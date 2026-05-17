@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Teste de Conexão</title>
+  <style>
+    body { font-family: sans-serif; padding: 40px; background: #f0f0f0; max-width: 800px; margin: 0 auto; }
+    h1 { margin-bottom: 30px; }
+    h2 { margin: 30px 0 10px; border-bottom: 2px solid #ccc; padding-bottom: 6px; }
+    button { padding: 10px 20px; margin: 6px 6px 6px 0; font-size: 15px; cursor: pointer; background: #1a73e8; color: white; border: none; border-radius: 6px; }
+    button:hover { background: #1558b0; }
+    input, select { padding: 8px 12px; font-size: 15px; border: 1px solid #ccc; border-radius: 6px; margin: 4px 0; width: 100%; max-width: 340px; }
+    label { display: block; margin-top: 10px; font-weight: bold; font-size: 14px; }
+    .resultado { margin-top: 14px; padding: 16px; background: white; border-radius: 8px; min-height: 50px; word-break: break-word; }
+    .ok  { color: green; }
+    .err { color: red; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border-radius: 8px; overflow: hidden; }
+    th { background: #1a73e8; color: white; padding: 10px; text-align: left; }
+    td { padding: 10px; border-bottom: 1px solid #eee; }
+    tr:last-child td { border-bottom: none; }
+    .form-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+
+  <h1>🧪 Teste de Conexão — Frontend ↔ API</h1>
+
+  <!-- SEÇÃO 1: LOGIN -->
+  <h2>1. Login</h2>
+  <div class="form-group">
+    <label>Usuário (user_name)</label>
+    <input type="text" id="login_user" placeholder="ex: admin" value="admin"/>
+  </div>
+  <div class="form-group">
+    <label>Senha</label>
+    <input type="password" id="login_senha" placeholder="ex: admin@123" value="admin@123"/>
+  </div>
+  <button onclick="fazerLogin()">Entrar</button>
+  <div class="resultado" id="res_login">Aguardando...</div>
+
+  <!-- SEÇÃO 2: LISTAR ALUNOS -->
+  <h2>2. Listar Alunos</h2>
+  <button onclick="listarAlunos()">Buscar Alunos</button>
+  <div class="resultado" id="res_alunos">Aguardando...</div>
+
+  <!-- SEÇÃO 3: CADASTRAR NOTA -->
+  <h2>3. Cadastrar Nota</h2>
+  <div class="form-group">
+    <label>ID do Aluno (fk_aluno)</label>
+    <input type="number" id="nota_aluno" placeholder="ex: 1" value="1"/>
+  </div>
+  <div class="form-group">
+    <label>ID Turma/Disciplina (fk_turma_disciplina)</label>
+    <input type="number" id="nota_turma_disc" placeholder="ex: 1" value="1"/>
+  </div>
+  <div class="form-group">
+    <label>Data de Aplicação</label>
+    <input type="date" id="nota_data" value="2025-05-17"/>
+  </div>
+  <div class="form-group">
+    <label>Valor da Nota (0 a 10)</label>
+    <input type="number" id="nota_valor" placeholder="ex: 8.5" step="0.1" min="0" max="10" value="8.5"/>
+  </div>
+  <div class="form-group">
+    <label>Descrição</label>
+    <input type="text" id="nota_descricao" placeholder="ex: Prova 1º Bimestre - Matemática" value="Prova Teste"/>
+  </div>
+  <div class="form-group">
+    <label>Período</label>
+    <input type="number" id="nota_periodo" placeholder="ex: 1" value="1"/>
+  </div>
+  <button onclick="cadastrarNota()">Cadastrar Nota</button>
+  <div class="resultado" id="res_nota">Aguardando...</div>
+
+  <script>
+    const API = 'http://trabalhobdd.gsuave.site';
+
+    // 1. LOGIN
+    async function fazerLogin() {
+      const user  = document.getElementById('login_user').value.trim();
+      const senha = document.getElementById('login_senha').value.trim();
+      const el    = document.getElementById('res_login');
+      el.innerHTML = 'Buscando...';
+      el.className = 'resultado';
+      try {
+        const res     = await fetch(`${API}/api/usuario`);
+        const usuarios = await res.json();
+        const encontrado = usuarios.find(u => u.user_name === user && u.senha === senha);
+        if (encontrado) {
+          el.innerHTML = `✅ Login OK! Bem-vindo, <b>${encontrado.user_name}</b> (nível ${encontrado.nivel_acesso})`;
+          el.className = 'resultado ok';
+          sessionStorage.setItem('usuario', JSON.stringify(encontrado));
+        } else {
+          el.innerHTML = '❌ Usuário ou senha incorretos.';
+          el.className = 'resultado err';
+        }
+      } catch (e) {
+        el.innerHTML = `❌ Erro ao conectar com a API: ${e.message}`;
+        el.className = 'resultado err';
+      }
+    }
+
+    // 2. LISTAR ALUNOS
+    async function listarAlunos() {
+      const el = document.getElementById('res_alunos');
+      el.innerHTML = 'Buscando...';
+      el.className = 'resultado';
+      try {
+        const res    = await fetch(`${API}/api/alunos`);
+        const alunos = await res.json();
+        if (!alunos.length) {
+          el.innerHTML = '⚠️ Nenhum aluno encontrado.';
+          return;
+        }
+        const rows = alunos.map(a => `
+          <tr>
+            <td>${a.id_aluno}</td>
+            <td>${a.nome_completo}</td>
+            <td>${a.matricula}</td>
+            <td>${a.data_nascimento ? a.data_nascimento.split('T')[0] : '-'}</td>
+            <td>${a.cpf}</td>
+          </tr>
+        `).join('');
+        el.innerHTML = `
+          ✅ ${alunos.length} aluno(s) encontrado(s):
+          <table>
+            <thead><tr><th>ID</th><th>Nome</th><th>Matrícula</th><th>Nascimento</th><th>CPF</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        `;
+        el.className = 'resultado ok';
+      } catch (e) {
+        el.innerHTML = `❌ Erro ao buscar alunos: ${e.message}`;
+        el.className = 'resultado err';
+      }
+    }
+
+    // 3. CADASTRAR NOTA
+    async function cadastrarNota() {
+      const el = document.getElementById('res_nota');
+      el.innerHTML = 'Enviando...';
+      el.className = 'resultado';
+
+      const body = {
+        fk_aluno:            parseInt(document.getElementById('nota_aluno').value),
+        fk_turma_disciplina: parseInt(document.getElementById('nota_turma_disc').value),
+        data_aplicacao:      document.getElementById('nota_data').value,
+        valor_nota:          parseFloat(document.getElementById('nota_valor').value),
+        descricao:           document.getElementById('nota_descricao').value,
+        periodo_nota:        parseInt(document.getElementById('nota_periodo').value),
+      };
+
+      try {
+        const res  = await fetch(`${API}/api/notas`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          el.innerHTML = `✅ ${data.mensagem || 'Nota cadastrada com sucesso!'}`;
+          el.className = 'resultado ok';
+        } else {
+          el.innerHTML = `❌ Erro: ${data.erro || 'Erro desconhecido'}`;
+          el.className = 'resultado err';
+        }
+      } catch (e) {
+        el.innerHTML = `❌ Erro ao cadastrar nota: ${e.message}`;
+        el.className = 'resultado err';
+      }
+    }
+
+    // Enter no login
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') fazerLogin();
+    });
+  </script>
+
+</body>
+</html>
