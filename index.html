@@ -21,7 +21,7 @@
   <div id="resultado">Clique em um botão para testar...</div>
 
   <script>
-    const API = 'http://localhost:3000';
+    const API = 'http://trabalhobdd.gsuave.site';
 // ALTERAR PARA: const API = 'http://ip-do-servidor-zima:3000';
 
     async function testarAPI() {
@@ -38,7 +38,7 @@
       try {
         const res   = await fetch(`${API}/api/alunos`);
         const dados = await res.json();
-        const lista = dados.map(a => `• ${a.nome} — Turma ${a.turma}`).join('<br>');
+        const lista = dados.map(a => `• ${a.nome_completo} — Turma ${a.turma}`).join('<br>');
         mostrar(`✅ Alunos recebidos:<br><br>${lista}`, 'ok');
       } catch (e) {
         mostrar('NÃO VAI FUNCIONAR, API TA NO MEU LOCALHOST AINDA!', 'err');
