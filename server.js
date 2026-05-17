@@ -15,7 +15,7 @@ app.get('/api/teste', (req, res) => {
 app.get('/api/alunos', async (req, res) => {
   try {
     const pool = await poolPromise;
-    const result = await pool.request().query('SELECT * FROM Alunos');
+    const result = await pool.request().query('SELECT * FROM alunos');
     res.json(result.recordset);
   } catch (err) {
     res.status(500).json({ erro: err.message });
