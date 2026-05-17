@@ -30,7 +30,7 @@
         const data = await res.json();
         mostrar(`✅ ${data.mensagem}`, 'ok');
       } catch (e) {
-        mostrar('❌ API não respondeu. Verifique se o server.js está rodando.', 'err');
+        mostrar('Para API funcionar, suave tem que dar o ar da graça e me passar o link do server dele', 'err');
       }
     }
 
@@ -41,7 +41,7 @@
         const lista = dados.map(a => `• ${a.nome} — Turma ${a.turma}`).join('<br>');
         mostrar(`✅ Alunos recebidos:<br><br>${lista}`, 'ok');
       } catch (e) {
-        mostrar('❌ Erro ao buscar alunos. Verifique se o server.js está rodando.', 'err');
+        mostrar('NÃO VAI FUNCIONAR, API TA NO MEU LOCALHOST AINDA!', 'err');
       }
     }
 
