@@ -1,56 +1,31 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>Teste de Conexão</title>
-  <style>
-    body { font-family: sans-serif; padding: 40px; background: #f0f0f0; }
-    button { padding: 10px 20px; margin: 8px; font-size: 16px; cursor: pointer; }
-    #resultado { margin-top: 20px; padding: 20px; background: white; border-radius: 8px; min-height: 60px; }
-    .ok  { color: green; font-weight: bold; }
-    .err { color: red;   font-weight: bold; }
-  </style>
-</head>
-<body>
+<html lang="pt-br">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0"
+		/>
+		<title>ABC - Login</title>
+		<link rel="stylesheet" href="style/carregando.css" />
+		<!-- <link
+			rel="shortcut icon"
+			href="../img/logo/logo.png"
+			type="image/x-icon"
+		/> -->
+	</head>
+	<body>
+		<div class="loader-container">
+			<div class="loader-spin"></div>
+		</div>
 
-  <h1>Teste de Conexão — Frontend ↔ API</h1>
-
-  <button onclick="testarAPI()">Testar API</button>
-  <button onclick="buscarAlunos()">Buscar Alunos</button>
-git pull origin main
-  <div id="resultado">Clique em um botão para testar...</div>
-
-  <script>
-    const API = 'https://trabalhobdd.gsuave.site';
-// ALTERAR PARA: const API = 'http://ip-do-servidor-zima:3000';
-
-    async function testarAPI() {
-      try {
-        const res  = await fetch(`${API}/api/teste`);
-        const data = await res.json();
-        mostrar(`✅ ${data.mensagem}`, 'ok');
-      } catch (e) {
-        mostrar('Para API funcionar, suave tem que dar o ar da graça e me passar o link do server dele', 'err');
-      }
-    }
-
-    async function buscarAlunos() {
-      try {
-        const res   = await fetch(`${API}/api/alunos`);
-        const dados = await res.json();
-        const lista = dados.map(a => `• ${a.nome_completo} — Turma ${a.turma}`).join('<br>');
-        mostrar(`✅ Alunos recebidos:<br><br>${lista}`, 'ok');
-      } catch (e) {
-        mostrar('NÃO VAI FUNCIONAR, API TA NO MEU LOCALHOST AINDA!', 'err');
-      }
-    }
-
-    function mostrar(msg, tipo) {
-      const el = document.getElementById('resultado');
-      el.innerHTML = msg;
-      el.className = tipo;
-    }
-  </script>
-
-</body>
+		<div class="content" style="display: none">
+			<h1>Seu Conteúdo Carregado!</h1>
+			<p>
+				Imagine que este conteúdo apareceu depois de um
+				carregamento.
+			</p>
+		</div>
+		<!-- <script src="./script/main.js"></script> -->
+	</body>
 </html>

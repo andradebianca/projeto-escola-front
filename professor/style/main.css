@@ -1,0 +1,84 @@
+.layout {
+  border-radius: var(--radius);
+
+  padding: 30px;
+
+  box-shadow: var(--card-shadow);
+}
+
+.section-header {
+  margin-bottom: 25px;
+}
+
+.section-header h2 {
+  color: var(--primary);
+}
+
+table {
+  width: 100%;
+
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: left;
+
+  padding: 18px;
+}
+
+th {
+  color: var(--primary);
+
+  border-bottom: 2px solid #e9edf5;
+}
+
+tr:not(:last-child) td {
+  border-bottom: 1px solid #eef1f7;
+}
+
+.status {
+  padding: 8px 14px;
+
+  border-radius: 999px;
+
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.open {
+  background: rgba(28,216,255,0.15);
+  color: #00a9d1;
+}
+
+.progress {
+  background: rgba(255,193,7,0.18);
+  color: #c58a00;
+}
+
+.done {
+  background: rgba(25,135,84,0.15);
+  color: #198754;
+}
+
+@media (max-width: 900px) {
+
+  .layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .table-section {
+    overflow-x: auto;
+  }
+
+}
