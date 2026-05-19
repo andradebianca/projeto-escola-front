@@ -166,8 +166,15 @@ function renderizarDisciplinas(disciplinas) {
 
         <p class="professor">
 
-          Professor:
-          ${disciplina.professor}
+        Professor:
+        ${disciplina.professor}
+
+        </p>
+
+        <p class="quantidade-notas">
+
+          Quantidade de notas:
+          ${disciplina.notas?.length ?? 0}/3
 
         </p>
 

@@ -265,12 +265,14 @@ a {
 }
 
 .subject-card {
-  height: 104px;
+  min-height: 145px;
+
   border-radius: 20px;
 
   padding: 16px;
 
-  padding: 18px;
+  display: flex;
+  flex-direction: column;
 }
 
 .subject-card h3 {
