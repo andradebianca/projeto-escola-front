@@ -230,7 +230,7 @@ app.post("/api/login", async (req, res) => {
           matricula,
           cpf,
           data_nascimento
-        FROM aluno
+        FROM alunos
         WHERE fk_usuario = @id_usuario
       `);
 
