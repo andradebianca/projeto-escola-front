@@ -369,7 +369,7 @@ app.get("/api/aluno/:id/disciplinas", async (req, res) => {
           p.nome_completo AS professor,
 
           n.id_nota,
-          n.nota
+          n.valor_nota
 
         FROM turma_disciplina td
 
@@ -402,8 +402,8 @@ app.get("/api/aluno/:id/disciplinas", async (req, res) => {
         };
       }
 
-      if (item.nota !== null) {
-        disciplinasMap[item.id_disciplina].notas.push(item.nota);
+      if (item.valor_nota !== null) {
+        disciplinasMap[item.id_disciplina].notas.push(item.valor_nota);
       }
     });
 
@@ -459,7 +459,7 @@ app.get("/api/aluno/:id/notas", async (req, res) => {
         SELECT
           d.id_disciplina,
           d.nome AS disciplina,
-          n.nota
+          n.valor_nota
 
         FROM notas n
 
@@ -486,7 +486,7 @@ app.get("/api/aluno/:id/notas", async (req, res) => {
 
       // LIMITE DE 3 NOTAS
       if (disciplinasMap[item.id_disciplina].notas.length < 3) {
-        disciplinasMap[item.id_disciplina].notas.push(item.nota);
+        disciplinasMap[item.id_disciplina].notas.push(item.valor_nota);
       }
     });
 
