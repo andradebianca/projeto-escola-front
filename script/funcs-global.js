@@ -6,6 +6,19 @@ export function redirecionar(link) {
   window.location.href = `${urlBase}/${link}`;
 }
 
+export function verificarLogin(principal) {
+  const usuario = localStorage.getItem("usuario");
+  typeof principal == "boolean" ? principal : false;
+
+  if (!usuario) {
+    redirecionar("login/");
+  } else if (principal) {
+    const user = JSON.parse(localStorage.getItem("perfil"));
+
+    redirecionar(`${user?.tipo ?? ""}/`);
+  }
+}
+
 export function logout() {
   localStorage.removeItem("usuario");
   localStorage.removeItem("perfil");
