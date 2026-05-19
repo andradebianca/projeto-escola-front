@@ -6,23 +6,23 @@ export function redirecionar(link) {
   window.location.href = `${urlBase}/${link}`;
 }
 
-function sair() {
-  const logado = localStorage.getItem("logado");
+export function logout() {
+  localStorage.removeItem("usuario");
+  localStorage.removeItem("perfil");
+  localStorage.removeItem("token");
+  localStorage.removeItem("logado");
 
-  console.log("teste");
-
-  if (logado) {
-    localStorage.removeItem("user");
-    localStorage.setItem("logado", false);
-  }
-
-  const urlBase = capturarUrl();
-
-  window.location.href = `${urlBase}/login/`;
+  redirecionar("login/");
 }
 
 function capturarUrl() {
-  return window.location.origin;
+  const origin = window.location.origin;
+  const pathSegments = window.location.pathname.split("/").filter(Boolean);
+
+  if (pathSegments.length > 0 && pathSegments[0] === "projeto-escola-front")
+    return `${origin}/${pathSegments[0]}`;
+
+  return origin;
 }
 
-if (btnSair) btnSair.addEventListener("click", sair);
+if (btnSair) btnSair.addEventListener("click", logout);

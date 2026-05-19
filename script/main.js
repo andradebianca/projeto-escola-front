@@ -1,17 +1,13 @@
-const logado = localStorage.getItem("logado");
-let user;
+import { redirecionar } from "./funcs-global.js";
 
-if (logado == null) {
-  window.location.href = "./login/";
+const usuario = localStorage.getItem("usuario");
+
+if (!usuario) {
+  redirecionar("login/");
 } else {
-  user = JSON.parse(localStorage.getItem("user"));
+  const user = JSON.parse(localStorage.getItem("perfil"));
 
-  const pathSegments = window.location.pathname.split("/");
+  console.log(user);
 
-  let projectBase = "";
-  if (pathSegments.length > 1 && pathSegments[1] !== "") {
-    projectBase = `/${pathSegments[1]}`;
-  }
-
-  window.open(`${projectBase}/${user.tipo}/`, "_self");
+  redirecionar(`${user?.tipo ?? ""}/`);
 }
