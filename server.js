@@ -290,6 +290,106 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
+// Get Turmas pelo Usuário
+app.get("/api/aluno/:id/disciplinas", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { ano } = req.query;
+
+    if (!ano) {
+      return res.status(400).json({
+        erro: "Ano letivo é obrigatório",
+      });
+    }
+
+    const pool = await poolPromise;
+
+    // =========================
+    // BUSCAR ALUNO + TURMA
+    // =========================
+    const alunoResult = await pool
+      .request()
+      .input("id_aluno", sql.Int, id)
+      .input("ano", sql.Int, ano).query(`
+        SELECT 
+          a.id_aluno,
+          a.nome_completo,
+          t.id_turma,
+          t.cod_turma,
+          t.turno,
+          t.ano_letivo
+        FROM alunos a
+        INNER JOIN turma t
+          ON t.id_turma = a.fk_turma
+        WHERE a.id_aluno = @id_aluno
+          AND t.ano_letivo = @ano
+      `);
+
+    if (alunoResult.recordset.length === 0) {
+      return res.status(404).json({
+        erro: "Aluno ou turma não encontrados",
+      });
+    }
+
+    const aluno = alunoResult.recordset[0];
+
+    // =========================
+    // BUSCAR DISCIPLINAS
+    // =========================
+    const disciplinasResult = await pool
+      .request()
+      .input("id_turma", sql.Int, aluno.id_turma).query(`
+        SELECT
+          td.id_turma_disciplina,
+
+          d.id_disciplina,
+          d.nome AS disciplina,
+          d.descricao,
+          d.carga_horaria,
+
+          p.id_professor,
+          p.nome_completo AS professor
+
+        FROM turma_disciplina td
+
+        INNER JOIN disciplina d
+          ON d.id_disciplina = td.fk_disciplina
+
+        INNER JOIN professor p
+          ON p.id_professor = d.fk_professor
+
+        WHERE td.fk_turma = @id_turma
+      `);
+
+    // =========================
+    // RESPOSTA
+    // =========================
+    res.json({
+      sucesso: true,
+
+      aluno: {
+        id_aluno: aluno.id_aluno,
+        nome_completo: aluno.nome_completo,
+      },
+
+      turma: {
+        id_turma: aluno.id_turma,
+        cod_turma: aluno.cod_turma,
+        turno: aluno.turno,
+        ano_letivo: aluno.ano_letivo,
+      },
+
+      disciplinas: disciplinasResult.recordset,
+    });
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      erro: err.message,
+    });
+  }
+});
+
 app.listen(3000, () => {
   console.log("API rodando em http://localhost:3000");
 });
