@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Portal do Aluno</title>
+    <title>ABC - Portal do Aluno</title>
 
     <link rel="stylesheet" href="../style/global.css" />
     <link rel="stylesheet" href="./style/main.css" />
@@ -16,25 +16,26 @@
   </head>
 
   <body>
-    <div class="page">
+    <div class="app-container">
       <!-- HEADER -->
       <header class="top-header">
         <div class="logo-area">
           <h1 class="logo">ABC<span>.</span></h1>
 
-          <div class="divider"></div>
+          <div class="logo-divider"></div>
 
           <p class="portal-text">Portal do Aluno</p>
         </div>
 
-        <button class="logout">
+        <button class="logout-btn-header" id="btn-sair">
           Sair
+
           <i class="fa-solid fa-arrow-right-from-bracket"></i>
         </button>
       </header>
 
-      <!-- CONTENT -->
-      <div class="content">
+      <!-- DASHBOARD -->
+      <div class="dashboard-container">
         <!-- SIDEBAR -->
         <aside class="sidebar">
           <div class="profile">
@@ -44,7 +45,7 @@
 
             <h2>Nome aluno</h2>
 
-            <span> matrícula </span>
+            <span>matrícula</span>
           </div>
 
           <nav class="menu">
@@ -65,7 +66,7 @@
           </nav>
         </aside>
 
-        <!-- MAIN -->
+        <!-- CONTENT -->
         <main class="main-content">
           <select class="semester">
             <option>2026/1</option>
@@ -73,47 +74,47 @@
           </select>
 
           <section class="cards">
-            <div class="card">
+            <div class="subject-card default-card">
               <h3>Disciplina 1</h3>
               <p>Professor:</p>
             </div>
 
-            <div class="card">
+            <div class="subject-card default-card">
               <h3>Disciplina 2</h3>
               <p>Professor:</p>
             </div>
 
-            <div class="card">
+            <div class="subject-card default-card">
               <h3>Disciplina 3</h3>
               <p>Professor:</p>
             </div>
 
-            <div class="card">
+            <div class="subject-card default-card">
               <h3>Disciplina 4</h3>
               <p>Professor:</p>
             </div>
 
-            <div class="card">
+            <div class="subject-card default-card">
               <h3>Disciplina 5</h3>
               <p>Professor:</p>
             </div>
 
-            <div class="card">
+            <div class="subject-card default-card">
               <h3>Disciplina 6</h3>
               <p>Professor:</p>
             </div>
 
-            <div class="card">
+            <div class="subject-card default-card">
               <h3>Disciplina 7</h3>
               <p>Professor:</p>
             </div>
 
-            <div class="card">
+            <div class="subject-card default-card">
               <h3>Disciplina 8</h3>
               <p>Professor:</p>
             </div>
 
-            <div class="card">
+            <div class="subject-card default-card">
               <h3>Disciplina 10</h3>
               <p>Professor:</p>
             </div>
@@ -121,5 +122,6 @@
         </main>
       </div>
     </div>
+    <script src="/script/funcs-global.js" type="module"></script>
   </body>
 </html>
