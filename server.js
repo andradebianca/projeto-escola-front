@@ -314,6 +314,7 @@ app.get("/api/aluno/:id/disciplinas", async (req, res) => {
         SELECT 
           a.id_aluno,
           a.nome_completo,
+          a.matricula,
           t.id_turma,
           t.cod_turma,
           t.turno,
@@ -370,6 +371,7 @@ app.get("/api/aluno/:id/disciplinas", async (req, res) => {
       aluno: {
         id_aluno: aluno.id_aluno,
         nome_completo: aluno.nome_completo,
+        matricula: aluno.matricula,
       },
 
       turma: {
