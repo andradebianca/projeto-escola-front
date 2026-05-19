@@ -41,7 +41,9 @@ async function logar() {
 
     const data = await response.json();
 
-    /* ERRO LOGIN */
+    console.log(data);
+
+    /* ERRO */
 
     if (!data.sucesso) {
       alert("Email ou senha inválidos.");
@@ -51,51 +53,40 @@ async function logar() {
 
     /* STORAGE */
 
-    localStorage.setItem("logado", true);
+    localStorage.setItem("logado", "true");
 
     localStorage.setItem("usuario", JSON.stringify(data.usuario));
 
     localStorage.setItem("perfil", JSON.stringify(data.perfil));
 
-    /* REDIRECIONAMENTO */
+    /* REDIRECT */
 
-    if (!data.perfil) {
-      /*
-        ADM
-      */
+    const tipo = data.perfil?.tipo;
 
-      switch (data.usuario.nivel_acesso) {
-        case 1:
+    switch (tipo) {
+      case "aluno":
+        redirecionar("aluno/");
+
+        break;
+
+      case "professor":
+        redirecionar("professor/");
+
+        break;
+
+      default:
+        /* ADM */
+
+        if (data.usuario?.nivel_acesso === 1) {
           redirecionar("admin/");
-          break;
 
-        default:
-          redirecionar("");
-          break;
-      }
+          return;
+        }
 
-      return;
+        redirecionar("");
+
+        break;
     }
-
-    /* ALUNO */
-
-    if (data.perfil.tipo === "aluno") {
-      redirecionar("aluno/");
-
-      return;
-    }
-
-    /* PROFESSOR */
-
-    if (data.perfil.tipo === "professor") {
-      redirecionar("professor/");
-
-      return;
-    }
-
-    /* FALLBACK */
-
-    redirecionar("");
   } catch (error) {
     console.error(error);
 

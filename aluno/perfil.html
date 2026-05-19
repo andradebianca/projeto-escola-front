@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>ABC - Dados Pessoais</title>
+
+    <link rel="stylesheet" href="../style/global.css" />
+
+    <link rel="stylesheet" href="./style/perfil.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <div class="app-container">
+      <!-- HEADER -->
+      <header class="top-header">
+        <div class="logo-area">
+          <h1 class="logo">ABC<span>.</span></h1>
+
+          <div class="logo-divider"></div>
+
+          <p class="portal-text">Portal do Aluno</p>
+        </div>
+
+        <button class="logout-btn-header" id="btn-sair">
+          Sair
+
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </button>
+      </header>
+
+      <!-- DASHBOARD -->
+      <div class="dashboard-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+          <div class="profile">
+            <div class="avatar">
+              <i class="fa-solid fa-user"></i>
+            </div>
+
+            <h2 id="nome-aluno">Nome aluno</h2>
+
+            <span id="matricula-aluno"> matrícula </span>
+          </div>
+
+          <nav class="menu">
+            <button class="menu-btn" id="dashboard">
+              <i class="fa-solid fa-table-columns"></i>
+              DashBoard
+            </button>
+
+            <button class="menu-btn active" id="dados-pessoais">
+              <i class="fa-solid fa-user"></i>
+              Dados Pessoais
+            </button>
+
+            <button class="menu-btn" id="boletins">
+              <i class="fa-solid fa-star"></i>
+              Boletins
+            </button>
+          </nav>
+        </aside>
+
+        <!-- CONTENT -->
+        <main class="main-content">
+          <div class="perfil-card default-card">
+            <div class="perfil-header">
+              <h2>Dados Pessoais</h2>
+            </div>
+
+            <div class="perfil-grid">
+              <!-- NOME -->
+              <div class="info-item">
+                <span class="label"> Nome Completo </span>
+
+                <p id="info-nome">-</p>
+              </div>
+
+              <!-- MATRÍCULA -->
+              <div class="info-item">
+                <span class="label"> Matrícula </span>
+
+                <p id="info-matricula">-</p>
+              </div>
+
+              <!-- NASCIMENTO -->
+              <div class="info-item">
+                <span class="label"> Data de nascimento </span>
+
+                <p id="info-nascimento">-</p>
+              </div>
+
+              <!-- TELEFONE -->
+              <div class="info-item">
+                <span class="label"> Telefone </span>
+
+                <p id="info-telefone">-</p>
+              </div>
+
+              <!-- RUA -->
+              <div class="info-item full">
+                <span class="label"> Rua </span>
+
+                <p id="info-rua">-</p>
+              </div>
+
+              <!-- NÚMERO -->
+              <div class="info-item">
+                <span class="label"> Número </span>
+
+                <p id="info-numero">-</p>
+              </div>
+
+              <!-- BAIRRO -->
+              <div class="info-item">
+                <span class="label"> Bairro </span>
+
+                <p id="info-bairro">-</p>
+              </div>
+
+              <!-- CEP -->
+              <div class="info-item">
+                <span class="label"> CEP </span>
+
+                <p id="info-cep">-</p>
+              </div>
+
+              <!-- CIDADE -->
+              <div class="info-item">
+                <span class="label"> Cidade </span>
+
+                <p id="info-cidade">-</p>
+              </div>
+
+              <!-- UF -->
+              <div class="info-item">
+                <span class="label"> Estado </span>
+
+                <p id="info-uf">-</p>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script src="./script/perfil.js" type="module"></script>
+    <script src="./script/global.js" type="module"></script>
+  </body>
+</html>

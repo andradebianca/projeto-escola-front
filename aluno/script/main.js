@@ -8,10 +8,6 @@ verificarLogin();
 
 /* ELEMENTOS */
 
-const nomeAluno = document.getElementById("nome-aluno");
-
-const matriculaAluno = document.getElementById("matricula-aluno");
-
 const cardsDisciplinas = document.getElementById("cards-disciplinas");
 
 const selectAno = document.getElementById("select-ano");
@@ -35,17 +31,7 @@ let anoSelecionado = 2025;
 /* INIT */
 
 async function init() {
-  preencherAluno();
-
   await buscarDisciplinas();
-}
-
-/* ALUNO */
-
-function preencherAluno() {
-  nomeAluno.innerText = perfil.dados.nome_completo;
-
-  matriculaAluno.innerText = perfil.dados.matricula ?? perfil.dados.id_aluno;
 }
 
 /* API */
@@ -69,12 +55,6 @@ async function buscarDisciplinas() {
     /* SELECT */
 
     preencherSelectAnos(data.aluno.opcoesAnos);
-
-    /* ALUNO */
-
-    nomeAluno.innerText = data.aluno.nome_completo;
-
-    matriculaAluno.innerText = data.aluno.matricula;
 
     /* DISCIPLINAS */
 
