@@ -41,8 +41,6 @@ async function logar() {
 
     const data = await response.json();
 
-    console.log(data);
-
     /* ERRO LOGIN */
 
     if (!data.sucesso) {

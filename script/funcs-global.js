@@ -7,6 +7,8 @@ export function redirecionar(link) {
 }
 
 export function verificarLogin(principal) {
+  console.log("forçando a subir alteração");
+
   const usuario = localStorage.getItem("usuario");
   typeof principal == "boolean" ? principal : false;
 

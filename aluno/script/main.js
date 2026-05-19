@@ -45,7 +45,7 @@ async function init() {
 function preencherAluno() {
   nomeAluno.innerText = perfil.dados.nome_completo;
 
-  matriculaAluno.innerText = perfil.dados.id_aluno;
+  matriculaAluno.innerText = perfil.dados.matricula ?? perfil.dados.id_aluno;
 }
 
 /* API */
@@ -60,13 +60,23 @@ async function buscarDisciplinas() {
 
     const data = await response.json();
 
-    console.log(data);
-
     if (!data.sucesso) {
       cardsDisciplinas.innerHTML = "<p>Erro ao carregar disciplinas.</p>";
 
       return;
     }
+
+    /* SELECT */
+
+    preencherSelectAnos(data.aluno.opcoesAnos);
+
+    /* ALUNO */
+
+    nomeAluno.innerText = data.aluno.nome_completo;
+
+    matriculaAluno.innerText = data.aluno.matricula;
+
+    /* DISCIPLINAS */
 
     renderizarDisciplinas(data.disciplinas);
   } catch (error) {
@@ -74,6 +84,62 @@ async function buscarDisciplinas() {
 
     cardsDisciplinas.innerHTML = "<p>Erro interno.</p>";
   }
+}
+
+/* SELECT ANOS */
+
+function preencherSelectAnos(anos) {
+  selectAno.innerHTML = "";
+
+  /* ORDENA */
+
+  const anosOrdenados = [...anos].sort((a, b) => b - a);
+
+  /* MAIOR ANO */
+
+  anoSelecionado = anosOrdenados[0];
+
+  anosOrdenados.forEach((ano) => {
+    selectAno.innerHTML += `
+
+      <option
+        value="${ano}"
+        ${ano === anoSelecionado ? "selected" : ""}
+      >
+        ${ano}
+      </option>
+
+    `;
+  });
+}
+
+/* STATUS */
+
+function obterStatus(notas, media) {
+  /* CURSANDO */
+
+  if (!notas || notas.length < 3) {
+    return {
+      texto: "Cursando",
+      classe: "status-cursando",
+    };
+  }
+
+  /* APROVADO */
+
+  if (Number(media) >= 7) {
+    return {
+      texto: "Aprovado",
+      classe: "status-aprovado",
+    };
+  }
+
+  /* REPROVADO */
+
+  return {
+    texto: "Reprovado",
+    classe: "status-reprovado",
+  };
 }
 
 /* RENDER */
@@ -88,6 +154,8 @@ function renderizarDisciplinas(disciplinas) {
   }
 
   disciplinas.forEach((disciplina) => {
+    const status = obterStatus(disciplina.notas, disciplina.media);
+
     cardsDisciplinas.innerHTML += `
 
       <div class="subject-card default-card">
@@ -96,10 +164,32 @@ function renderizarDisciplinas(disciplinas) {
           ${disciplina.disciplina}
         </h3>
 
-        <p>
+        <p class="professor">
+
           Professor:
           ${disciplina.professor}
+
         </p>
+
+        <div class="info-row">
+
+          <div class="media">
+
+            Média:
+
+            <strong>
+             ${Number(disciplina.media).toFixed(2)}
+            </strong>
+
+          </div>
+
+          <div class="status ${status.classe}">
+
+            ${status.texto}
+
+          </div>
+
+        </div>
 
       </div>
 

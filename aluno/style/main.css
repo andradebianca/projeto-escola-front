@@ -1,0 +1,153 @@
+/* MAIN */
+
+.main-content {
+  flex: 1;
+
+  padding-top: 2px;
+}
+
+/* SELECT */
+
+.semester {
+  width: 100%;
+  max-width: 540px;
+
+  height: 34px;
+
+  border-radius: 999px;
+
+  border: 1px solid var(--secondary);
+
+  background: white;
+
+  padding: 0 16px;
+
+  margin-bottom: 14px;
+
+  outline: none;
+
+  font-size: 13px;
+
+  color: #777;
+}
+
+/* GRID */
+
+.cards {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 14px;
+
+  max-width: 760px;
+}
+
+/* CARD */
+
+.subject-card {
+  height: 104px;
+
+  border-radius: 20px;
+
+  padding: 16px;
+
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+/* TITULO */
+
+.subject-card h3 {
+  color: var(--secondary);
+
+  font-size: 14px;
+
+  margin-bottom: 8px;
+}
+
+/* PROFESSOR */
+
+.professor {
+  color: #999;
+
+  font-size: 11px;
+}
+
+/* INFO */
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-top: 18px;
+}
+
+/* MÉDIA */
+
+.media {
+  font-size: 13px;
+
+  color: #777;
+}
+
+.media strong {
+  color: var(--primary);
+}
+
+/* STATUS */
+
+.status {
+  height: 28px;
+
+  padding: 0 12px;
+
+  border-radius: 999px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 11px;
+  font-weight: bold;
+}
+
+/* APROVADO */
+
+.status-aprovado {
+  background: rgba(25, 135, 84, 0.12);
+
+  color: #198754;
+}
+
+/* REPROVADO */
+
+.status-reprovado {
+  background: rgba(220, 53, 69, 0.12);
+
+  color: #dc3545;
+}
+
+/* CURSANDO */
+
+.status-cursando {
+  background: rgba(255, 193, 7, 0.15);
+
+  color: #d39e00;
+}
+
+/* RESPONSIVO */
+
+@media (max-width: 1100px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 850px) {
+  .cards {
+    grid-template-columns: 1fr;
+
+    max-width: 100%;
+  }
+}
