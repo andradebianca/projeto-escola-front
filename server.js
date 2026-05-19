@@ -185,7 +185,9 @@ app.post("/api/login", async (req, res) => {
   try {
     const { email, senha } = req.body || {};
 
-    // Validação básica
+    // =========================
+    // VALIDAÇÃO
+    // =========================
     if (!email || !senha) {
       return res.status(400).json({
         erro: "Email e senha são obrigatórios",
@@ -194,7 +196,9 @@ app.post("/api/login", async (req, res) => {
 
     const pool = await poolPromise;
 
+    // =========================
     // LOGIN
+    // =========================
     const usuarioResult = await pool
       .request()
       .input("email", sql.VarChar, email)
@@ -209,7 +213,9 @@ app.post("/api/login", async (req, res) => {
           AND senha = @senha
       `);
 
-    // Usuário não encontrado
+    // =========================
+    // USUÁRIO NÃO ENCONTRADO
+    // =========================
     if (usuarioResult.recordset.length === 0) {
       return res.status(401).json({
         erro: "Email ou senha inválidos",
@@ -230,7 +236,6 @@ app.post("/api/login", async (req, res) => {
           SELECT 
             id_professor,
             nome_completo,
-            cpf,
             data_nacimento
           FROM professor
           WHERE fk_usuario = @id_usuario
@@ -254,7 +259,7 @@ app.post("/api/login", async (req, res) => {
           SELECT 
             id_aluno,
             nome_completo,
-            cpf,
+            matricula,
             data_nacimento
           FROM alunos
           WHERE fk_usuario = @id_usuario
@@ -273,12 +278,14 @@ app.post("/api/login", async (req, res) => {
     // =========================
     res.json({
       sucesso: true,
+
       usuario: {
         id_usuario: usuario.id_usuario,
         email: usuario.email,
         user_name: usuario.user_name,
         nivel_acesso: usuario.nivel_acesso,
       },
+
       perfil,
     });
   } catch (err) {
