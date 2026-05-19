@@ -520,17 +520,16 @@ app.get("/api/aluno/:id/perfil", async (req, res) => {
           a.nome_completo,
           a.matricula,
           a.data_nascimento,
-          a.email,
 
-          e.bairro,
           e.numero,
-          e.cep,
 
           r.nome_rua,
+          r.cep,
+          r.bairro,
 
           c.nome_cidade,
 
-          uf.sigla AS uf
+          uf.nome_estado AS uf
 
         FROM alunos a
 
@@ -541,10 +540,10 @@ app.get("/api/aluno/:id/perfil", async (req, res) => {
           ON r.id_rua = e.fk_rua
 
         LEFT JOIN cidade c
-          ON c.id_cidade = r.fk_cidade
+          ON c.id_cidade = e.fk_cidade
 
         LEFT JOIN uf
-          ON uf.id_uf = c.fk_uf
+          ON uf.id_uf = e.fk_uf
 
         WHERE a.id_aluno = @id_aluno
       `);
@@ -576,13 +575,12 @@ app.get("/api/aluno/:id/perfil", async (req, res) => {
         nome_completo: aluno.nome_completo,
         matricula: aluno.matricula,
         data_nascimento: aluno.data_nascimento,
-        email: aluno.email,
 
         endereco: {
-          bairro: aluno.bairro,
-          numero: aluno.numero,
-          cep: aluno.cep,
           rua: aluno.nome_rua,
+          numero: aluno.numero,
+          bairro: aluno.bairro,
+          cep: aluno.cep,
           cidade: aluno.nome_cidade,
           uf: aluno.uf,
         },
