@@ -1,21 +1,21 @@
-const express = require('express');
-const cors = require('cors');
-const { sql, poolPromise } = require('./db');
+const express = require("express");
+const cors = require("cors");
+const { sql, poolPromise } = require("./db");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 // Teste
-app.get('/api/teste', (req, res) => {
-  res.json({ mensagem: 'API funcionando!', status: 'ok' });
+app.get("/api/teste", (req, res) => {
+  res.json({ mensagem: "API funcionando!", status: "ok" });
 });
 
 // Alunos
-app.get('/api/alunos', async (req, res) => {
+app.get("/api/alunos", async (req, res) => {
   try {
     const pool = await poolPromise;
-    const result = await pool.request().query('SELECT * FROM alunos');
+    const result = await pool.request().query("SELECT * FROM alunos");
     res.json(result.recordset);
   } catch (err) {
     res.status(500).json({ erro: err.message });
@@ -23,10 +23,10 @@ app.get('/api/alunos', async (req, res) => {
 });
 
 // Cidade
-app.get('/api/cidade', async (req, res) => {
+app.get("/api/cidade", async (req, res) => {
   try {
     const pool = await poolPromise;
-    const result = await pool.request().query('SELECT * FROM cidade');
+    const result = await pool.request().query("SELECT * FROM cidade");
     res.json(result.recordset);
   } catch (err) {
     res.status(500).json({ erro: err.message });
@@ -34,10 +34,10 @@ app.get('/api/cidade', async (req, res) => {
 });
 
 // Disciplina
-app.get('/api/disciplina', async (req, res) => {
+app.get("/api/disciplina", async (req, res) => {
   try {
     const pool = await poolPromise;
-    const result = await pool.request().query('SELECT * FROM disciplina');
+    const result = await pool.request().query("SELECT * FROM disciplina");
     res.json(result.recordset);
   } catch (err) {
     res.status(500).json({ erro: err.message });
@@ -45,10 +45,10 @@ app.get('/api/disciplina', async (req, res) => {
 });
 
 // Endereço
-app.get('/api/endereco', async (req, res) => {
+app.get("/api/endereco", async (req, res) => {
   try {
     const pool = await poolPromise;
-    const result = await pool.request().query('SELECT * FROM endereco');
+    const result = await pool.request().query("SELECT * FROM endereco");
     res.json(result.recordset);
   } catch (err) {
     res.status(500).json({ erro: err.message });
@@ -56,10 +56,10 @@ app.get('/api/endereco', async (req, res) => {
 });
 
 // Especialização
-app.get('/api/especializacao', async (req, res) => {
+app.get("/api/especializacao", async (req, res) => {
   try {
     const pool = await poolPromise;
-    const result = await pool.request().query('SELECT * FROM especializacao');
+    const result = await pool.request().query("SELECT * FROM especializacao");
     res.json(result.recordset);
   } catch (err) {
     res.status(500).json({ erro: err.message });
@@ -67,10 +67,10 @@ app.get('/api/especializacao', async (req, res) => {
 });
 
 // Notas
-app.get('/api/notas', async (req, res) => {
+app.get("/api/notas", async (req, res) => {
   try {
     const pool = await poolPromise;
-    const result = await pool.request().query('SELECT * FROM notas');
+    const result = await pool.request().query("SELECT * FROM notas");
     res.json(result.recordset);
   } catch (err) {
     res.status(500).json({ erro: err.message });
@@ -78,10 +78,10 @@ app.get('/api/notas', async (req, res) => {
 });
 
 // Professor
-app.get('/api/professor', async (req, res) => {
+app.get("/api/professor", async (req, res) => {
   try {
     const pool = await poolPromise;
-    const result = await pool.request().query('SELECT * FROM professor');
+    const result = await pool.request().query("SELECT * FROM professor");
     res.json(result.recordset);
   } catch (err) {
     res.status(500).json({ erro: err.message });
@@ -89,10 +89,12 @@ app.get('/api/professor', async (req, res) => {
 });
 
 // Professor Especialização
-app.get('/api/professor_especializacao', async (req, res) => {
+app.get("/api/professor_especializacao", async (req, res) => {
   try {
     const pool = await poolPromise;
-    const result = await pool.request().query('SELECT * FROM professor_especializacao');
+    const result = await pool
+      .request()
+      .query("SELECT * FROM professor_especializacao");
     res.json(result.recordset);
   } catch (err) {
     res.status(500).json({ erro: err.message });
@@ -100,10 +102,10 @@ app.get('/api/professor_especializacao', async (req, res) => {
 });
 
 // Rua
-app.get('/api/rua', async (req, res) => {
+app.get("/api/rua", async (req, res) => {
   try {
     const pool = await poolPromise;
-    const result = await pool.request().query('SELECT * FROM rua');
+    const result = await pool.request().query("SELECT * FROM rua");
     res.json(result.recordset);
   } catch (err) {
     res.status(500).json({ erro: err.message });
@@ -111,10 +113,10 @@ app.get('/api/rua', async (req, res) => {
 });
 
 // Telefone Aluno
-app.get('/api/telefone_aluno', async (req, res) => {
+app.get("/api/telefone_aluno", async (req, res) => {
   try {
     const pool = await poolPromise;
-    const result = await pool.request().query('SELECT * FROM telefone_aluno');
+    const result = await pool.request().query("SELECT * FROM telefone_aluno");
     res.json(result.recordset);
   } catch (err) {
     res.status(500).json({ erro: err.message });
@@ -122,10 +124,12 @@ app.get('/api/telefone_aluno', async (req, res) => {
 });
 
 // Telefone Professor
-app.get('/api/telefone_professor', async (req, res) => {
+app.get("/api/telefone_professor", async (req, res) => {
   try {
     const pool = await poolPromise;
-    const result = await pool.request().query('SELECT * FROM telefone_professor');
+    const result = await pool
+      .request()
+      .query("SELECT * FROM telefone_professor");
     res.json(result.recordset);
   } catch (err) {
     res.status(500).json({ erro: err.message });
@@ -133,10 +137,10 @@ app.get('/api/telefone_professor', async (req, res) => {
 });
 
 // Turma
-app.get('/api/turma', async (req, res) => {
+app.get("/api/turma", async (req, res) => {
   try {
     const pool = await poolPromise;
-    const result = await pool.request().query('SELECT * FROM turma');
+    const result = await pool.request().query("SELECT * FROM turma");
     res.json(result.recordset);
   } catch (err) {
     res.status(500).json({ erro: err.message });
@@ -144,10 +148,10 @@ app.get('/api/turma', async (req, res) => {
 });
 
 // Turma Disciplina
-app.get('/api/turma_disciplina', async (req, res) => {
+app.get("/api/turma_disciplina", async (req, res) => {
   try {
     const pool = await poolPromise;
-    const result = await pool.request().query('SELECT * FROM turma_disciplina');
+    const result = await pool.request().query("SELECT * FROM turma_disciplina");
     res.json(result.recordset);
   } catch (err) {
     res.status(500).json({ erro: err.message });
@@ -155,10 +159,10 @@ app.get('/api/turma_disciplina', async (req, res) => {
 });
 
 // UF
-app.get('/api/uf', async (req, res) => {
+app.get("/api/uf", async (req, res) => {
   try {
     const pool = await poolPromise;
-    const result = await pool.request().query('SELECT * FROM uf');
+    const result = await pool.request().query("SELECT * FROM uf");
     res.json(result.recordset);
   } catch (err) {
     res.status(500).json({ erro: err.message });
@@ -166,16 +170,111 @@ app.get('/api/uf', async (req, res) => {
 });
 
 // Usuário
-app.get('/api/usuario', async (req, res) => {
+app.get("/api/usuario", async (req, res) => {
   try {
     const pool = await poolPromise;
-    const result = await pool.request().query('SELECT * FROM usuario');
+    const result = await pool.request().query("SELECT * FROM usuario");
     res.json(result.recordset);
   } catch (err) {
     res.status(500).json({ erro: err.message });
   }
 });
 
+// Login
+app.post("/api/login", async (req, res) => {
+  try {
+    const { email, senha } = req.body;
+
+    // Validação básica
+    if (!email || !senha) {
+      return res.status(400).json({
+        erro: "Email e senha são obrigatórios",
+      });
+    }
+
+    const pool = await poolPromise;
+
+    // Query parametrizada (ANTI SQL INJECTION)
+    const usuarioResult = await pool
+      .request()
+      .input("email", sql.VarChar, email)
+      .input("senha", sql.VarChar, senha).query(`
+        SELECT 
+          id_usuario,
+          email,
+          user_name,
+          nivel_acesso
+        FROM usuario
+        WHERE email = @email
+          AND senha = @senha
+      `);
+
+    // Usuário não encontrado
+    if (usuarioResult.recordset.length === 0) {
+      return res.status(401).json({
+        erro: "Email ou senha inválidos",
+      });
+    }
+
+    const usuario = usuarioResult.recordset[0];
+
+    let perfil = null;
+
+    // Buscar perfil de aluno
+    const alunoResult = await pool
+      .request()
+      .input("id_usuario", sql.Int, usuario.id_usuario).query(`
+        SELECT 
+          id_aluno,
+          nome_completo,
+          matricula,
+          cpf,
+          data_nascimento
+        FROM aluno
+        WHERE fk_usuario = @id_usuario
+      `);
+
+    // Buscar perfil de professor
+    const professorResult = await pool
+      .request()
+      .input("id_usuario", sql.Int, usuario.id_usuario).query(`
+        SELECT 
+          id_professor,
+          nome,
+          sobrenome,
+          cpf,
+          data_nascimento
+        FROM professor
+        WHERE fk_usuario = @id_usuario
+      `);
+
+    if (alunoResult.recordset.length > 0) {
+      perfil = {
+        tipo: "aluno",
+        dados: alunoResult.recordset[0],
+      };
+    }
+
+    if (professorResult.recordset.length > 0) {
+      perfil = {
+        tipo: "professor",
+        dados: professorResult.recordset[0],
+      };
+    }
+
+    // Retorno final
+    res.json({
+      sucesso: true,
+      usuario,
+      perfil,
+    });
+  } catch (err) {
+    res.status(500).json({
+      erro: err.message,
+    });
+  }
+});
+
 app.listen(3000, () => {
-  console.log('API rodando em http://localhost:3000');
+  console.log("API rodando em http://localhost:3000");
 });
