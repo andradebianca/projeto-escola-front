@@ -519,7 +519,7 @@ app.get("/api/aluno/:id/perfil", async (req, res) => {
           a.id_aluno,
           a.nome_completo,
           a.matricula,
-          a.data_nascimento,
+          a.data_nacimento,
 
           e.numero,
 
@@ -574,7 +574,7 @@ app.get("/api/aluno/:id/perfil", async (req, res) => {
         id_aluno: aluno.id_aluno,
         nome_completo: aluno.nome_completo,
         matricula: aluno.matricula,
-        data_nascimento: aluno.data_nascimento,
+        data_nacimento: aluno.data_nacimento,
 
         endereco: {
           rua: aluno.nome_rua,
