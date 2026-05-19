@@ -183,7 +183,7 @@ app.get("/api/usuario", async (req, res) => {
 // Login
 app.post("/api/login", async (req, res) => {
   try {
-    const { email, senha } = req.body;
+    const { email, senha } = req.body || {};
 
     // Validação básica
     if (!email || !senha) {
@@ -194,7 +194,7 @@ app.post("/api/login", async (req, res) => {
 
     const pool = await poolPromise;
 
-    // Query parametrizada (ANTI SQL INJECTION)
+    // LOGIN
     const usuarioResult = await pool
       .request()
       .input("email", sql.VarChar, email)
@@ -220,55 +220,70 @@ app.post("/api/login", async (req, res) => {
 
     let perfil = null;
 
-    // Buscar perfil de aluno
-    const alunoResult = await pool
-      .request()
-      .input("id_usuario", sql.Int, usuario.id_usuario).query(`
-        SELECT 
-          id_aluno,
-          nome_completo,
-          matricula,
-          cpf,
-          data_nascimento
-        FROM alunos
-        WHERE fk_usuario = @id_usuario
-      `);
+    // =========================
+    // PROFESSOR
+    // =========================
+    if (usuario.nivel_acesso === 2) {
+      const professorResult = await pool
+        .request()
+        .input("id_usuario", sql.Int, usuario.id_usuario).query(`
+          SELECT 
+            id_professor,
+            nome_completo,
+            cpf,
+            data_nacimento
+          FROM professor
+          WHERE fk_usuario = @id_usuario
+        `);
 
-    // Buscar perfil de professor
-    const professorResult = await pool
-      .request()
-      .input("id_usuario", sql.Int, usuario.id_usuario).query(`
-        SELECT 
-          id_professor,
-          nome,
-          sobrenome,
-          cpf,
-          data_nascimento
-        FROM professor
-        WHERE fk_usuario = @id_usuario
-      `);
-
-    if (alunoResult.recordset.length > 0) {
-      perfil = {
-        tipo: "aluno",
-        dados: alunoResult.recordset[0],
-      };
+      if (professorResult.recordset.length > 0) {
+        perfil = {
+          tipo: "professor",
+          dados: professorResult.recordset[0],
+        };
+      }
     }
 
-    if (professorResult.recordset.length > 0) {
-      perfil = {
-        tipo: "professor",
-        dados: professorResult.recordset[0],
-      };
+    // =========================
+    // ALUNO
+    // =========================
+    if (usuario.nivel_acesso === 3) {
+      const alunoResult = await pool
+        .request()
+        .input("id_usuario", sql.Int, usuario.id_usuario).query(`
+          SELECT 
+            id_aluno,
+            nome_completo,
+            cpf,
+            data_nacimento
+          FROM alunos
+          WHERE fk_usuario = @id_usuario
+        `);
+
+      if (alunoResult.recordset.length > 0) {
+        perfil = {
+          tipo: "aluno",
+          dados: alunoResult.recordset[0],
+        };
+      }
     }
 
-    // Retorno final
+    // =========================
+    // RESPOSTA FINAL
+    // =========================
     res.json({
       sucesso: true,
-      usuario,
+      usuario: {
+        id_usuario: usuario.id_usuario,
+        email: usuario.email,
+        user_name: usuario.user_name,
+        nivel_acesso: usuario.nivel_acesso,
+      },
       perfil,
     });
   } catch (err) {
+    console.error(err);
+
     res.status(500).json({
       erro: err.message,
     });
