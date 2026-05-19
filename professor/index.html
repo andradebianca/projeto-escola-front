@@ -1,72 +1,118 @@
-<!DOCTYPE html>
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-      <section class="stats-grid">
+    <title>ABC - Portal do Professor</title>
 
-        <div class="stat-card">
-          <h2>8</h2>
-          <p>Turmas ativas</p>
+    <link rel="stylesheet" href="../style/global.css" />
+    <link rel="stylesheet" href="./style/main.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <div class="app-container">
+      <!-- HEADER -->
+      <header class="top-header">
+        <div class="logo-area">
+          <h1 class="logo">ABC<span>.</span></h1>
+
+          <div class="logo-divider"></div>
+
+          <p class="portal-text">Portal do Professor</p>
         </div>
 
-        <div class="stat-card">
-          <h2>214</h2>
-          <p>Alunos</p>
-        </div>
+        <button class="logout-btn-header" id="btn-sair">
+          Sair
 
-        <div class="stat-card">
-          <h2>12</h2>
-          <p>Avaliações</p>
-        </div>
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </button>
+      </header>
 
-      </section>
+      <!-- DASHBOARD -->
+      <div class="dashboard-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+          <div class="profile">
+            <div class="avatar">
+              <i class="fa-solid fa-user"></i>
+            </div>
 
-      <section class="table-section">
+            <h2>Nome</h2>
 
-        <div class="section-header">
-          <h2>Próximas entregas</h2>
-        </div>
+            <span>Professor</span>
+          </div>
 
-        <table>
-          <thead>
-            <tr>
-              <th>Disciplina</th>
-              <th>Turma</th>
-              <th>Entrega</th>
-              <th>Status</th>
-            </tr>
-          </thead>
+          <nav class="menu">
+            <button class="menu-btn active">
+              <i class="fa-solid fa-table-columns"></i>
+              DashBoard
+            </button>
 
-          <tbody>
+            <button class="menu-btn">
+              <i class="fa-solid fa-user"></i>
+              Dados Pessoais
+            </button>
 
-            <tr>
-              <td>Programação Web</td>
-              <td>3A</td>
-              <td>18/05/2026</td>
-              <td><span class="status open">Aberto</span></td>
-            </tr>
+            <button class="menu-btn">
+              <i class="fa-solid fa-star"></i>
+              Boletins
+            </button>
+          </nav>
+        </aside>
 
-            <tr>
-              <td>Banco de Dados</td>
-              <td>2B</td>
-              <td>20/05/2026</td>
-              <td><span class="status progress">Em correção</span></td>
-            </tr>
+        <!-- CONTENT -->
+        <main class="main-content">
+          <select class="semester">
+            <option>2026/1</option>
+            <option>2025/2</option>
+          </select>
 
-            <tr>
-              <td>Estrutura de Dados</td>
-              <td>1A</td>
-              <td>25/05/2026</td>
-              <td><span class="status done">Finalizado</span></td>
-            </tr>
+          <section class="cards">
+            <div class="subject-card default-card">
+              <h3>Disciplina 1</h3>
+            </div>
 
-          </tbody>
-        </table>
+            <div class="subject-card default-card">
+              <h3>Disciplina 2</h3>
+            </div>
 
-      </section>
+            <div class="subject-card default-card">
+              <h3>Disciplina 3</h3>
+            </div>
 
-    </main>
+            <div class="subject-card default-card">
+              <h3>Disciplina 4</h3>
+            </div>
 
-  </div>
+            <div class="subject-card default-card">
+              <h3>Disciplina 5</h3>
+            </div>
 
-  <script src="./script/main.js"></script>
-</body>
+            <div class="subject-card default-card">
+              <h3>Disciplina 6</h3>
+            </div>
+
+            <div class="subject-card default-card">
+              <h3>Disciplina 7</h3>
+            </div>
+
+            <div class="subject-card default-card">
+              <h3>Disciplina 8</h3>
+            </div>
+
+            <div class="subject-card default-card">
+              <h3>Disciplina 10</h3>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+    <script src="/script/funcs-global.js" type="module"></script>
+  </body>
 </html>
