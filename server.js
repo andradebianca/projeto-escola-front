@@ -231,7 +231,7 @@ app.post("/api/login", async (req, res) => {
             id_professor,
             nome_completo,
             cpf,
-            data_nascimento
+            data_nacimento
           FROM professor
           WHERE fk_usuario = @id_usuario
         `);
@@ -255,7 +255,7 @@ app.post("/api/login", async (req, res) => {
             id_aluno,
             nome_completo,
             cpf,
-            data_nascimento
+            data_nacimento
           FROM alunos
           WHERE fk_usuario = @id_usuario
         `);
