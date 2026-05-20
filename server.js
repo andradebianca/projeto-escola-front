@@ -466,6 +466,10 @@ app.get("/api/aluno/:id/notas", async (req, res) => {
         SELECT
           d.id_disciplina,
           d.nome AS disciplina,
+
+          p.nome_completo AS professor,
+
+          n.id_nota,
           n.valor_nota
 
         FROM notas n
@@ -476,24 +480,33 @@ app.get("/api/aluno/:id/notas", async (req, res) => {
         INNER JOIN disciplina d
           ON d.id_disciplina = td.fk_disciplina
 
+        INNER JOIN professor p
+          ON p.id_professor = d.fk_professor
+
         WHERE n.fk_aluno = @id_aluno
 
-        ORDER BY d.nome
+        ORDER BY d.nome, n.id_nota
       `);
 
     const disciplinasMap = {};
 
     result.recordset.forEach((item) => {
+      // cria disciplina
       if (!disciplinasMap[item.id_disciplina]) {
         disciplinasMap[item.id_disciplina] = {
+          id_disciplina: item.id_disciplina,
           disciplina: item.disciplina,
+          professor: item.professor,
           notas: [],
         };
       }
 
       // LIMITE DE 3 NOTAS
       if (disciplinasMap[item.id_disciplina].notas.length < 3) {
-        disciplinasMap[item.id_disciplina].notas.push(item.valor_nota);
+        disciplinasMap[item.id_disciplina].notas.push({
+          id_nota: item.id_nota,
+          valor_nota: item.valor_nota,
+        });
       }
     });
 
