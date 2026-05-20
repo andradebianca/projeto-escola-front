@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { sql, poolPromise } = require("./db");
+const { sql, getPool } = require("./db");
 
 const app = express();
 app.use(cors());
@@ -14,7 +14,7 @@ app.get("/api/teste", (req, res) => {
 // Alunos
 app.get("/api/alunos", async (req, res) => {
   try {
-    const pool = await poolPromise;
+    const pool = await getPool();
     const result = await pool.request().query("SELECT * FROM alunos");
     res.json(result.recordset);
   } catch (err) {
@@ -25,7 +25,7 @@ app.get("/api/alunos", async (req, res) => {
 // Cidade
 app.get("/api/cidade", async (req, res) => {
   try {
-    const pool = await poolPromise;
+    const pool = await getPool();
     const result = await pool.request().query("SELECT * FROM cidade");
     res.json(result.recordset);
   } catch (err) {
@@ -36,7 +36,7 @@ app.get("/api/cidade", async (req, res) => {
 // Disciplina
 app.get("/api/disciplina", async (req, res) => {
   try {
-    const pool = await poolPromise;
+    const pool = await getPool();
     const result = await pool.request().query("SELECT * FROM disciplina");
     res.json(result.recordset);
   } catch (err) {
@@ -47,7 +47,7 @@ app.get("/api/disciplina", async (req, res) => {
 // Endereço
 app.get("/api/endereco", async (req, res) => {
   try {
-    const pool = await poolPromise;
+    const pool = await getPool();
     const result = await pool.request().query("SELECT * FROM endereco");
     res.json(result.recordset);
   } catch (err) {
@@ -58,7 +58,7 @@ app.get("/api/endereco", async (req, res) => {
 // Especialização
 app.get("/api/especializacao", async (req, res) => {
   try {
-    const pool = await poolPromise;
+    const pool = await getPool();
     const result = await pool.request().query("SELECT * FROM especializacao");
     res.json(result.recordset);
   } catch (err) {
@@ -69,7 +69,7 @@ app.get("/api/especializacao", async (req, res) => {
 // Notas
 app.get("/api/notas", async (req, res) => {
   try {
-    const pool = await poolPromise;
+    const pool = await getPool();
     const result = await pool.request().query("SELECT * FROM notas");
     res.json(result.recordset);
   } catch (err) {
@@ -80,7 +80,7 @@ app.get("/api/notas", async (req, res) => {
 // Professor
 app.get("/api/professor", async (req, res) => {
   try {
-    const pool = await poolPromise;
+    const pool = await getPool();
     const result = await pool.request().query("SELECT * FROM professor");
     res.json(result.recordset);
   } catch (err) {
@@ -91,7 +91,7 @@ app.get("/api/professor", async (req, res) => {
 // Professor Especialização
 app.get("/api/professor_especializacao", async (req, res) => {
   try {
-    const pool = await poolPromise;
+    const pool = await getPool();
     const result = await pool
       .request()
       .query("SELECT * FROM professor_especializacao");
@@ -104,7 +104,7 @@ app.get("/api/professor_especializacao", async (req, res) => {
 // Rua
 app.get("/api/rua", async (req, res) => {
   try {
-    const pool = await poolPromise;
+    const pool = await getPool();
     const result = await pool.request().query("SELECT * FROM rua");
     res.json(result.recordset);
   } catch (err) {
@@ -115,7 +115,7 @@ app.get("/api/rua", async (req, res) => {
 // Telefone Aluno
 app.get("/api/telefone_aluno", async (req, res) => {
   try {
-    const pool = await poolPromise;
+    const pool = await getPool();
     const result = await pool.request().query("SELECT * FROM telefone_aluno");
     res.json(result.recordset);
   } catch (err) {
@@ -126,7 +126,7 @@ app.get("/api/telefone_aluno", async (req, res) => {
 // Telefone Professor
 app.get("/api/telefone_professor", async (req, res) => {
   try {
-    const pool = await poolPromise;
+    const pool = await getPool();
     const result = await pool
       .request()
       .query("SELECT * FROM telefone_professor");
@@ -139,7 +139,7 @@ app.get("/api/telefone_professor", async (req, res) => {
 // Turma
 app.get("/api/turma", async (req, res) => {
   try {
-    const pool = await poolPromise;
+    const pool = await getPool();
     const result = await pool.request().query("SELECT * FROM turma");
     res.json(result.recordset);
   } catch (err) {
@@ -150,7 +150,7 @@ app.get("/api/turma", async (req, res) => {
 // Turma Disciplina
 app.get("/api/turma_disciplina", async (req, res) => {
   try {
-    const pool = await poolPromise;
+    const pool = await getPool();
     const result = await pool.request().query("SELECT * FROM turma_disciplina");
     res.json(result.recordset);
   } catch (err) {
@@ -161,7 +161,7 @@ app.get("/api/turma_disciplina", async (req, res) => {
 // UF
 app.get("/api/uf", async (req, res) => {
   try {
-    const pool = await poolPromise;
+    const pool = await getPool();
     const result = await pool.request().query("SELECT * FROM uf");
     res.json(result.recordset);
   } catch (err) {
@@ -172,7 +172,7 @@ app.get("/api/uf", async (req, res) => {
 // Usuário
 app.get("/api/usuario", async (req, res) => {
   try {
-    const pool = await poolPromise;
+    const pool = await getPool();
     const result = await pool.request().query("SELECT * FROM usuario");
     res.json(result.recordset);
   } catch (err) {
@@ -194,7 +194,7 @@ app.post("/api/login", async (req, res) => {
       });
     }
 
-    const pool = await poolPromise;
+    const pool = await getPool();
 
     // =========================
     // LOGIN
@@ -309,7 +309,7 @@ app.get("/api/aluno/:id/disciplinas", async (req, res) => {
       });
     }
 
-    const pool = await poolPromise;
+    const pool = await getPool();
 
     // =========================
     // BUSCAR ANOS DO ALUNO
@@ -419,7 +419,7 @@ app.get("/api/aluno/:id/disciplinas", async (req, res) => {
       if (disciplina.notas.length > 0) {
         const soma = disciplina.notas.reduce((a, b) => a + b, 0);
 
-        disciplina.media = soma / disciplina.notas.length;
+        disciplina.media = Number((soma / disciplina.notas.length).toFixed(2));
       }
     });
 
@@ -460,7 +460,7 @@ app.get("/api/aluno/:id/notas", async (req, res) => {
   try {
     const { id } = req.params;
 
-    const pool = await poolPromise;
+    const pool = await getPool();
 
     const result = await pool.request().input("id_aluno", sql.Int, id).query(`
         SELECT
@@ -515,7 +515,7 @@ app.get("/api/aluno/:id/perfil", async (req, res) => {
   try {
     const { id } = req.params;
 
-    const pool = await poolPromise;
+    const pool = await getPool();
 
     // =========================
     // DADOS ALUNO
