@@ -1436,19 +1436,26 @@ app.post("/api/nota", async (req, res) => {
     // =========================
     const quantidadeResult = await pool
       .request()
-      .input("fk_turma_disciplina", sql.Int, fk_turma_disciplina)
-      .input("fk_aluno", sql.Int, fk_aluno).query(`
+      .input(
+        "fk_turma_disciplina",
+        sql.Int,
+        fk_turma_disciplina
+      )
+      .input("fk_aluno", sql.Int, fk_aluno)
+      .query(`
         SELECT COUNT(*) AS total
         FROM notas
         WHERE fk_turma_disciplina = @fk_turma_disciplina
           AND fk_aluno = @fk_aluno
       `);
 
-    const total = quantidadeResult.recordset[0].total;
+    const total =
+      quantidadeResult.recordset[0].total;
 
     if (total >= 3) {
       return res.status(400).json({
-        erro: "Aluno já possui 3 notas nesta disciplina",
+        erro:
+          "Aluno já possui 3 notas nesta disciplina",
       });
     }
 
@@ -1457,25 +1464,35 @@ app.post("/api/nota", async (req, res) => {
     // =========================
     await pool
       .request()
-      .input("fk_turma_disciplina", sql.Int, fk_turma_disciplina)
+      .input(
+        "fk_turma_disciplina",
+        sql.Int,
+        fk_turma_disciplina
+      )
       .input("fk_aluno", sql.Int, fk_aluno)
-      .input("valor_nota", sql.Decimal(5, 2), valor_nota)
+      .input(
+        "valor_nota",
+        sql.Decimal(5, 2),
+        valor_nota
+      )
       .input("descricao", sql.VarChar, descricao)
       .input("periodo_nota", sql.Int, periodo_nota)
 
-      // data da prova
-      .input("data_aplicacao", sql.Date, data_aplicacao)
+      // DATA DA PROVA
+      .input(
+        "data_aplicacao",
+        sql.Date,
+        data_aplicacao
+      )
 
-      // data do lançamento
-      .input("data_criacao", sql.DateTime, new Date()).query(`
+      .query(`
         INSERT INTO notas (
           fk_turma_disciplina,
           fk_aluno,
           data_aplicacao,
           valor_nota,
           descricao,
-          periodo_nota,
-          data_criacao
+          periodo_nota
         )
         VALUES (
           @fk_turma_disciplina,
@@ -1483,8 +1500,7 @@ app.post("/api/nota", async (req, res) => {
           @data_aplicacao,
           @valor_nota,
           @descricao,
-          @periodo_nota,
-          @data_criacao
+          @periodo_nota
         )
       `);
 
@@ -1492,6 +1508,7 @@ app.post("/api/nota", async (req, res) => {
       sucesso: true,
       mensagem: "Nota cadastrada com sucesso",
     });
+
   } catch (err) {
     console.error(err);
 
