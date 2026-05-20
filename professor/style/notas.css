@@ -1,0 +1,356 @@
+.main-content {
+  flex: 1;
+}
+
+/* LIST */
+
+.turmas-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 18px;
+}
+
+/* CARD */
+
+.turma-card {
+  border-radius: 22px;
+
+  border: 1px solid rgba(65, 223, 255, 0.5);
+
+  overflow: hidden;
+
+  background: white;
+}
+
+/* HEADER */
+
+.turma-header {
+  padding: 22px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.turma-header:hover {
+  background: rgba(65, 223, 255, 0.04);
+}
+
+/* INFO */
+
+.turma-info h3 {
+  color: var(--secondary);
+
+  font-size: 22px;
+
+  margin-bottom: 6px;
+}
+
+.turma-info p {
+  color: #777;
+
+  font-size: 13px;
+}
+
+/* RIGHT */
+
+.turma-right {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+}
+
+/* PILL */
+
+.info-pill {
+  height: 34px;
+
+  padding: 0 14px;
+
+  border-radius: 999px;
+
+  background: rgba(65, 223, 255, 0.12);
+
+  color: var(--secondary);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* BODY */
+
+.turma-body {
+  display: none;
+
+  border-top: 1px solid #ececec;
+
+  padding: 22px;
+}
+
+.turma-body.active {
+  display: block;
+}
+
+/* ALUNOS */
+
+.alunos-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 18px;
+}
+
+/* CARD */
+
+.aluno-card {
+  border-radius: 18px;
+
+  background: #f8fbfd;
+
+  border: 1px solid rgba(65, 223, 255, 0.25);
+
+  padding: 18px;
+}
+
+/* TOP */
+
+.aluno-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 18px;
+}
+
+/* INFO */
+
+.aluno-info h4 {
+  color: var(--primary);
+
+  margin-bottom: 6px;
+}
+
+.aluno-info p {
+  color: #777;
+
+  font-size: 13px;
+}
+
+/* MÉDIA */
+
+.media-pill {
+  width: 74px;
+  height: 38px;
+
+  border-radius: 14px;
+
+  background: linear-gradient(90deg, #1dcfff 0%, #1749e4 100%);
+
+  color: white;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-weight: bold;
+}
+
+/* NOTAS */
+
+.notas-list {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 10px;
+}
+
+/* NOTA */
+
+.nota-pill {
+  min-width: 56px;
+
+  height: 42px;
+
+  padding: 0 14px;
+
+  border-radius: 14px;
+
+  border: 1px solid rgba(65, 223, 255, 0.35);
+
+  background: white;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  gap: 8px;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+
+  color: var(--primary);
+
+  font-weight: bold;
+}
+
+.nota-pill:hover {
+  transform: translateY(-2px);
+
+  border-color: #42deff;
+}
+
+/* LOCK */
+
+.nota-pill.locked {
+  background: #f2f2f2;
+
+  border-color: #ddd;
+
+  color: #999;
+
+  cursor: not-allowed;
+}
+
+/* ADD */
+
+.add-nota {
+  background: linear-gradient(90deg, #1dcfff 0%, #1749e4 100%);
+
+  border: none;
+
+  color: white;
+}
+
+/* MODAL */
+
+.modal-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.45);
+
+  display: none;
+
+  justify-content: center;
+  align-items: center;
+
+  z-index: 999;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+/* MODAL */
+
+.modal {
+  width: 100%;
+  max-width: 500px;
+
+  border-radius: 24px;
+
+  background: white;
+
+  padding: 24px;
+}
+
+/* HEADER */
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 24px;
+}
+
+.modal-header h3 {
+  color: var(--primary);
+}
+
+/* CLOSE */
+
+.close-modal {
+  background: transparent;
+
+  border: none;
+
+  font-size: 22px;
+
+  cursor: pointer;
+}
+
+/* BODY */
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+
+  gap: 18px;
+}
+
+/* INPUT */
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.input-group label {
+  color: var(--secondary);
+
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.input-group input,
+.input-group textarea,
+.input-group select {
+  min-height: 46px;
+
+  border-radius: 14px;
+
+  border: 1px solid rgba(65, 223, 255, 0.4);
+
+  padding: 12px 14px;
+
+  outline: none;
+}
+
+textarea {
+  resize: none;
+
+  min-height: 100px;
+}
+
+/* SAVE */
+
+.save-btn {
+  height: 48px;
+
+  border-radius: 14px;
+
+  border: none;
+
+  background: linear-gradient(90deg, #1dcfff 0%, #1749e4 100%);
+
+  color: white;
+
+  font-weight: bold;
+
+  cursor: pointer;
+}

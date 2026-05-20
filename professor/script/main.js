@@ -1,8 +1,6 @@
 import { urlBase } from "./../../script/variaveis-globais.js";
 
-const perfil = JSON.parse(
-  localStorage.getItem("perfil"),
-);
+const perfil = JSON.parse(localStorage.getItem("perfil"));
 
 /* LOGIN */
 
