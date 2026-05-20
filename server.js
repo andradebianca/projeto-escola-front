@@ -240,7 +240,7 @@ app.post("/api/login", async (req, res) => {
           SELECT 
             id_professor,
             nome_completo,
-            data_nascimento
+            data_nacimento
           FROM professor
           WHERE fk_usuario = @id_usuario
         `);
@@ -297,7 +297,7 @@ app.post("/api/login", async (req, res) => {
             id_aluno,
             nome_completo,
             matricula,
-            data_nascimento
+            data_nacimento
           FROM alunos
           WHERE fk_usuario = @id_usuario
         `);
@@ -897,7 +897,7 @@ app.get("/api/professor/:id/perfil", async (req, res) => {
         SELECT
           p.id_professor,
           p.nome_completo,
-          p.data_nascimento,
+          p.data_nacimento,
 
           e.numero,
 
@@ -974,7 +974,7 @@ app.get("/api/professor/:id/perfil", async (req, res) => {
       professor: {
         id_professor: professor.id_professor,
         nome_completo: professor.nome_completo,
-        data_nascimento: professor.data_nascimento,
+        data_nacimento: professor.data_nacimento,
 
         endereco: {
           rua: professor.nome_rua,
