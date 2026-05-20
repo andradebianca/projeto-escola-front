@@ -94,6 +94,22 @@ async function logar() {
   }
 }
 
+/* TOGGLE PASSWORD */
+
+const togglePassword = document.getElementById("toggle-password");
+
+if (togglePassword) {
+  togglePassword.addEventListener("click", () => {
+    const isPassword = inputSenha.type === "password";
+
+    inputSenha.type = isPassword ? "text" : "password";
+
+    togglePassword.classList.toggle("fa-eye");
+
+    togglePassword.classList.toggle("fa-eye-slash");
+  });
+}
+
 /* EVENT */
 
 if (btnEntrar) {

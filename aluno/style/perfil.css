@@ -2,28 +2,10 @@
   flex: 1;
 }
 
-/* CARD */
-
-.perfil-card {
-  width: 100%;
-
-  max-width: 850px;
-
-  min-height: 520px;
-
-  padding: 28px;
-}
-
 /* HEADER */
 
 .perfil-header {
   margin-bottom: 30px;
-}
-
-.perfil-header h2 {
-  color: var(--primary);
-
-  font-size: 24px;
 }
 
 /* GRID */

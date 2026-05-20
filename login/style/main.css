@@ -7,21 +7,28 @@
 
 body {
   width: 100%;
+
   min-height: 100vh;
 
   display: flex;
   justify-content: center;
   align-items: center;
 
-  padding: 20px;
+  padding: 18px;
 
   background: #f3f3f3;
+
+  overflow-x: hidden;
 }
 
 .container {
   width: 100%;
+
   max-width: 1180px;
-  height: 760px;
+
+  min-height: 720px;
+
+  max-height: 95vh;
 
   background: white;
 
@@ -31,7 +38,7 @@ body {
 
   display: flex;
 
-  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
 }
 
 /* ========================= */
@@ -41,11 +48,7 @@ body {
 .left {
   width: 36%;
 
-  background: linear-gradient(
-    180deg,
-    #1f2d90 0%,
-    #020b40 100%
-  );
+  background: linear-gradient(180deg, #1f2d90 0%, #020b40 100%);
 
   padding: 35px;
 
@@ -53,6 +56,7 @@ body {
 
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 
 .logo-area {
@@ -101,7 +105,7 @@ body {
 
   border: 6px solid #42deff;
 
-  background: rgba(255,255,255,0.18);
+  background: rgba(255, 255, 255, 0.18);
 
   display: flex;
   justify-content: center;
@@ -172,7 +176,9 @@ body {
   justify-content: center;
   align-items: center;
 
-  padding: 30px;
+  padding: 24px;
+
+  overflow-y: auto;
 }
 
 .exit {
@@ -201,7 +207,7 @@ body {
 
 .login-box {
   width: 100%;
-  max-width: 540px;
+  max-width: 500px;
 
   border: 2px solid #42deff;
 
@@ -209,7 +215,7 @@ body {
 
   padding: 40px;
 
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 .title {
@@ -309,11 +315,7 @@ body {
 
   border-radius: 16px;
 
-  background: linear-gradient(
-    90deg,
-    #1dcfff 0%,
-    #1749e4 100%
-  );
+  background: linear-gradient(90deg, #1dcfff 0%, #1749e4 100%);
 
   color: white;
 
@@ -386,12 +388,21 @@ body {
   line-height: 1.4;
 }
 
+.toggle-password {
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.toggle-password:hover {
+  color: #00d8ff;
+}
+
 /* ========================= */
 /* RESPONSIVO */
 /* ========================= */
 
 @media (max-width: 980px) {
-
   .left {
     display: none;
   }
@@ -403,11 +414,57 @@ body {
   .right {
     padding: 25px;
   }
+}
 
+@media (max-height: 850px) {
+  .container {
+    min-height: auto;
+
+    max-height: unset;
+  }
+
+  .left {
+    padding: 26px;
+  }
+
+  .logo-area {
+    margin-bottom: 30px;
+  }
+
+  .avatar {
+    width: 120px;
+    height: 120px;
+
+    font-size: 42px;
+  }
+
+  .profile h1 {
+    font-size: 28px;
+  }
+
+  .profile p {
+    font-size: 16px;
+  }
+
+  .menu {
+    gap: 16px;
+  }
+
+  .menu-item {
+    font-size: 15px;
+  }
+
+  .icon-box {
+    width: 46px;
+    height: 46px;
+  }
+
+  .login-box {
+    padding: 30px;
+  }
 }
 
 @media (max-width: 600px) {
-
   body {
     padding: 10px;
   }
@@ -456,5 +513,4 @@ body {
 
     font-size: 18px;
   }
-
 }

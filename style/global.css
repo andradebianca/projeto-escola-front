@@ -52,6 +52,38 @@ a {
   font-size: 13px;
 }
 
+/* PAGE CONTENT */
+
+.page-content-card {
+  width: 100%;
+
+  max-width: 950px;
+
+  min-height: 600px;
+
+  padding: 28px;
+}
+
+/* PAGE TITLE */
+
+.page-title {
+  margin-bottom: 30px;
+}
+
+.page-title h2 {
+  color: var(--primary);
+
+  font-size: 28px;
+
+  margin-bottom: 8px;
+}
+
+.page-title p {
+  color: #777;
+
+  font-size: 14px;
+}
+
 /* APP */
 
 .app-container {

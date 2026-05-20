@@ -2,12 +2,14 @@
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>ABC - Portal do Aluno</title>
+    <title>ABC - Boletim</title>
 
     <link rel="stylesheet" href="../style/global.css" />
-    <link rel="stylesheet" href="./style/main.css" />
+
+    <link rel="stylesheet" href="./style/notas.css" />
 
     <link
       rel="stylesheet"
@@ -49,7 +51,7 @@
           </div>
 
           <nav class="menu">
-            <button class="menu-btn active" id="dashboard">
+            <button class="menu-btn" id="dashboard">
               <i class="fa-solid fa-table-columns"></i>
               DashBoard
             </button>
@@ -59,7 +61,7 @@
               Dados Pessoais
             </button>
 
-            <button class="menu-btn" id="boletins">
+            <button class="menu-btn active" id="boletins">
               <i class="fa-solid fa-star"></i>
               Boletins
             </button>
@@ -67,24 +69,24 @@
         </aside>
 
         <!-- CONTENT -->
-        <div class="page-content-card default-card">
-          <main class="main-content">
+        <main class="main-content">
+          <div class="page-content-card default-card" id="boletim-container">
             <div class="page-title">
-              <h2>DashBoard</h2>
+              <h2>Boletim Escolar</h2>
 
-              <p>Visualize o resumo de todas as notas</p>
+              <p>Visualize todas as suas notas</p>
             </div>
 
-            <select class="semester" id="select-ano">
-              <option>Carregando opções...</option>
-            </select>
-
-            <section class="cards" id="cards-disciplinas"></section>
-          </main>
-        </div>
+            <section class="disciplinas-list" id="disciplinas-list">
+              <p>Carregando...</p>
+            </section>
+          </div>
+        </main>
       </div>
     </div>
-    <script src="./script/main.js" type="module"></script>
+
     <script src="./script/global.js" type="module"></script>
+
+    <script src="./script/notas.js" type="module"></script>
   </body>
 </html>

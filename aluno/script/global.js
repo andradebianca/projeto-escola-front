@@ -10,6 +10,8 @@ const dashboard = document.getElementById("dashboard");
 
 const dadosPessoais = document.getElementById("dados-pessoais");
 
+const boletim = document.getElementById("boletins");
+
 const btnSair = document.getElementById("btn-sair");
 
 const nomeAluno = document.getElementById("nome-aluno");
@@ -45,6 +47,9 @@ if (dadosPessoais) {
 if (btnSair) {
   btnSair.addEventListener("click", logout);
 }
+
+if (boletins)
+  boletins.addEventListener("click", () => redirecionar("aluno/notas.html"));
 
 /* INIT */
 
