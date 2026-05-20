@@ -1,6 +1,5 @@
-import { verificarLogin } from "./../../script/funcs-global.js";
-
 import { urlBase } from "./../../script/variaveis-globais.js";
+import { verificarLogin } from "./../../script/funcs-global.js";
 
 /* LOGIN */
 
