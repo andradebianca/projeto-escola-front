@@ -202,7 +202,8 @@ app.post("/api/login", async (req, res) => {
     const usuarioResult = await pool
       .request()
       .input("email", sql.VarChar, email)
-      .input("senha", sql.VarChar, senha).query(`
+      .input("senha", sql.VarChar, senha)
+      .query(`
         SELECT 
           id_usuario,
           email,
@@ -230,21 +231,55 @@ app.post("/api/login", async (req, res) => {
     // PROFESSOR
     // =========================
     if (usuario.nivel_acesso === 2) {
+
+      // dados professor
       const professorResult = await pool
         .request()
-        .input("id_usuario", sql.Int, usuario.id_usuario).query(`
+        .input("id_usuario", sql.Int, usuario.id_usuario)
+        .query(`
           SELECT 
             id_professor,
             nome_completo,
-            data_nacimento
+            data_nascimento
           FROM professor
           WHERE fk_usuario = @id_usuario
         `);
 
       if (professorResult.recordset.length > 0) {
+
+        const professor = professorResult.recordset[0];
+
+        // anos disponíveis
+        const anosResult = await pool
+          .request()
+          .input("id_professor", sql.Int, professor.id_professor)
+          .query(`
+            SELECT DISTINCT
+              t.ano_letivo
+
+            FROM disciplina d
+
+            INNER JOIN turma_disciplina td
+              ON td.fk_disciplina = d.id_disciplina
+
+            INNER JOIN turma t
+              ON t.id_turma = td.fk_turma
+
+            WHERE d.fk_professor = @id_professor
+
+            ORDER BY t.ano_letivo
+          `);
+
         perfil = {
           tipo: "professor",
-          dados: professorResult.recordset[0],
+
+          dados: {
+            ...professor,
+
+            opcoesAnos: anosResult.recordset.map(
+              (x) => x.ano_letivo
+            ),
+          },
         };
       }
     }
@@ -253,22 +288,52 @@ app.post("/api/login", async (req, res) => {
     // ALUNO
     // =========================
     if (usuario.nivel_acesso === 3) {
+
       const alunoResult = await pool
         .request()
-        .input("id_usuario", sql.Int, usuario.id_usuario).query(`
+        .input("id_usuario", sql.Int, usuario.id_usuario)
+        .query(`
           SELECT 
             id_aluno,
             nome_completo,
             matricula,
-            data_nacimento
+            data_nascimento
           FROM alunos
           WHERE fk_usuario = @id_usuario
         `);
 
       if (alunoResult.recordset.length > 0) {
+
+        const aluno = alunoResult.recordset[0];
+
+        // anos disponíveis
+        const anosResult = await pool
+          .request()
+          .input("id_aluno", sql.Int, aluno.id_aluno)
+          .query(`
+            SELECT DISTINCT
+              t.ano_letivo
+
+            FROM alunos a
+
+            INNER JOIN turma t
+              ON t.id_turma = a.fk_turma
+
+            WHERE a.id_aluno = @id_aluno
+
+            ORDER BY t.ano_letivo
+          `);
+
         perfil = {
           tipo: "aluno",
-          dados: alunoResult.recordset[0],
+
+          dados: {
+            ...aluno,
+
+            opcoesAnos: anosResult.recordset.map(
+              (x) => x.ano_letivo
+            ),
+          },
         };
       }
     }
@@ -288,6 +353,7 @@ app.post("/api/login", async (req, res) => {
 
       perfil,
     });
+
   } catch (err) {
     console.error(err);
 
@@ -736,12 +802,20 @@ app.get("/api/nota/:id", async (req, res) => {
 app.get("/api/professor/:id/disciplinas", async (req, res) => {
   try {
     const { id } = req.params;
+    const { ano } = req.query;
+
+    if (!ano) {
+      return res.status(400).json({
+        erro: "Ano letivo é obrigatório",
+      });
+    }
 
     const pool = await getPool();
 
     const result = await pool
       .request()
       .input("id_professor", sql.Int, id)
+      .input("ano", sql.Int, ano)
       .query(`
         SELECT
           -- DISCIPLINA
@@ -765,8 +839,9 @@ app.get("/api/professor/:id/disciplinas", async (req, res) => {
           ON t.id_turma = td.fk_turma
 
         WHERE d.fk_professor = @id_professor
+          AND t.ano_letivo = @ano
 
-        ORDER BY d.nome, t.ano_letivo
+        ORDER BY d.nome, t.cod_turma
       `);
 
     const disciplinasMap = {};
