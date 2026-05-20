@@ -1067,14 +1067,21 @@ app.get("/api/turma/:id/alunos", async (req, res) => {
 
     const result = await pool.request().input("id_turma", sql.Int, id).query(`
         SELECT
+          -- ALUNO
           a.id_aluno,
           a.nome_completo,
           a.matricula,
 
-          COUNT(n.id_nota) AS quantidade_notas,
+          -- NOTA
+          n.id_nota,
+          n.valor_nota,
+          n.data_criacao,
 
+          -- MÉDIA
           AVG(
             CAST(n.valor_nota AS FLOAT)
+          ) OVER (
+            PARTITION BY a.id_aluno
           ) AS media
 
         FROM alunos a
@@ -1084,22 +1091,40 @@ app.get("/api/turma/:id/alunos", async (req, res) => {
 
         WHERE a.fk_turma = @id_turma
 
-        GROUP BY
-          a.id_aluno,
+        ORDER BY
           a.nome_completo,
-          a.matricula
-
-        ORDER BY a.nome_completo
+          n.data_criacao
       `);
+
+    const alunosMap = {};
+
+    result.recordset.forEach((item) => {
+      // cria aluno
+      if (!alunosMap[item.id_aluno]) {
+        alunosMap[item.id_aluno] = {
+          id_aluno: item.id_aluno,
+          nome_completo: item.nome_completo,
+          matricula: item.matricula,
+
+          media: item.media !== null ? Number(item.media.toFixed(2)) : null,
+
+          notas: [],
+        };
+      }
+
+      // adiciona nota
+      if (item.id_nota) {
+        alunosMap[item.id_aluno].notas.push({
+          id_nota: item.id_nota,
+          valor_nota: item.valor_nota,
+          data_criacao: item.data_criacao,
+        });
+      }
+    });
 
     res.json({
       sucesso: true,
-
-      alunos: result.recordset.map((aluno) => ({
-        ...aluno,
-
-        media: aluno.media !== null ? Number(aluno.media.toFixed(2)) : null,
-      })),
+      alunos: Object.values(alunosMap),
     });
   } catch (err) {
     console.error(err);
