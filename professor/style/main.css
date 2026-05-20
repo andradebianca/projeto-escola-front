@@ -1,84 +1,124 @@
-.layout {
-  border-radius: var(--radius);
-
-  padding: 30px;
-
-  box-shadow: var(--card-shadow);
+.main-content {
+  flex: 1;
 }
 
-.section-header {
-  margin-bottom: 25px;
+/* GRID */
+
+.disciplinas-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fill,
+      minmax(320px, 1fr)
+    );
+
+  gap: 18px;
 }
 
-.section-header h2 {
-  color: var(--primary);
+/* CARD */
+
+.disciplina-card {
+  min-height: 220px;
+
+  border-radius: 22px;
+
+  border: 1px solid rgba(65,223,255,0.5);
+
+  background: white;
+
+  padding: 22px;
+
+  transition: 0.2s;
 }
 
-table {
-  width: 100%;
+.disciplina-card:hover {
+  transform: translateY(-2px);
 
-  border-collapse: collapse;
+  box-shadow:
+    0 6px 18px rgba(0,0,0,0.05);
 }
 
-th,
-td {
-  text-align: left;
+/* TOP */
 
-  padding: 18px;
+.disciplina-card h3 {
+  color: var(--secondary);
+
+  font-size: 22px;
+
+  margin-bottom: 10px;
 }
 
-th {
-  color: var(--primary);
+.disciplina-desc {
+  color: #888;
 
-  border-bottom: 2px solid #e9edf5;
+  font-size: 13px;
+
+  line-height: 1.5;
+
+  margin-bottom: 20px;
 }
 
-tr:not(:last-child) td {
-  border-bottom: 1px solid #eef1f7;
+/* INFO */
+
+.disciplina-info {
+  display: flex;
+
+  gap: 14px;
+
+  margin-bottom: 20px;
 }
 
-.status {
-  padding: 8px 14px;
+.info-pill {
+  height: 34px;
+
+  padding: 0 16px;
 
   border-radius: 999px;
 
-  font-size: 14px;
+  background:
+    rgba(65,223,255,0.12);
+
+  color: var(--secondary);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 12px;
   font-weight: bold;
 }
 
-.open {
-  background: rgba(28,216,255,0.15);
-  color: #00a9d1;
+/* TURMAS */
+
+.turmas-list {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 10px;
 }
 
-.progress {
-  background: rgba(255,193,7,0.18);
-  color: #c58a00;
-}
+.turma-pill {
+  height: 34px;
 
-.done {
-  background: rgba(25,135,84,0.15);
-  color: #198754;
-}
+  padding: 0 14px;
 
-@media (max-width: 900px) {
+  border-radius: 12px;
 
-  .layout {
-    flex-direction: column;
-  }
+  background:
+    linear-gradient(
+      90deg,
+      #1dcfff 0%,
+      #1749e4 100%
+    );
 
-  .sidebar {
-    width: 100%;
-  }
+  color: white;
 
-  .topbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-  .table-section {
-    overflow-x: auto;
-  }
-
+  font-size: 12px;
+  font-weight: bold;
 }

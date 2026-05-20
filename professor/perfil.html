@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>
+      ABC - Perfil Professor
+    </title>
+
+    <link
+      rel="stylesheet"
+      href="../style/global.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="./style/perfil.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+
+  </head>
+
+  <body>
+
+    <div class="app-container">
+
+      <!-- HEADER -->
+      <header class="top-header">
+
+        <div class="logo-area">
+
+          <h1 class="logo">
+            ABC<span>.</span>
+          </h1>
+
+          <div class="logo-divider"></div>
+
+          <p class="portal-text">
+            Portal do Professor
+          </p>
+
+        </div>
+
+        <button
+          class="logout-btn-header"
+          id="btn-sair"
+        >
+
+          Sair
+
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+
+        </button>
+
+      </header>
+
+      <!-- DASHBOARD -->
+      <div class="dashboard-container">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+          <div class="profile">
+
+            <div class="avatar">
+
+              <i class="fa-solid fa-user-tie"></i>
+
+            </div>
+
+            <h2 id="nome-professor">
+              Professor
+            </h2>
+
+            <span>
+              Docente
+            </span>
+
+          </div>
+
+          <nav class="menu">
+
+            <button
+              class="menu-btn" id="menu-dashboard"
+            >
+
+              <i class="fa-solid fa-table-columns"></i>
+
+              Dashboard
+
+            </button>
+
+            <button
+              class="menu-btn" id="menu-turmas"
+            >
+
+              <i class="fa-solid fa-users"></i>
+
+              Turmas
+
+            </button>
+
+            <button
+              class="menu-btn" id="menu-lancar-notas"
+            >
+
+              <i class="fa-solid fa-pen"></i>
+
+              Lançar Notas
+
+            </button>
+
+            <button
+              class="menu-btn active" id="menu-perfil"
+            
+            >
+
+              <i class="fa-solid fa-user"></i>
+
+              Perfil
+
+            </button>
+
+          </nav>
+
+        </aside>
+
+        <!-- CONTENT -->
+        <main class="main-content">
+
+          <div class="page-content-card default-card">
+
+            <div class="page-title">
+
+              <h2>
+                Perfil do Professor
+              </h2>
+
+              <p>
+                Informações pessoais e especializações
+              </p>
+
+            </div>
+
+            <!-- GRID -->
+            <div class="perfil-grid">
+
+              <!-- NOME -->
+              <div class="info-item full">
+
+                <span>
+                  Nome Completo
+                </span>
+
+                <p id="info-nome">
+                  -
+                </p>
+
+              </div>
+
+              <!-- NASCIMENTO -->
+              <div class="info-item">
+
+                <span>
+                  Data de Nascimento
+                </span>
+
+                <p id="info-nascimento">
+                  -
+                </p>
+
+              </div>
+
+              <!-- TELEFONES -->
+              <div class="info-item">
+
+                <span>
+                  Telefones
+                </span>
+
+                <p id="info-telefone">
+                  -
+                </p>
+
+              </div>
+
+              <!-- RUA -->
+              <div class="info-item full">
+
+                <span>
+                  Rua
+                </span>
+
+                <p id="info-rua">
+                  -
+                </p>
+
+              </div>
+
+              <!-- NUMERO -->
+              <div class="info-item">
+
+                <span>
+                  Número
+                </span>
+
+                <p id="info-numero">
+                  -
+                </p>
+
+              </div>
+
+              <!-- BAIRRO -->
+              <div class="info-item">
+
+                <span>
+                  Bairro
+                </span>
+
+                <p id="info-bairro">
+                  -
+                </p>
+
+              </div>
+
+              <!-- CEP -->
+              <div class="info-item">
+
+                <span>
+                  CEP
+                </span>
+
+                <p id="info-cep">
+                  -
+                </p>
+
+              </div>
+
+              <!-- CIDADE -->
+              <div class="info-item">
+
+                <span>
+                  Cidade
+                </span>
+
+                <p id="info-cidade">
+                  -
+                </p>
+
+              </div>
+
+              <!-- UF -->
+              <div class="info-item">
+
+                <span>
+                  Estado
+                </span>
+
+                <p id="info-uf">
+                  -
+                </p>
+
+              </div>
+
+            </div>
+
+            <!-- ESPECIALIZAÇÕES -->
+            <div class="especializacoes-section">
+
+              <div class="section-title">
+
+                <h3>
+                  Especializações
+                </h3>
+
+              </div>
+
+              <div
+                class="especializacoes-grid"
+                id="especializacoes-grid"
+              ></div>
+
+            </div>
+
+          </div>
+
+        </main>
+
+      </div>
+
+    </div>
+
+    <script
+      src="../script/global.js"
+      type="module"
+    ></script>
+
+    <script
+      src="./script/global.js"
+      type="module"
+    ></script>
+
+    <script
+      src="./script/perfil.js"
+      type="module"
+    ></script>
+
+  </body>
+</html>

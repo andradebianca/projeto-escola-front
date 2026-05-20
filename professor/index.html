@@ -1,118 +1,195 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-br">
   <head>
+
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>ABC - Portal do Professor</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
 
-    <link rel="stylesheet" href="../style/global.css" />
-    <link rel="stylesheet" href="./style/main.css" />
+    <title>
+      ABC - Professor
+    </title>
+
+    <link
+      rel="stylesheet"
+      href="../style/global.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="./style/main.css"
+    />
 
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     />
+
   </head>
 
   <body>
+
     <div class="app-container">
+
       <!-- HEADER -->
       <header class="top-header">
+
         <div class="logo-area">
-          <h1 class="logo">ABC<span>.</span></h1>
+
+          <h1 class="logo">
+            ABC<span>.</span>
+          </h1>
 
           <div class="logo-divider"></div>
 
-          <p class="portal-text">Portal do Professor</p>
+          <p class="portal-text">
+            Portal do Professor
+          </p>
+
         </div>
 
-        <button class="logout-btn-header" id="btn-sair">
+        <button
+          class="logout-btn-header"
+          id="btn-sair"
+        >
+
           Sair
 
           <i class="fa-solid fa-arrow-right-from-bracket"></i>
+
         </button>
+
       </header>
 
       <!-- DASHBOARD -->
       <div class="dashboard-container">
+
         <!-- SIDEBAR -->
         <aside class="sidebar">
+
           <div class="profile">
+
             <div class="avatar">
-              <i class="fa-solid fa-user"></i>
+
+              <i class="fa-solid fa-user-tie"></i>
+
             </div>
 
-            <h2>Nome</h2>
+            <h2 id="nome-professor">
+              Professor
+            </h2>
 
-            <span>Professor</span>
+            <span>
+              Docente
+            </span>
+
           </div>
 
           <nav class="menu">
-            <button class="menu-btn active">
+
+            <button
+              class="menu-btn active" id="menu-dashboard"
+            >
+
               <i class="fa-solid fa-table-columns"></i>
-              DashBoard
+
+              Dashboard
+
             </button>
 
-            <button class="menu-btn">
+            <button
+              class="menu-btn" id="menu-turmas"
+            >
+
+              <i class="fa-solid fa-users"></i>
+
+              Turmas
+
+            </button>
+
+            <button
+              class="menu-btn" id="menu-lancar-notas"
+            >
+
+              <i class="fa-solid fa-pen"></i>
+
+              Lançar Notas
+
+            </button>
+
+            <button
+              class="menu-btn" id="menu-perfil"
+            
+            >
+
               <i class="fa-solid fa-user"></i>
-              Dados Pessoais
+
+              Perfil
+
             </button>
 
-            <button class="menu-btn">
-              <i class="fa-solid fa-star"></i>
-              Boletins
-            </button>
           </nav>
+
         </aside>
 
         <!-- CONTENT -->
         <main class="main-content">
-          <select class="semester">
-            <option>2026/1</option>
-            <option>2025/2</option>
-          </select>
 
-          <section class="cards">
-            <div class="subject-card default-card">
-              <h3>Disciplina 1</h3>
+          <div class="page-content-card default-card">
+
+            <div class="page-title">
+
+              <h2>
+                Minhas Disciplinas
+              </h2>
+
+              <p>
+                Gerencie suas turmas e disciplinas
+              </p>
+
             </div>
 
-            <div class="subject-card default-card">
-              <h3>Disciplina 2</h3>
-            </div>
+            <select
+              class="semester"
+              id="select-ano"
+            ></select>
 
-            <div class="subject-card default-card">
-              <h3>Disciplina 3</h3>
-            </div>
+            <section
+              class="disciplinas-grid"
+              id="disciplinas-grid"
+            >
 
-            <div class="subject-card default-card">
-              <h3>Disciplina 4</h3>
-            </div>
+              <p>
+                Carregando...
+              </p>
 
-            <div class="subject-card default-card">
-              <h3>Disciplina 5</h3>
-            </div>
+            </section>
 
-            <div class="subject-card default-card">
-              <h3>Disciplina 6</h3>
-            </div>
+          </div>
 
-            <div class="subject-card default-card">
-              <h3>Disciplina 7</h3>
-            </div>
-
-            <div class="subject-card default-card">
-              <h3>Disciplina 8</h3>
-            </div>
-
-            <div class="subject-card default-card">
-              <h3>Disciplina 10</h3>
-            </div>
-          </section>
         </main>
+
       </div>
+
     </div>
-    <script src="/script/funcs-global.js" type="module"></script>
+
+    <script
+      src="../script/global.js"
+      type="module"
+    ></script>
+
+    <script
+      src="./script/global.js"
+      type="module"
+    ></script>
+
+    <script
+      src="./script/main.js"
+      type="module"
+    ></script>
+
   </body>
 </html>
