@@ -202,8 +202,7 @@ app.post("/api/login", async (req, res) => {
     const usuarioResult = await pool
       .request()
       .input("email", sql.VarChar, email)
-      .input("senha", sql.VarChar, senha)
-      .query(`
+      .input("senha", sql.VarChar, senha).query(`
         SELECT 
           id_usuario,
           email,
@@ -231,12 +230,10 @@ app.post("/api/login", async (req, res) => {
     // PROFESSOR
     // =========================
     if (usuario.nivel_acesso === 2) {
-
       // dados professor
       const professorResult = await pool
         .request()
-        .input("id_usuario", sql.Int, usuario.id_usuario)
-        .query(`
+        .input("id_usuario", sql.Int, usuario.id_usuario).query(`
           SELECT 
             id_professor,
             nome_completo,
@@ -246,14 +243,12 @@ app.post("/api/login", async (req, res) => {
         `);
 
       if (professorResult.recordset.length > 0) {
-
         const professor = professorResult.recordset[0];
 
         // anos disponíveis
         const anosResult = await pool
           .request()
-          .input("id_professor", sql.Int, professor.id_professor)
-          .query(`
+          .input("id_professor", sql.Int, professor.id_professor).query(`
             SELECT DISTINCT
               t.ano_letivo
 
@@ -276,9 +271,7 @@ app.post("/api/login", async (req, res) => {
           dados: {
             ...professor,
 
-            opcoesAnos: anosResult.recordset.map(
-              (x) => x.ano_letivo
-            ),
+            opcoesAnos: anosResult.recordset.map((x) => x.ano_letivo),
           },
         };
       }
@@ -288,11 +281,9 @@ app.post("/api/login", async (req, res) => {
     // ALUNO
     // =========================
     if (usuario.nivel_acesso === 3) {
-
       const alunoResult = await pool
         .request()
-        .input("id_usuario", sql.Int, usuario.id_usuario)
-        .query(`
+        .input("id_usuario", sql.Int, usuario.id_usuario).query(`
           SELECT 
             id_aluno,
             nome_completo,
@@ -303,14 +294,12 @@ app.post("/api/login", async (req, res) => {
         `);
 
       if (alunoResult.recordset.length > 0) {
-
         const aluno = alunoResult.recordset[0];
 
         // anos disponíveis
         const anosResult = await pool
           .request()
-          .input("id_aluno", sql.Int, aluno.id_aluno)
-          .query(`
+          .input("id_aluno", sql.Int, aluno.id_aluno).query(`
             SELECT DISTINCT
               t.ano_letivo
 
@@ -330,9 +319,7 @@ app.post("/api/login", async (req, res) => {
           dados: {
             ...aluno,
 
-            opcoesAnos: anosResult.recordset.map(
-              (x) => x.ano_letivo
-            ),
+            opcoesAnos: anosResult.recordset.map((x) => x.ano_letivo),
           },
         };
       }
@@ -353,7 +340,6 @@ app.post("/api/login", async (req, res) => {
 
       perfil,
     });
-
   } catch (err) {
     console.error(err);
 
@@ -815,8 +801,7 @@ app.get("/api/professor/:id/disciplinas", async (req, res) => {
     const result = await pool
       .request()
       .input("id_professor", sql.Int, id)
-      .input("ano", sql.Int, ano)
-      .query(`
+      .input("ano", sql.Int, ano).query(`
         SELECT
           -- DISCIPLINA
           d.id_disciplina,
@@ -847,7 +832,6 @@ app.get("/api/professor/:id/disciplinas", async (req, res) => {
     const disciplinasMap = {};
 
     result.recordset.forEach((item) => {
-
       // cria disciplina
       if (!disciplinasMap[item.id_disciplina]) {
         disciplinasMap[item.id_disciplina] = {
@@ -871,7 +855,6 @@ app.get("/api/professor/:id/disciplinas", async (req, res) => {
       sucesso: true,
       disciplinas: Object.values(disciplinasMap),
     });
-
   } catch (err) {
     console.error(err);
 
@@ -892,8 +875,7 @@ app.get("/api/professor/:id/perfil", async (req, res) => {
     // =========================
     const professorResult = await pool
       .request()
-      .input("id_professor", sql.Int, id)
-      .query(`
+      .input("id_professor", sql.Int, id).query(`
         SELECT
           p.id_professor,
           p.nome_completo,
@@ -937,8 +919,7 @@ app.get("/api/professor/:id/perfil", async (req, res) => {
     // =========================
     const telefoneResult = await pool
       .request()
-      .input("id_professor", sql.Int, id)
-      .query(`
+      .input("id_professor", sql.Int, id).query(`
         SELECT
           telefone
         FROM telefone_professor
@@ -950,8 +931,7 @@ app.get("/api/professor/:id/perfil", async (req, res) => {
     // =========================
     const especializacaoResult = await pool
       .request()
-      .input("id_professor", sql.Int, id)
-      .query(`
+      .input("id_professor", sql.Int, id).query(`
         SELECT
           e.id_especializacao,
           e.nome,
@@ -985,14 +965,11 @@ app.get("/api/professor/:id/perfil", async (req, res) => {
           uf: professor.uf,
         },
 
-        telefones: telefoneResult.recordset.map(
-          (x) => x.telefone
-        ),
+        telefones: telefoneResult.recordset.map((x) => x.telefone),
 
         especializacoes: especializacaoResult.recordset,
       },
     });
-
   } catch (err) {
     console.error(err);
 
@@ -1008,9 +985,7 @@ app.get("/api/professor/:id/turmas", async (req, res) => {
 
     const pool = await getPool();
 
-    const result = await pool
-      .request()
-      .input("id_professor", sql.Int, id)
+    const result = await pool.request().input("id_professor", sql.Int, id)
       .query(`
         SELECT
           -- TURMA
@@ -1053,7 +1028,6 @@ app.get("/api/professor/:id/turmas", async (req, res) => {
     const turmasMap = {};
 
     result.recordset.forEach((item) => {
-
       // cria turma
       if (!turmasMap[item.id_turma]) {
         turmasMap[item.id_turma] = {
@@ -1076,7 +1050,6 @@ app.get("/api/professor/:id/turmas", async (req, res) => {
       sucesso: true,
       turmas: Object.values(turmasMap),
     });
-
   } catch (err) {
     console.error(err);
 
@@ -1092,10 +1065,7 @@ app.get("/api/turma/:id/alunos", async (req, res) => {
 
     const pool = await getPool();
 
-    const result = await pool
-      .request()
-      .input("id_turma", sql.Int, id)
-      .query(`
+    const result = await pool.request().input("id_turma", sql.Int, id).query(`
         SELECT
           a.id_aluno,
           a.nome_completo,
@@ -1128,13 +1098,9 @@ app.get("/api/turma/:id/alunos", async (req, res) => {
       alunos: result.recordset.map((aluno) => ({
         ...aluno,
 
-        media:
-          aluno.media !== null
-            ? Number(aluno.media.toFixed(2))
-            : null,
+        media: aluno.media !== null ? Number(aluno.media.toFixed(2)) : null,
       })),
     });
-
   } catch (err) {
     console.error(err);
 
@@ -1176,26 +1142,19 @@ app.post("/api/nota", async (req, res) => {
     // =========================
     const quantidadeResult = await pool
       .request()
-      .input(
-        "fk_turma_disciplina",
-        sql.Int,
-        fk_turma_disciplina
-      )
-      .input("fk_aluno", sql.Int, fk_aluno)
-      .query(`
+      .input("fk_turma_disciplina", sql.Int, fk_turma_disciplina)
+      .input("fk_aluno", sql.Int, fk_aluno).query(`
         SELECT COUNT(*) AS total
         FROM notas
         WHERE fk_turma_disciplina = @fk_turma_disciplina
           AND fk_aluno = @fk_aluno
       `);
 
-    const total =
-      quantidadeResult.recordset[0].total;
+    const total = quantidadeResult.recordset[0].total;
 
     if (total >= 3) {
       return res.status(400).json({
-        erro:
-          "Aluno já possui 3 notas nesta disciplina",
+        erro: "Aluno já possui 3 notas nesta disciplina",
       });
     }
 
@@ -1204,17 +1163,12 @@ app.post("/api/nota", async (req, res) => {
     // =========================
     await pool
       .request()
-      .input(
-        "fk_turma_disciplina",
-        sql.Int,
-        fk_turma_disciplina
-      )
+      .input("fk_turma_disciplina", sql.Int, fk_turma_disciplina)
       .input("fk_aluno", sql.Int, fk_aluno)
       .input("valor_nota", sql.Decimal(5, 2), valor_nota)
       .input("descricao", sql.VarChar, descricao)
       .input("periodo_nota", sql.Int, periodo_nota)
-      .input("data_aplicacao", sql.Date, new Date())
-      .query(`
+      .input("data_aplicacao", sql.Date, new Date()).query(`
         INSERT INTO notas (
           fk_turma_disciplina,
           fk_aluno,
@@ -1237,7 +1191,393 @@ app.post("/api/nota", async (req, res) => {
       sucesso: true,
       mensagem: "Nota cadastrada com sucesso",
     });
+  } catch (err) {
+    console.error(err);
 
+    res.status(500).json({
+      erro: err.message,
+    });
+  }
+});
+
+app.get("/api/professor/:id/turmas", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const pool = await getPool();
+
+    const result = await pool.request().input("id_professor", sql.Int, id)
+      .query(`
+        SELECT
+          -- TURMA
+          t.id_turma,
+          t.cod_turma,
+          t.turno,
+          t.ano_letivo,
+
+          -- DISCIPLINA
+          d.id_disciplina,
+          d.nome AS disciplina,
+
+          -- QUANTIDADE ALUNOS
+          COUNT(a.id_aluno) AS quantidade_alunos
+
+        FROM disciplina d
+
+        INNER JOIN turma_disciplina td
+          ON td.fk_disciplina = d.id_disciplina
+
+        INNER JOIN turma t
+          ON t.id_turma = td.fk_turma
+
+        LEFT JOIN alunos a
+          ON a.fk_turma = t.id_turma
+
+        WHERE d.fk_professor = @id_professor
+
+        GROUP BY
+          t.id_turma,
+          t.cod_turma,
+          t.turno,
+          t.ano_letivo,
+          d.id_disciplina,
+          d.nome
+
+        ORDER BY t.ano_letivo, t.cod_turma
+      `);
+
+    const turmasMap = {};
+
+    result.recordset.forEach((item) => {
+      // cria turma
+      if (!turmasMap[item.id_turma]) {
+        turmasMap[item.id_turma] = {
+          id_turma: item.id_turma,
+          cod_turma: item.cod_turma,
+          turno: item.turno,
+          ano_letivo: item.ano_letivo,
+          disciplinas: [],
+        };
+      }
+
+      turmasMap[item.id_turma].disciplinas.push({
+        id_disciplina: item.id_disciplina,
+        disciplina: item.disciplina,
+        quantidade_alunos: item.quantidade_alunos,
+      });
+    });
+
+    res.json({
+      sucesso: true,
+      turmas: Object.values(turmasMap),
+    });
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      erro: err.message,
+    });
+  }
+});
+
+app.get("/api/turma/:id/alunos", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const pool = await getPool();
+
+    const result = await pool.request().input("id_turma", sql.Int, id).query(`
+        SELECT
+          a.id_aluno,
+          a.nome_completo,
+          a.matricula,
+
+          COUNT(n.id_nota) AS quantidade_notas,
+
+          AVG(
+            CAST(n.valor_nota AS FLOAT)
+          ) AS media
+
+        FROM alunos a
+
+        LEFT JOIN notas n
+          ON n.fk_aluno = a.id_aluno
+
+        WHERE a.fk_turma = @id_turma
+
+        GROUP BY
+          a.id_aluno,
+          a.nome_completo,
+          a.matricula
+
+        ORDER BY a.nome_completo
+      `);
+
+    res.json({
+      sucesso: true,
+
+      alunos: result.recordset.map((aluno) => ({
+        ...aluno,
+
+        media: aluno.media !== null ? Number(aluno.media.toFixed(2)) : null,
+      })),
+    });
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      erro: err.message,
+    });
+  }
+});
+
+// ========================================
+// CRIAR NOTA
+// ========================================
+app.post("/api/nota", async (req, res) => {
+  try {
+    const {
+      fk_turma_disciplina,
+      fk_aluno,
+      valor_nota,
+      descricao,
+      periodo_nota,
+      data_aplicacao,
+    } = req.body || {};
+
+    // =========================
+    // VALIDAÇÃO
+    // =========================
+    if (
+      !fk_turma_disciplina ||
+      !fk_aluno ||
+      valor_nota === undefined ||
+      !descricao ||
+      !periodo_nota ||
+      !data_aplicacao
+    ) {
+      return res.status(400).json({
+        erro: "Todos os campos são obrigatórios",
+      });
+    }
+
+    const pool = await getPool();
+
+    // =========================
+    // LIMITE DE 3 NOTAS
+    // =========================
+    const quantidadeResult = await pool
+      .request()
+      .input("fk_turma_disciplina", sql.Int, fk_turma_disciplina)
+      .input("fk_aluno", sql.Int, fk_aluno).query(`
+        SELECT COUNT(*) AS total
+        FROM notas
+        WHERE fk_turma_disciplina = @fk_turma_disciplina
+          AND fk_aluno = @fk_aluno
+      `);
+
+    const total = quantidadeResult.recordset[0].total;
+
+    if (total >= 3) {
+      return res.status(400).json({
+        erro: "Aluno já possui 3 notas nesta disciplina",
+      });
+    }
+
+    // =========================
+    // INSERT
+    // =========================
+    await pool
+      .request()
+      .input("fk_turma_disciplina", sql.Int, fk_turma_disciplina)
+      .input("fk_aluno", sql.Int, fk_aluno)
+      .input("valor_nota", sql.Decimal(5, 2), valor_nota)
+      .input("descricao", sql.VarChar, descricao)
+      .input("periodo_nota", sql.Int, periodo_nota)
+
+      // data da prova
+      .input("data_aplicacao", sql.Date, data_aplicacao)
+
+      // data do lançamento
+      .input("data_criacao", sql.DateTime, new Date()).query(`
+        INSERT INTO notas (
+          fk_turma_disciplina,
+          fk_aluno,
+          data_aplicacao,
+          valor_nota,
+          descricao,
+          periodo_nota,
+          data_criacao
+        )
+        VALUES (
+          @fk_turma_disciplina,
+          @fk_aluno,
+          @data_aplicacao,
+          @valor_nota,
+          @descricao,
+          @periodo_nota,
+          @data_criacao
+        )
+      `);
+
+    res.status(201).json({
+      sucesso: true,
+      mensagem: "Nota cadastrada com sucesso",
+    });
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      erro: err.message,
+    });
+  }
+});
+
+// ========================================
+// EDITAR NOTA
+// ========================================
+app.put("/api/nota/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { valor_nota, descricao, periodo_nota } = req.body || {};
+
+    // =========================
+    // VALIDAÇÃO
+    // =========================
+    if (valor_nota === undefined || !descricao || !periodo_nota) {
+      return res.status(400).json({
+        erro: "Todos os campos são obrigatórios",
+      });
+    }
+
+    const pool = await getPool();
+
+    // =========================
+    // BUSCAR NOTA
+    // =========================
+    const notaResult = await pool.request().input("id_nota", sql.Int, id)
+      .query(`
+        SELECT
+          id_nota,
+          data_aplicacao
+        FROM notas
+        WHERE id_nota = @id_nota
+      `);
+
+    if (notaResult.recordset.length === 0) {
+      return res.status(404).json({
+        erro: "Nota não encontrada",
+      });
+    }
+
+    const nota = notaResult.recordset[0];
+
+    // =========================
+    // VALIDAR PRAZO
+    // =========================
+    const hoje = new Date();
+
+    const dataAplicacao = new Date(nota.data_aplicacao);
+
+    const diferencaMs = hoje - dataAplicacao;
+
+    const diferencaDias = diferencaMs / (1000 * 60 * 60 * 24);
+
+    if (diferencaDias > 2) {
+      return res.status(403).json({
+        erro: "Só é possível editar notas até 2 dias após a aplicação",
+      });
+    }
+
+    // =========================
+    // UPDATE
+    // =========================
+    await pool
+      .request()
+      .input("id_nota", sql.Int, id)
+      .input("valor_nota", sql.Decimal(5, 2), valor_nota)
+      .input("descricao", sql.VarChar, descricao)
+      .input("periodo_nota", sql.Int, periodo_nota).query(`
+        UPDATE notas
+        SET
+          valor_nota = @valor_nota,
+          descricao = @descricao,
+          periodo_nota = @periodo_nota
+        WHERE id_nota = @id_nota
+      `);
+
+    res.json({
+      sucesso: true,
+      mensagem: "Nota atualizada com sucesso",
+    });
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      erro: err.message,
+    });
+  }
+});
+
+// ========================================
+// EXCLUIR NOTA
+// ========================================
+app.delete("/api/nota/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const pool = await getPool();
+
+    // =========================
+    // BUSCAR NOTA
+    // =========================
+    const notaResult = await pool.request().input("id_nota", sql.Int, id)
+      .query(`
+        SELECT
+          id_nota,
+          data_criacao
+        FROM notas
+        WHERE id_nota = @id_nota
+      `);
+
+    if (notaResult.recordset.length === 0) {
+      return res.status(404).json({
+        erro: "Nota não encontrada",
+      });
+    }
+
+    const nota = notaResult.recordset[0];
+
+    // =========================
+    // VALIDAR PRAZO
+    // =========================
+    const hoje = new Date();
+
+    const dataCriacao = new Date(nota.data_criacao);
+
+    const diferencaMs = hoje - dataCriacao;
+
+    const diferencaDias = diferencaMs / (1000 * 60 * 60 * 24);
+
+    if (diferencaDias > 2) {
+      return res.status(403).json({
+        erro: "Só é possível excluir notas até 2 dias após o lançamento",
+      });
+    }
+
+    // =========================
+    // DELETE
+    // =========================
+    await pool.request().input("id_nota", sql.Int, id).query(`
+        DELETE FROM notas
+        WHERE id_nota = @id_nota
+      `);
+
+    res.json({
+      sucesso: true,
+      mensagem: "Nota removida com sucesso",
+    });
   } catch (err) {
     console.error(err);
 
