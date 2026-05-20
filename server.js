@@ -1062,44 +1062,61 @@ app.get("/api/professor/:id/turmas", async (req, res) => {
 app.get("/api/turma/:id/alunos", async (req, res) => {
   try {
     const { id } = req.params;
+    const { disciplinaId } = req.query;
 
     const pool = await getPool();
 
-    const result = await pool.request().input("id_turma", sql.Int, id).query(`
-        SELECT
-          -- ALUNO
-          a.id_aluno,
-          a.nome_completo,
-          a.matricula,
+    let filtroDisciplina = "";
 
-          -- NOTA
-          n.id_nota,
-          n.valor_nota,
-          n.data_criacao,
+    const request = pool.request().input("id_turma", sql.Int, id);
 
-          -- MÉDIA
-          AVG(
-            CAST(n.valor_nota AS FLOAT)
-          ) OVER (
-            PARTITION BY a.id_aluno
-          ) AS media
+    if (disciplinaId) {
+      filtroDisciplina = `
+        AND td.fk_disciplina = @disciplinaId
+      `;
 
-        FROM alunos a
+      request.input("disciplinaId", sql.Int, disciplinaId);
+    }
 
-        LEFT JOIN notas n
-          ON n.fk_aluno = a.id_aluno
+    const result = await request.query(`
+      SELECT
+        -- ALUNO
+        a.id_aluno,
+        a.nome_completo,
+        a.matricula,
 
-        WHERE a.fk_turma = @id_turma
+        -- NOTA
+        n.id_nota,
+        n.valor_nota,
+        n.data_criacao,
 
-        ORDER BY
-          a.nome_completo,
-          n.data_criacao
-      `);
+        -- MÉDIA
+        AVG(
+          CAST(n.valor_nota AS FLOAT)
+        ) OVER (
+          PARTITION BY a.id_aluno
+        ) AS media
+
+      FROM alunos a
+
+      LEFT JOIN notas n
+        ON n.fk_aluno = a.id_aluno
+
+      LEFT JOIN turma_disciplina td
+        ON td.id_turma_disciplina =
+          n.fk_turma_disciplina
+
+      WHERE a.fk_turma = @id_turma
+      ${filtroDisciplina}
+
+      ORDER BY
+        a.nome_completo,
+        n.data_criacao
+    `);
 
     const alunosMap = {};
 
     result.recordset.forEach((item) => {
-      // cria aluno
       if (!alunosMap[item.id_aluno]) {
         alunosMap[item.id_aluno] = {
           id_aluno: item.id_aluno,
@@ -1112,7 +1129,6 @@ app.get("/api/turma/:id/alunos", async (req, res) => {
         };
       }
 
-      // adiciona nota
       if (item.id_nota) {
         alunosMap[item.id_aluno].notas.push({
           id_nota: item.id_nota,
