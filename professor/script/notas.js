@@ -16,7 +16,11 @@ const closeModal = document.getElementById("close-modal");
 
 const btnSalvarNota = document.getElementById("btn-salvar-nota");
 
+const btnExcluirNota = document.getElementById("btn-excluir-nota");
+
 const modalTitle = document.getElementById("modal-title");
+
+const inputPesquisa = document.getElementById("input-pesquisa");
 
 /* INPUTS */
 
@@ -36,7 +40,13 @@ const cacheTurmas = {};
 
 let notaEditando = null;
 
+let modoEdicao = false;
+
 let anoSelecionado = null;
+
+let accordionAberto = null;
+
+let scrollPosicao = 0;
 
 /* INIT */
 
@@ -91,9 +101,47 @@ async function buscarTurmas() {
 
     const data = await response.json();
 
-    console.log(data);
-
     renderizarTurmas(data.turmas);
+
+    /* REABRIR */
+
+    if (accordionAberto) {
+      const idTurma = accordionAberto.turma;
+
+      const idDisciplina = accordionAberto.disciplina;
+
+      const body = document.getElementById(`body-${idTurma}-${idDisciplina}`);
+
+      if (body) {
+        /* ABRE */
+
+        body.classList.add("active");
+
+        const cacheKey = `${idTurma}-${idDisciplina}`;
+
+        const header = document.querySelector(
+          `.turma-header[data-turma="${idTurma}"][data-disciplina="${idDisciplina}"]`,
+        );
+
+        const fkTurmaDisciplina = header?.dataset.turmaDisciplina;
+
+        /* RENDER CACHE */
+
+        if (cacheTurmas[cacheKey]) {
+          renderizarAlunos(cacheTurmas[cacheKey], body, fkTurmaDisciplina);
+        } else {
+          await buscarAlunos(idTurma, idDisciplina, fkTurmaDisciplina, body);
+        }
+      }
+
+      setTimeout(() => {
+        window.scrollTo({
+          top: scrollPosicao,
+
+          behavior: "smooth",
+        });
+      }, 150);
+    }
   } catch (error) {
     console.error(error);
 
@@ -107,7 +155,7 @@ async function buscarTurmas() {
   }
 }
 
-/* RENDER TURMAS */
+/* RENDER */
 
 function renderizarTurmas(turmas) {
   turmasList.innerHTML = "";
@@ -120,8 +168,11 @@ function renderizarTurmas(turmas) {
 
               <div
                 class="turma-header"
+
                 data-turma="${turma.id_turma}"
+
                 data-disciplina="${disciplina.id_disciplina}"
+
                 data-turma-disciplina="${disciplina.id_turma_disciplina}"
               >
 
@@ -158,6 +209,7 @@ function renderizarTurmas(turmas) {
 
               <div
                 class="turma-body"
+
                 id="body-${turma.id_turma}-${disciplina.id_disciplina}"
               >
 
@@ -195,7 +247,19 @@ function adicionarEventosAccordion() {
 
       const body = document.getElementById(`body-${idTurma}-${idDisciplina}`);
 
+      const abriu = !body.classList.contains("active");
+
       body.classList.toggle("active");
+
+      if (abriu) {
+        accordionAberto = {
+          turma: idTurma,
+
+          disciplina: idDisciplina,
+        };
+      } else {
+        accordionAberto = null;
+      }
 
       const cacheKey = `${idTurma}-${idDisciplina}`;
 
@@ -210,7 +274,7 @@ function adicionarEventosAccordion() {
   });
 }
 
-/* BUSCAR ALUNOS */
+/* API ALUNOS */
 
 async function buscarAlunos(idTurma, idDisciplina, fkTurmaDisciplina, body) {
   try {
@@ -402,19 +466,77 @@ ${formatarData(dataLimite)}
 /* EVENTOS NOTAS */
 
 function adicionarEventosNotas() {
+  /* ADD */
+
   const btnsAdd = document.querySelectorAll(".add-nota");
 
   btnsAdd.forEach((btn) => {
     btn.addEventListener("click", () => {
+      modoEdicao = false;
+
+      btnExcluirNota.classList.remove("active");
+
       modalTitle.innerText = "Nova Nota";
 
-      notaEditando = {
-        aluno: btn.dataset.aluno,
+      btnSalvarNota.innerText = "Salvar Nota";
 
-        fkTurmaDisciplina: btn.dataset.turmaDisciplina,
+      notaEditando = {
+        aluno: Number(btn.dataset.aluno),
+
+        fkTurmaDisciplina: Number(btn.dataset.turmaDisciplina),
       };
 
       abrirModal();
+    });
+  });
+
+  /* EDIT */
+
+  const notas = document.querySelectorAll(
+    ".nota-pill:not(.add-nota):not(.locked)",
+  );
+
+  notas.forEach((nota) => {
+    nota.addEventListener("click", async () => {
+      try {
+        modoEdicao = true;
+
+        modalTitle.innerText = "Editar Nota";
+
+        btnExcluirNota.classList.add("active");
+
+        btnSalvarNota.innerText = "Salvar Alterações";
+
+        const response = await fetch(`${urlBase}api/nota/${nota.dataset.id}`);
+
+        const data = await response.json();
+
+        if (!data.sucesso) {
+          alert("Erro ao buscar nota.");
+
+          return;
+        }
+
+        const notaData = data.nota;
+
+        notaEditando = {
+          id: notaData.id_nota,
+        };
+
+        inputNota.value = notaData.valor_nota;
+
+        inputDescricao.value = notaData.descricao;
+
+        inputPeriodo.value = notaData.periodo_nota;
+
+        inputData.value = notaData.data_aplicacao?.split("T")[0];
+
+        abrirModal();
+      } catch (error) {
+        console.error(error);
+
+        alert("Erro ao carregar nota.");
+      }
     });
   });
 }
@@ -427,6 +549,8 @@ function abrirModal() {
 
 function fecharModal() {
   modalOverlay.classList.remove("active");
+
+  btnExcluirNota.classList.remove("active");
 
   limparModal();
 }
@@ -447,6 +571,8 @@ btnSalvarNota.addEventListener("click", async () => {
   try {
     const valorNota = Number(inputNota.value);
 
+    /* REQUIRED */
+
     if (
       !inputNota.value ||
       !inputDescricao.value ||
@@ -458,8 +584,10 @@ btnSalvarNota.addEventListener("click", async () => {
       return;
     }
 
+    /* MAX */
+
     if (valorNota > 10) {
-      alert("A nota máxima permitida é 10.");
+      alert("A nota máxima é 10.");
 
       return;
     }
@@ -472,27 +600,51 @@ btnSalvarNota.addEventListener("click", async () => {
       return;
     }
 
-    const response = await fetch(`${urlBase}api/nota`, {
-      method: "POST",
+    let response;
 
-      headers: {
-        "Content-Type": "application/json",
-      },
+    /* EDIT */
 
-      body: JSON.stringify({
-        fk_turma_disciplina: Number(notaEditando.fkTurmaDisciplina),
+    if (modoEdicao) {
+      response = await fetch(`${urlBase}api/nota/${notaEditando.id}`, {
+        method: "PUT",
 
-        fk_aluno: Number(notaEditando.aluno),
+        headers: {
+          "Content-Type": "application/json",
+        },
 
-        valor_nota: Number(inputNota.value),
+        body: JSON.stringify({
+          valor_nota: valorNota,
 
-        descricao: inputDescricao.value,
+          descricao: inputDescricao.value,
 
-        periodo_nota: Number(inputPeriodo.value),
+          periodo_nota: Number(inputPeriodo.value),
+        }),
+      });
+    } else {
+      /* CREATE */
 
-        data_aplicacao: inputData.value,
-      }),
-    });
+      response = await fetch(`${urlBase}api/nota`, {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          fk_turma_disciplina: notaEditando.fkTurmaDisciplina,
+
+          fk_aluno: notaEditando.aluno,
+
+          valor_nota: valorNota,
+
+          descricao: inputDescricao.value,
+
+          periodo_nota: Number(inputPeriodo.value),
+
+          data_aplicacao: inputData.value,
+        }),
+      });
+    }
 
     const data = await response.json();
 
@@ -502,17 +654,63 @@ btnSalvarNota.addEventListener("click", async () => {
       return;
     }
 
-    alert("Nota cadastrada!");
+    alert(modoEdicao ? "Nota editada!" : "Nota cadastrada!");
 
     fecharModal();
 
-    /* LIMPA CACHE */
+    /* SAVE SCROLL */
+
+    scrollPosicao = window.scrollY;
+
+    /* CLEAR CACHE */
 
     Object.keys(cacheTurmas).forEach((key) => {
       delete cacheTurmas[key];
     });
 
-    /* RELOAD */
+    await buscarTurmas();
+  } catch (error) {
+    console.error(error);
+
+    alert("Erro interno.");
+  }
+});
+
+/* DELETE */
+
+btnExcluirNota.addEventListener("click", async () => {
+  try {
+    const confirmar = confirm("Deseja realmente excluir esta nota?");
+
+    if (!confirmar) {
+      return;
+    }
+
+    const response = await fetch(`${urlBase}api/nota/${notaEditando.id}`, {
+      method: "DELETE",
+    });
+
+    const data = await response.json();
+
+    if (!data.sucesso) {
+      alert(data.mensagem ?? "Erro ao excluir nota.");
+
+      return;
+    }
+
+    alert("Nota excluída!");
+
+    fecharModal();
+
+    /* SAVE SCROLL */
+
+    scrollPosicao = window.scrollY;
+
+    /* CLEAR CACHE */
+
+    Object.keys(cacheTurmas).forEach((key) => {
+      delete cacheTurmas[key];
+    });
 
     await buscarTurmas();
   } catch (error) {
@@ -534,7 +732,7 @@ selectAno.addEventListener("change", async (event) => {
   await buscarTurmas();
 });
 
-/* MODAL EVENTS */
+/* MODAL */
 
 closeModal.addEventListener("click", fecharModal);
 
@@ -542,6 +740,64 @@ modalOverlay.addEventListener("click", (event) => {
   if (event.target === modalOverlay) {
     fecharModal();
   }
+});
+
+/* PESQUISA */
+
+/* PESQUISA */
+
+inputPesquisa.addEventListener("input", async () => {
+  const valor = inputPesquisa.value.toLowerCase().trim();
+
+  const headers = document.querySelectorAll(".turma-header");
+
+  /* LIMPOU PESQUISA */
+
+  if (!valor) {
+    const bodies = document.querySelectorAll(".turma-body");
+
+    bodies.forEach((body) => {
+      body.classList.remove("active");
+    });
+
+    accordionAberto = null;
+
+    /* MOSTRA TODOS */
+
+    const alunos = document.querySelectorAll(".aluno-card");
+
+    alunos.forEach((aluno) => {
+      aluno.style.display = "";
+    });
+
+    return;
+  }
+
+  /* ABRE TODOS */
+
+  for (const header of headers) {
+    const idTurma = header.dataset.turma;
+
+    const idDisciplina = header.dataset.disciplina;
+
+    const body = document.getElementById(`body-${idTurma}-${idDisciplina}`);
+
+    if (!body.classList.contains("active")) {
+      header.click();
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+  }
+
+  /* FILTRA */
+
+  const alunos = document.querySelectorAll(".aluno-card");
+
+  alunos.forEach((aluno) => {
+    const texto = aluno.innerText.toLowerCase();
+
+    aluno.style.display = texto.includes(valor) ? "" : "none";
+  });
 });
 
 /* START */

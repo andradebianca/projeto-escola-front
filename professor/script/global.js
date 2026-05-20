@@ -24,7 +24,7 @@ function preencherProfessor() {
 
 if(menuDashboard) menuDashboard.addEventListener("click", () => {redirecionar("professor/")});
 if(menuPerfil) menuPerfil.addEventListener("click", () => {redirecionar("professor/perfil.html")});
-if(menuLancarNotas) menuLancarNotas.addEventListener("click", () => {redirecionar("professor/lancar-notas.html")});
+if(menuLancarNotas) menuLancarNotas.addEventListener("click", () => {redirecionar("professor/notas.html")});
 if(menuTurmas) menuTurmas.addEventListener("click", () => {redirecionar("professor/turmas.html")});
 
 init();

@@ -51,19 +51,19 @@
           </div>
 
           <nav class="menu">
-            <button class="menu-btn" id="dashboard">
+            <button class="menu-btn" id="menu-dashboard">
               <i class="fa-solid fa-table-columns"></i>
 
               Dashboard
             </button>
 
-            <button class="menu-btn active">
+            <button class="menu-btn active" id="menu-lancar-notas">
               <i class="fa-solid fa-pen"></i>
 
               Gerenciar Notas
             </button>
 
-            <button class="menu-btn" id="perfil">
+            <button class="menu-btn" id="menu-perfil">
               <i class="fa-solid fa-user"></i>
 
               Perfil
@@ -77,10 +77,24 @@
             <div class="page-title">
               <h2>Gerenciar Notas</h2>
 
-              <p>Gerencie as notas das turmas</p>
+              <p>Gerencie as notas das turmas.</p>
+              <p>
+                <span class="required">Obs:</span> Só é possível editar, ou
+                excluidas, notas até 2 dias após o cadastro.
+              </p>
             </div>
 
             <select class="semester" id="select-ano"></select>
+
+            <div class="search-container">
+              <i class="fa-solid fa-magnifying-glass"></i>
+
+              <input
+                type="text"
+                id="input-pesquisa"
+                placeholder="Pesquisar aluno..."
+              />
+            </div>
 
             <section class="turmas-list" id="turmas-list">
               <p>Carregando turmas...</p>
@@ -144,6 +158,7 @@
             <input type="date" id="input-data" />
           </div>
 
+          <button class="delete-btn" id="btn-excluir-nota">Excluir Nota</button>
           <button class="save-btn" id="btn-salvar-nota">Salvar Nota</button>
         </div>
       </div>
