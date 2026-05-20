@@ -13,7 +13,6 @@ verificarLogin();
 /* STORAGE */
 
 const perfil = JSON.parse(localStorage.getItem("perfil"));
-console.log(perfil);
 
 /* ELEMENTOS */
 
@@ -54,8 +53,6 @@ async function buscarPerfil() {
     );
 
     const data = await response.json();
-
-    console.log(data);
 
     if (!data.sucesso) {
       alert("Erro ao carregar perfil.");

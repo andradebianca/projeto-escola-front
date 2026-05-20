@@ -36,8 +36,6 @@ async function buscarNotas() {
 
     const data = await response.json();
 
-    console.log(data);
-
     if (!data.sucesso) {
       disciplinasList.innerHTML = "<p>Erro ao carregar notas.</p>";
 
