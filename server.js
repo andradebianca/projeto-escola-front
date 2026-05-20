@@ -982,17 +982,32 @@ app.get("/api/professor/:id/perfil", async (req, res) => {
 app.get("/api/professor/:id/turmas", async (req, res) => {
   try {
     const { id } = req.params;
+    const { ano } = req.query;
+
+    // =========================
+    // VALIDAÇÃO
+    // =========================
+    if (!ano) {
+      return res.status(400).json({
+        erro: "Ano letivo é obrigatório",
+      });
+    }
 
     const pool = await getPool();
 
-    const result = await pool.request().input("id_professor", sql.Int, id)
-      .query(`
+    const result = await pool
+      .request()
+      .input("id_professor", sql.Int, id)
+      .input("ano", sql.Int, ano).query(`
         SELECT
           -- TURMA
           t.id_turma,
           t.cod_turma,
           t.turno,
           t.ano_letivo,
+
+          -- TURMA DISCIPLINA
+          td.id_turma_disciplina,
 
           -- DISCIPLINA
           d.id_disciplina,
@@ -1013,16 +1028,23 @@ app.get("/api/professor/:id/turmas", async (req, res) => {
           ON a.fk_turma = t.id_turma
 
         WHERE d.fk_professor = @id_professor
+          AND t.ano_letivo = @ano
 
         GROUP BY
           t.id_turma,
           t.cod_turma,
           t.turno,
           t.ano_letivo,
+
+          td.id_turma_disciplina,
+
           d.id_disciplina,
           d.nome
 
-        ORDER BY t.ano_letivo, t.cod_turma
+        ORDER BY
+          t.ano_letivo,
+          t.cod_turma,
+          d.nome
       `);
 
     const turmasMap = {};
@@ -1039,9 +1061,14 @@ app.get("/api/professor/:id/turmas", async (req, res) => {
         };
       }
 
+      // adiciona disciplina
       turmasMap[item.id_turma].disciplinas.push({
+        id_turma_disciplina: item.id_turma_disciplina,
+
         id_disciplina: item.id_disciplina,
+
         disciplina: item.disciplina,
+
         quantidade_alunos: item.quantidade_alunos,
       });
     });
