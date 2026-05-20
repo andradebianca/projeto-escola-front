@@ -8,25 +8,27 @@
   display: flex;
   flex-direction: column;
 
-  gap: 18px;
+  gap: 16px;
 }
 
 /* CARD */
 
 .turma-card {
-  border-radius: 22px;
+  border-radius: 20px;
 
-  border: 1px solid rgba(65, 223, 255, 0.5);
-
-  overflow: hidden;
+  border: 1px solid rgba(65, 223, 255, 0.35);
 
   background: white;
+
+  overflow: hidden;
 }
 
 /* HEADER */
 
 .turma-header {
-  padding: 22px;
+  height: 82px;
+
+  padding: 0 22px;
 
   display: flex;
   justify-content: space-between;
@@ -46,15 +48,15 @@
 .turma-info h3 {
   color: var(--secondary);
 
-  font-size: 22px;
+  font-size: 18px;
 
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .turma-info p {
   color: #777;
 
-  font-size: 13px;
+  font-size: 12px;
 }
 
 /* RIGHT */
@@ -69,7 +71,7 @@
 /* PILL */
 
 .info-pill {
-  height: 34px;
+  height: 32px;
 
   padding: 0 14px;
 
@@ -83,7 +85,7 @@
   justify-content: center;
   align-items: center;
 
-  font-size: 12px;
+  font-size: 11px;
   font-weight: bold;
 }
 
@@ -92,9 +94,9 @@
 .turma-body {
   display: none;
 
-  border-top: 1px solid #ececec;
+  padding: 20px;
 
-  padding: 22px;
+  border-top: 1px solid #ececec;
 }
 
 .turma-body.active {
@@ -107,29 +109,29 @@
   display: flex;
   flex-direction: column;
 
-  gap: 18px;
+  gap: 12px;
 }
 
-/* CARD */
+/* ALUNO */
 
 .aluno-card {
-  border-radius: 18px;
+  border-radius: 16px;
 
-  background: #f8fbfd;
+  border: 1px solid rgba(65, 223, 255, 0.15);
 
-  border: 1px solid rgba(65, 223, 255, 0.25);
+  background: #f9fcfd;
 
-  padding: 18px;
+  padding: 14px 16px;
 }
 
-/* TOP */
+/* HEADER */
 
-.aluno-top {
+.aluno-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 }
 
 /* INFO */
@@ -137,24 +139,39 @@
 .aluno-info h4 {
   color: var(--primary);
 
-  margin-bottom: 6px;
+  font-size: 15px;
+
+  margin-bottom: 4px;
 }
 
 .aluno-info p {
-  color: #777;
+  color: #888;
 
-  font-size: 13px;
+  font-size: 12px;
+}
+
+/* RIGHT */
+
+.aluno-right {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
 }
 
 /* MÉDIA */
 
 .media-pill {
-  width: 74px;
-  height: 38px;
+  width: 64px;
+  height: 34px;
 
-  border-radius: 14px;
+  border-radius: 12px;
 
-  background: linear-gradient(90deg, #1dcfff 0%, #1749e4 100%);
+  background: linear-gradient(
+    90deg,
+    #1dcfff 0%,
+    #1749e4 100%
+  );
 
   color: white;
 
@@ -162,7 +179,43 @@
   justify-content: center;
   align-items: center;
 
+  font-size: 13px;
   font-weight: bold;
+}
+
+/* STATUS */
+
+.status-pill {
+  height: 34px;
+
+  padding: 0 12px;
+
+  border-radius: 999px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.status-aprovado {
+  background: rgba(46, 204, 113, 0.15);
+
+  color: #27ae60;
+}
+
+.status-reprovado {
+  background: rgba(231, 76, 60, 0.15);
+
+  color: #e74c3c;
+}
+
+.status-cursando {
+  background: rgba(241, 196, 15, 0.15);
+
+  color: #f39c12;
 }
 
 /* NOTAS */
@@ -171,21 +224,19 @@
   display: flex;
   flex-wrap: wrap;
 
-  gap: 10px;
+  gap: 8px;
 }
 
 /* NOTA */
 
 .nota-pill {
-  min-width: 56px;
+  min-width: 52px;
 
-  height: 42px;
+  height: 36px;
 
-  padding: 0 14px;
+  border-radius: 12px;
 
-  border-radius: 14px;
-
-  border: 1px solid rgba(65, 223, 255, 0.35);
+  border: 1px solid rgba(65, 223, 255, 0.25);
 
   background: white;
 
@@ -193,7 +244,7 @@
   justify-content: center;
   align-items: center;
 
-  gap: 8px;
+  gap: 6px;
 
   cursor: pointer;
 
@@ -201,6 +252,7 @@
 
   color: var(--primary);
 
+  font-size: 13px;
   font-weight: bold;
 }
 
@@ -213,7 +265,7 @@
 /* LOCK */
 
 .nota-pill.locked {
-  background: #f2f2f2;
+  background: #f3f3f3;
 
   border-color: #ddd;
 
@@ -225,11 +277,15 @@
 /* ADD */
 
 .add-nota {
-  background: linear-gradient(90deg, #1dcfff 0%, #1749e4 100%);
-
-  border: none;
+  background: linear-gradient(
+    90deg,
+    #1dcfff 0%,
+    #1749e4 100%
+  );
 
   color: white;
+
+  border: none;
 }
 
 /* MODAL */
@@ -252,8 +308,6 @@
 .modal-overlay.active {
   display: flex;
 }
-
-/* MODAL */
 
 .modal {
   width: 100%;
@@ -324,7 +378,7 @@
 
   border-radius: 14px;
 
-  border: 1px solid rgba(65, 223, 255, 0.4);
+  border: 1px solid rgba(65, 223, 255, 0.35);
 
   padding: 12px 14px;
 
@@ -346,11 +400,21 @@ textarea {
 
   border: none;
 
-  background: linear-gradient(90deg, #1dcfff 0%, #1749e4 100%);
+  background: linear-gradient(
+    90deg,
+    #1dcfff 0%,
+    #1749e4 100%
+  );
 
   color: white;
 
   font-weight: bold;
 
   cursor: pointer;
+}
+
+.required {
+  color: #e74c3c;
+
+  margin-left: 4px;
 }

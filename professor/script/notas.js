@@ -8,6 +8,8 @@ const perfil = JSON.parse(localStorage.getItem("perfil"));
 
 const turmasList = document.getElementById("turmas-list");
 
+const selectAno = document.getElementById("select-ano");
+
 const modalOverlay = document.getElementById("modal-overlay");
 
 const closeModal = document.getElementById("close-modal");
@@ -34,18 +36,57 @@ const cacheTurmas = {};
 
 let notaEditando = null;
 
+let anoSelecionado = null;
+
 /* INIT */
 
 async function init() {
+  preencherSelectAnos();
+
   await buscarTurmas();
+}
+
+/* SELECT */
+
+function preencherSelectAnos() {
+  const anos = perfil.dados.opcoesAnos ?? [];
+
+  const anosOrdenados = [...anos].sort((a, b) => b - a);
+
+  anoSelecionado = anosOrdenados[0];
+
+  selectAno.innerHTML = "";
+
+  anosOrdenados.forEach((ano) => {
+    selectAno.innerHTML += `
+
+        <option
+          value="${ano}"
+          ${ano === anoSelecionado ? "selected" : ""}
+        >
+
+          ${ano}
+
+        </option>
+
+      `;
+  });
 }
 
 /* API */
 
 async function buscarTurmas() {
   try {
+    turmasList.innerHTML = `
+    
+      <p>
+        Carregando turmas...
+      </p>
+    
+    `;
+
     const response = await fetch(
-      `${urlBase}api/professor/${perfil.dados.id_professor}/turmas`,
+      `${urlBase}api/professor/${perfil.dados.id_professor}/turmas?ano=${anoSelecionado}`,
     );
 
     const data = await response.json();
@@ -55,6 +96,14 @@ async function buscarTurmas() {
     renderizarTurmas(data.turmas);
   } catch (error) {
     console.error(error);
+
+    turmasList.innerHTML = `
+    
+      <p>
+        Erro ao carregar turmas.
+      </p>
+    
+    `;
   }
 }
 
@@ -73,7 +122,7 @@ function renderizarTurmas(turmas) {
                 class="turma-header"
                 data-turma="${turma.id_turma}"
                 data-disciplina="${disciplina.id_disciplina}"
-                data-turma-disciplina="${disciplina.fk_turma_disciplina}"
+                data-turma-disciplina="${disciplina.id_turma_disciplina}"
               >
 
                 <div class="turma-info">
@@ -181,6 +230,49 @@ async function buscarAlunos(idTurma, idDisciplina, fkTurmaDisciplina, body) {
   }
 }
 
+/* STATUS */
+
+function obterStatus(aluno) {
+  if (aluno.notas.length < 3) {
+    return {
+      texto: "Cursando",
+      classe: "status-cursando",
+    };
+  }
+
+  if (Number(aluno.media) >= 7) {
+    return {
+      texto: "Aprovado",
+      classe: "status-aprovado",
+    };
+  }
+
+  return {
+    texto: "Reprovado",
+    classe: "status-reprovado",
+  };
+}
+
+/* DATA */
+
+function formatarData(data) {
+  return new Date(data).toLocaleDateString("pt-BR");
+}
+
+/* REGRA */
+
+function podeEditarNota(dataCriacao) {
+  const hoje = new Date();
+
+  const criacao = new Date(dataCriacao);
+
+  const diferenca = hoje - criacao;
+
+  const dias = diferenca / (1000 * 60 * 60 * 24);
+
+  return dias <= 2;
+}
+
 /* RENDER ALUNOS */
 
 function renderizarAlunos(alunos, body, fkTurmaDisciplina) {
@@ -189,9 +281,15 @@ function renderizarAlunos(alunos, body, fkTurmaDisciplina) {
   container.innerHTML = "";
 
   alunos.forEach((aluno) => {
+    const status = obterStatus(aluno);
+
     const notas = aluno.notas
       .map((nota) => {
         const editavel = podeEditarNota(nota.data_criacao);
+
+        const dataLimite = new Date(nota.data_criacao);
+
+        dataLimite.setDate(dataLimite.getDate() + 2);
 
         return `
 
@@ -200,6 +298,17 @@ function renderizarAlunos(alunos, body, fkTurmaDisciplina) {
                     nota-pill
                     ${!editavel ? "locked" : ""}
                   "
+
+                  title="${
+                    !editavel
+                      ? `
+Essa nota não pode mais ser editada.
+Prazo encerrado em:
+${formatarData(dataLimite)}
+`
+                      : "Editar nota"
+                  }"
+
                   data-id="${nota.id_nota}"
                 >
 
@@ -225,7 +334,7 @@ function renderizarAlunos(alunos, body, fkTurmaDisciplina) {
 
         <div class="aluno-card">
 
-          <div class="aluno-top">
+          <div class="aluno-header">
 
             <div class="aluno-info">
 
@@ -240,9 +349,19 @@ function renderizarAlunos(alunos, body, fkTurmaDisciplina) {
 
             </div>
 
-            <div class="media-pill">
+            <div class="aluno-right">
 
-              ${Number(aluno.media).toFixed(2)}
+              <div class="status-pill ${status.classe}">
+
+                ${status.texto}
+
+              </div>
+
+              <div class="media-pill">
+
+                ${Number(aluno.media).toFixed(2)}
+
+              </div>
 
             </div>
 
@@ -257,7 +376,9 @@ function renderizarAlunos(alunos, body, fkTurmaDisciplina) {
                 ? `
                   <button
                     class="nota-pill add-nota"
+
                     data-aluno="${aluno.id_aluno}"
+
                     data-turma-disciplina="${fkTurmaDisciplina}"
                   >
 
@@ -276,20 +397,6 @@ function renderizarAlunos(alunos, body, fkTurmaDisciplina) {
   });
 
   adicionarEventosNotas();
-}
-
-/* REGRA */
-
-function podeEditarNota(dataCriacao) {
-  const hoje = new Date();
-
-  const criacao = new Date(dataCriacao);
-
-  const diferenca = hoje - criacao;
-
-  const dias = diferenca / (1000 * 60 * 60 * 24);
-
-  return dias <= 2;
 }
 
 /* EVENTOS NOTAS */
@@ -338,7 +445,34 @@ function limparModal() {
 
 btnSalvarNota.addEventListener("click", async () => {
   try {
-    await fetch(`${urlBase}api/nota`, {
+    const valorNota = Number(inputNota.value);
+
+    if (
+      !inputNota.value ||
+      !inputDescricao.value ||
+      !inputPeriodo.value ||
+      !inputData.value
+    ) {
+      alert("Preencha todos os campos obrigatórios.");
+
+      return;
+    }
+
+    if (valorNota > 10) {
+      alert("A nota máxima permitida é 10.");
+
+      return;
+    }
+
+    /* MIN */
+
+    if (valorNota < 0) {
+      alert("A nota mínima é 0.");
+
+      return;
+    }
+
+    const response = await fetch(`${urlBase}api/nota`, {
       method: "POST",
 
       headers: {
@@ -360,14 +494,44 @@ btnSalvarNota.addEventListener("click", async () => {
       }),
     });
 
+    const data = await response.json();
+
+    if (!data.sucesso) {
+      alert(data.mensagem ?? "Erro ao salvar nota.");
+
+      return;
+    }
+
     alert("Nota cadastrada!");
 
     fecharModal();
+
+    /* LIMPA CACHE */
+
+    Object.keys(cacheTurmas).forEach((key) => {
+      delete cacheTurmas[key];
+    });
+
+    /* RELOAD */
+
+    await buscarTurmas();
   } catch (error) {
     console.error(error);
 
-    alert("Erro ao salvar nota.");
+    alert("Erro interno.");
   }
+});
+
+/* SELECT */
+
+selectAno.addEventListener("change", async (event) => {
+  anoSelecionado = event.target.value;
+
+  Object.keys(cacheTurmas).forEach((key) => {
+    delete cacheTurmas[key];
+  });
+
+  await buscarTurmas();
 });
 
 /* MODAL EVENTS */
