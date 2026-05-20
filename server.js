@@ -1013,13 +1013,18 @@ app.get("/api/professor/:id/turmas", async (req, res) => {
       .input("id_professor", sql.Int, id)
       .query(`
         SELECT
+          -- TURMA
           t.id_turma,
           t.cod_turma,
           t.turno,
           t.ano_letivo,
 
+          -- DISCIPLINA
           d.id_disciplina,
-          d.nome AS disciplina
+          d.nome AS disciplina,
+
+          -- QUANTIDADE ALUNOS
+          COUNT(a.id_aluno) AS quantidade_alunos
 
         FROM disciplina d
 
@@ -1029,7 +1034,18 @@ app.get("/api/professor/:id/turmas", async (req, res) => {
         INNER JOIN turma t
           ON t.id_turma = td.fk_turma
 
+        LEFT JOIN alunos a
+          ON a.fk_turma = t.id_turma
+
         WHERE d.fk_professor = @id_professor
+
+        GROUP BY
+          t.id_turma,
+          t.cod_turma,
+          t.turno,
+          t.ano_letivo,
+          d.id_disciplina,
+          d.nome
 
         ORDER BY t.ano_letivo, t.cod_turma
       `);
@@ -1052,12 +1068,174 @@ app.get("/api/professor/:id/turmas", async (req, res) => {
       turmasMap[item.id_turma].disciplinas.push({
         id_disciplina: item.id_disciplina,
         disciplina: item.disciplina,
+        quantidade_alunos: item.quantidade_alunos,
       });
     });
 
     res.json({
       sucesso: true,
       turmas: Object.values(turmasMap),
+    });
+
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      erro: err.message,
+    });
+  }
+});
+
+app.get("/api/turma/:id/alunos", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const pool = await getPool();
+
+    const result = await pool
+      .request()
+      .input("id_turma", sql.Int, id)
+      .query(`
+        SELECT
+          a.id_aluno,
+          a.nome_completo,
+          a.matricula,
+
+          COUNT(n.id_nota) AS quantidade_notas,
+
+          AVG(
+            CAST(n.valor_nota AS FLOAT)
+          ) AS media
+
+        FROM alunos a
+
+        LEFT JOIN notas n
+          ON n.fk_aluno = a.id_aluno
+
+        WHERE a.fk_turma = @id_turma
+
+        GROUP BY
+          a.id_aluno,
+          a.nome_completo,
+          a.matricula
+
+        ORDER BY a.nome_completo
+      `);
+
+    res.json({
+      sucesso: true,
+
+      alunos: result.recordset.map((aluno) => ({
+        ...aluno,
+
+        media:
+          aluno.media !== null
+            ? Number(aluno.media.toFixed(2))
+            : null,
+      })),
+    });
+
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      erro: err.message,
+    });
+  }
+});
+
+app.post("/api/nota", async (req, res) => {
+  try {
+    const {
+      fk_turma_disciplina,
+      fk_aluno,
+      valor_nota,
+      descricao,
+      periodo_nota,
+    } = req.body || {};
+
+    // =========================
+    // VALIDAÇÃO
+    // =========================
+    if (
+      !fk_turma_disciplina ||
+      !fk_aluno ||
+      valor_nota === undefined ||
+      !descricao ||
+      !periodo_nota
+    ) {
+      return res.status(400).json({
+        erro: "Todos os campos são obrigatórios",
+      });
+    }
+
+    const pool = await getPool();
+
+    // =========================
+    // LIMITE DE 3 NOTAS
+    // =========================
+    const quantidadeResult = await pool
+      .request()
+      .input(
+        "fk_turma_disciplina",
+        sql.Int,
+        fk_turma_disciplina
+      )
+      .input("fk_aluno", sql.Int, fk_aluno)
+      .query(`
+        SELECT COUNT(*) AS total
+        FROM notas
+        WHERE fk_turma_disciplina = @fk_turma_disciplina
+          AND fk_aluno = @fk_aluno
+      `);
+
+    const total =
+      quantidadeResult.recordset[0].total;
+
+    if (total >= 3) {
+      return res.status(400).json({
+        erro:
+          "Aluno já possui 3 notas nesta disciplina",
+      });
+    }
+
+    // =========================
+    // INSERT
+    // =========================
+    await pool
+      .request()
+      .input(
+        "fk_turma_disciplina",
+        sql.Int,
+        fk_turma_disciplina
+      )
+      .input("fk_aluno", sql.Int, fk_aluno)
+      .input("valor_nota", sql.Decimal(5, 2), valor_nota)
+      .input("descricao", sql.VarChar, descricao)
+      .input("periodo_nota", sql.Int, periodo_nota)
+      .input("data_aplicacao", sql.Date, new Date())
+      .query(`
+        INSERT INTO notas (
+          fk_turma_disciplina,
+          fk_aluno,
+          data_aplicacao,
+          valor_nota,
+          descricao,
+          periodo_nota
+        )
+        VALUES (
+          @fk_turma_disciplina,
+          @fk_aluno,
+          @data_aplicacao,
+          @valor_nota,
+          @descricao,
+          @periodo_nota
+        )
+      `);
+
+    res.status(201).json({
+      sucesso: true,
+      mensagem: "Nota cadastrada com sucesso",
     });
 
   } catch (err) {
