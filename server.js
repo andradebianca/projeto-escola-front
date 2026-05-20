@@ -633,8 +633,7 @@ app.get("/api/nota/:id", async (req, res) => {
 
           -- PROFESSOR
           p.id_professor,
-          p.nome AS professor_nome,
-          p.sobrenome AS professor_sobrenome,
+          p.nome_completo AS professor_nome,
 
           -- TURMA
           t.id_turma,
@@ -701,7 +700,7 @@ app.get("/api/nota/:id", async (req, res) => {
 
         professor: {
           id_professor: nota.id_professor,
-          nome_completo: `${nota.professor_nome} ${nota.professor_sobrenome}`,
+          nome_completo: `${nota.professor_nome}`,
         },
 
         turma: {
