@@ -13,14 +13,16 @@ const config = {
   },
 };
 
-let pool;
+let pool = null;
 
 async function getPool() {
   try {
+    // já conectado
     if (pool) {
       return pool;
     }
 
+    // conecta
     pool = await new sql.ConnectionPool(config).connect();
 
     console.log("✅ Conectado ao SQL Server!");
@@ -29,6 +31,7 @@ async function getPool() {
   } catch (err) {
     console.error("❌ Erro na conexão:", err);
 
+    // limpa pool quebrado
     pool = null;
 
     throw err;
