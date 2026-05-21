@@ -30,6 +30,7 @@ router.get(
             n.data_aplicacao,
             n.data_criacao,
             n.periodo_nota,
+            n.cod_turma,
 
             a.id_aluno,
             a.nome_completo AS aluno,
