@@ -1,67 +1,56 @@
 import { urlBase } from "./../../script/variaveis-globais.js";
-import { verificarLogin } from "./../../script/funcs-global.js";
+import {
+  verificarLogin,
+  requisicaoApi,
+  showToast,
+} from "./../../script/funcs-global.js";
 
 /* LOGIN */
-
 verificarLogin();
 
 /* STORAGE */
-
 const perfil = JSON.parse(localStorage.getItem("perfil"));
 
 /* ELEMENTOS */
-
 const disciplinasList = document.getElementById("disciplinas-list");
 
 /* CACHE */
-
 const cacheNotas = {};
 
 /* INIT */
-
 async function init() {
   await buscarNotas();
 }
 
-/* API */
-
+/* API MAIN */
 async function buscarNotas() {
   try {
     disciplinasList.innerHTML = "<p>Carregando boletim...</p>";
 
-    const response = await fetch(
+    // REFACTOR: Requisição segura com JWT encapsulado
+    const response = await requisicaoApi(
       `${urlBase}api/aluno/${perfil.dados.id_aluno}/notas`,
     );
-
     const data = await response.json();
 
     if (!data.sucesso) {
       disciplinasList.innerHTML = "<p>Erro ao carregar notas.</p>";
-
       return;
     }
 
     renderizarDisciplinas(data.disciplinas);
   } catch (error) {
     console.error(error);
-
-    disciplinasList.innerHTML = "<p>Erro interno.</p>";
+    disciplinasList.innerHTML = "<p>Erro interno ao processar boletim.</p>";
   }
 }
 
 /* MÉDIA */
-
 function obterMedia(notas) {
-  if (!notas?.length) {
-    return "-";
-  }
-
+  if (!notas?.length) return "-";
   const soma = notas.reduce((acc, nota) => acc + Number(nota.valor_nota), 0);
-
   return (soma / notas.length).toFixed(2);
 }
-
-/* STATUS */
 
 function renderizarStatus(notas) {
   /* CURSANDO */
@@ -249,118 +238,45 @@ function adicionarEventosNotas() {
 /* DETALHES */
 
 async function abrirDetalhesNota(idNota, details) {
-  /* CACHE */
-
+  /* CACHE COMPORTAMENTO */
   if (cacheNotas[idNota]) {
     renderizarDetalhes(cacheNotas[idNota], details);
-
     return;
   }
 
-  details.innerHTML = `
-
-    <p class="loading-details">
-      Carregando detalhes...
-    </p>
-
-  `;
+  details.innerHTML = `<p class="loading-details">Carregando detalhes...</p>`;
 
   try {
-    const response = await fetch(`${urlBase}api/nota/${idNota}`);
-
+    // REFACTOR: Substituído pelo wrapper seguro requisicaoApi
+    const response = await requisicaoApi(`${urlBase}api/nota/${idNota}`);
     const data = await response.json();
 
     if (!data.sucesso) {
       details.innerHTML = "<p>Erro ao carregar detalhes.</p>";
-
       return;
     }
 
     cacheNotas[idNota] = data.nota;
-
     renderizarDetalhes(data.nota, details);
   } catch (error) {
     console.error(error);
-
-    details.innerHTML = "<p>Erro interno.</p>";
+    details.innerHTML = "<p>Erro interno ao carregar detalhes da nota.</p>";
   }
 }
-
-/* DATA */
 
 function formatarData(data) {
   return new Date(data).toLocaleDateString("pt-BR");
 }
 
-/* HTML DETAILS */
-
 function renderizarDetalhes(nota, details) {
   details.innerHTML = `
-
     <div class="details-grid">
-
-      <div class="detail-item">
-
-        <span>
-          Nota
-        </span>
-
-        <p>
-          ${nota.valor_nota}
-        </p>
-
-      </div>
-
-      <div class="detail-item">
-
-        <span>
-          Data Aplicação
-        </span>
-
-        <p>
-          ${formatarData(nota.data_aplicacao)}
-        </p>
-
-      </div>
-
-      <div class="detail-item">
-
-        <span>
-          Período
-        </span>
-
-        <p>
-          ${nota.periodo_nota}º Bimestre
-        </p>
-
-      </div>
-
-      <div class="detail-item">
-
-        <span>
-          Turma
-        </span>
-
-        <p>
-          ${nota.turma.cod_turma}
-        </p>
-
-      </div>
-
-      <div class="detail-item full">
-
-        <span>
-          Descrição
-        </span>
-
-        <p>
-          ${nota.descricao}
-        </p>
-
-      </div>
-
+      <div class="detail-item"><span>Nota</span><p>${nota.valor_nota}</p></div>
+      <div class="detail-item"><span>Data Aplicação</span><p>${formatarData(nota.data_aplicacao)}</p></div>
+      <div class="detail-item"><span>Período</span><p>${nota.periodo_nota}º Bimestre</p></div>
+      <div class="detail-item"><span>Turma</span><p>${nota.turma.cod_turma}</p></div>
+      <div class="detail-item full"><span>Descrição</span><p>${nota.descricao}</p></div>
     </div>
-
   `;
 }
 

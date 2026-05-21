@@ -1,148 +1,110 @@
+// professor/main.js
+import { verificarLogin, requisicaoApi } from "./../../script/funcs-global.js";
 import { urlBase } from "./../../script/variaveis-globais.js";
 
-const perfil = JSON.parse(localStorage.getItem("perfil"));
+/* LOGIN LOCK */
+verificarLogin();
 
-/* LOGIN */
-
+/* ELEMENTOS */
 const disciplinasGrid = document.getElementById("disciplinas-grid");
-
 const selectAno = document.getElementById("select-ano");
 
-/* ANO */
+/* STORAGE */
+const perfil = JSON.parse(localStorage.getItem("perfil"));
 
+/* ANO PADRÃO */
 let anoSelecionado = 2025;
 
 /* INIT */
-
 async function init() {
   preencherSelect();
-
   await buscarDisciplinas();
 }
 
-/* SELECT */
-
+/* SELECT DINÂMICO */
 function preencherSelect() {
-  const anos = perfil.dados.opcoesAnos;
+  if (!selectAno || !perfil?.dados?.opcoesAnos) return;
 
+  const anos = perfil.dados.opcoesAnos;
   const ordenados = [...anos].sort((a, b) => b - a);
 
-  anoSelecionado = ordenados[0];
-
+  anoSelecionado = ordenados[0] ?? 2025;
   selectAno.innerHTML = "";
 
   ordenados.forEach((ano) => {
     selectAno.innerHTML += `
-
-        <option
-          value="${ano}"
-        >
-          ${ano}
-        </option>
-
-      `;
+      <option value="${ano}">${ano}</option>
+    `;
   });
 }
 
-/* API */
-
+/* API (WRAPPER AUTENTICADO) */
 async function buscarDisciplinas() {
   try {
-    disciplinasGrid.innerHTML = "<p>Carregando disciplinas...</p>";
+    if (disciplinasGrid)
+      disciplinasGrid.innerHTML = "<p>Carregando disciplinas...</p>";
 
-    const response = await fetch(
+    // REFACTOR: Centralizado com injeção automática de Bearer Token JWT
+    const response = await requisicaoApi(
       `${urlBase}api/professor/${perfil.dados.id_professor}/disciplinas?ano=${anoSelecionado}`,
     );
-
     const data = await response.json();
 
-    console.log(data);
-
     if (!data.sucesso) {
-      disciplinasGrid.innerHTML = "<p>Erro ao carregar.</p>";
-
+      if (disciplinasGrid)
+        disciplinasGrid.innerHTML = "<p>Erro ao carregar disciplinas.</p>";
       return;
     }
 
     renderizarDisciplinas(data.disciplinas);
   } catch (error) {
-    console.error(error);
-
-    disciplinasGrid.innerHTML = "<p>Erro interno.</p>";
+    console.error("Erro ao buscar disciplinas:", error);
+    if (disciplinasGrid)
+      disciplinasGrid.innerHTML = "<p>Erro interno ao carregar dados.</p>";
   }
 }
 
-/* RENDER */
-
+/* RENDER CARDS */
 function renderizarDisciplinas(disciplinas) {
+  if (!disciplinasGrid) return;
   disciplinasGrid.innerHTML = "";
 
+  if (!disciplinas || !disciplinas.length) {
+    disciplinasGrid.innerHTML =
+      "<p>Nenhuma disciplina vinculada para este ano.</p>";
+    return;
+  }
+
   disciplinas.forEach((disciplina) => {
-    const turmas = disciplina.turmas
+    const turmas = (disciplina.turmas ?? [])
       .map(
         (turma) => `
-          
-          <div class="turma-pill">
-
-            ${turma.cod_turma}
-
-          </div>
-
-        `,
+        <div class="turma-pill">${turma.cod_turma}</div>
+      `,
       )
       .join("");
 
     disciplinasGrid.innerHTML += `
-
-        <div class="disciplina-card">
-
-          <h3>
-            ${disciplina.disciplina}
-          </h3>
-
-          <p class="disciplina-desc">
-
-            ${disciplina.descricao}
-
-          </p>
-
-          <div class="disciplina-info">
-
-            <div class="info-pill">
-
-              ${disciplina.carga_horaria}h
-
-            </div>
-
-            <div class="info-pill">
-
-              ${disciplina.turmas.length}
-              turma(s)
-
-            </div>
-
-          </div>
-
-          <div class="turmas-list">
-
-            ${turmas}
-
-          </div>
-
+      <div class="disciplina-card">
+        <h3>${disciplina.disciplina}</h3>
+        <p class="disciplina-desc">${disciplina.descricao ?? "Sem descrição disponível."}</p>
+        <div class="disciplina-info">
+          <div class="info-pill">${disciplina.carga_horaria}h</div>
+          <div class="info-pill">${disciplina.turmas?.length ?? 0} turma(s)</div>
         </div>
-
-      `;
+        <div class="turmas-list">${turmas}</div>
+      </div>
+    `;
   });
 }
 
-/* EVENT */
-
-selectAno.addEventListener("change", async (event) => {
-  anoSelecionado = event.target.value;
-
-  await buscarDisciplinas();
-});
+/* EVENTO DE ALTERAÇÃO DO ANO */
+if (selectAno) {
+  selectAno.addEventListener("change", async (event) => {
+    anoSelecionado = event.target.value;
+    await buscarDisciplinas();
+  });
+}
 
 /* START */
-
 init();
