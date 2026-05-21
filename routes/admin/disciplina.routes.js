@@ -306,6 +306,18 @@ router.delete(
         .request()
 
         .input("fk_disciplina", sql.Int, id).query(`
+          DELETE n
+          FROM notas n
+          INNER JOIN turma_disciplina td
+            ON td.id_turma_disciplina = n.fk_turma_disciplina
+          WHERE td.fk_disciplina =
+            @fk_disciplina
+        `);
+
+      await pool
+        .request()
+
+        .input("fk_disciplina", sql.Int, id).query(`
           DELETE FROM turma_disciplina
           WHERE fk_disciplina =
             @fk_disciplina
@@ -349,3 +361,5 @@ router.delete(
     }
   },
 );
+
+module.exports = router;

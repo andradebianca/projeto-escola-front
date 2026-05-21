@@ -25,20 +25,69 @@ router.get(
 
       const result = await pool.request().query(`
         SELECT
-          ta.id_telefone,
-          ta.telefone,
+          tp.id_telefone,
+          tp.telefone,
 
-          a.id_aluno,
-          a.nome_completo
+          p.id_professor,
+          p.nome_completo
 
-        FROM telefone_professor ta
+        FROM telefone_professor tp
 
-        INNER JOIN professor a
-          ON a.id_aluno =
-            ta.fk_professor
+        INNER JOIN professor p
+          ON p.id_professor =
+            tp.fk_professor
 
-        ORDER BY a.nome_completo
+        ORDER BY p.nome_completo
       `);
+
+      res.json({
+        sucesso: true,
+        telefones: result.recordset,
+      });
+    } catch (err) {
+      res.status(500).json({
+        erro: err.message,
+      });
+    }
+  },
+);
+
+// ========================================
+// GET BY PROFESSOR
+// ========================================
+router.get(
+  "/admin/telefone-professor/professor/:idProfessor",
+
+  verificarToken,
+  apenasAdmin,
+
+  async (req, res) => {
+    try {
+      const { idProfessor } = req.params;
+
+      const pool = await getPool();
+
+      const result = await pool
+        .request()
+        .input("id_professor", sql.Int, idProfessor).query(`
+          SELECT
+            tp.id_telefone,
+            tp.telefone,
+
+            p.id_professor,
+            p.nome_completo
+
+          FROM telefone_professor tp
+
+          INNER JOIN professor p
+            ON p.id_professor =
+              tp.fk_professor
+
+          WHERE tp.fk_professor =
+            @id_professor
+
+          ORDER BY tp.id_telefone
+        `);
 
       res.json({
         sucesso: true,
@@ -67,31 +116,28 @@ router.get(
 
       const pool = await getPool();
 
-      const result = await pool
-        .request()
-
-        .input("id_telefone", sql.Int, id).query(`
+      const result = await pool.request().input("id_telefone", sql.Int, id)
+        .query(`
           SELECT
-            ta.id_telefone,
-            ta.telefone,
+            tp.id_telefone,
+            tp.telefone,
 
-            a.id_aluno,
-            a.nome_completo,
-            a.matricula
+            p.id_professor,
+            p.nome_completo
 
-          FROM telefone_professor ta
+          FROM telefone_professor tp
 
-          INNER JOIN professor a
-            ON a.id_aluno =
-              ta.fk_professor
+          INNER JOIN professor p
+            ON p.id_professor =
+              tp.fk_professor
 
-          WHERE ta.id_telefone =
+          WHERE tp.id_telefone =
             @id_telefone
         `);
 
       if (result.recordset.length === 0) {
         return res.status(404).json({
-          erro: "Telefone não encontrado",
+          erro: "Telefone nao encontrado",
         });
       }
 
@@ -122,7 +168,7 @@ router.post(
 
       if (!fk_professor || !telefone) {
         return res.status(400).json({
-          erro: "Todos os campos são obrigatórios",
+          erro: "Todos os campos sao obrigatorios",
         });
       }
 
@@ -130,9 +176,7 @@ router.post(
 
       const result = await pool
         .request()
-
         .input("fk_professor", sql.Int, fk_professor)
-
         .input("telefone", sql.VarChar(15), telefone).query(`
           INSERT INTO telefone_professor (
             fk_professor,
@@ -158,7 +202,7 @@ router.post(
 
         idRegistro: novoTelefone.id_telefone,
 
-        descricao: "Telefone aluno criado",
+        descricao: "Telefone professor criado",
 
         dadosNovos: novoTelefone,
       });
@@ -192,10 +236,8 @@ router.put(
 
       const pool = await getPool();
 
-      const anterior = await pool
-        .request()
-
-        .input("id_telefone", sql.Int, id).query(`
+      const anterior = await pool.request().input("id_telefone", sql.Int, id)
+        .query(`
             SELECT *
             FROM telefone_professor
             WHERE id_telefone =
@@ -204,15 +246,13 @@ router.put(
 
       if (anterior.recordset.length === 0) {
         return res.status(404).json({
-          erro: "Telefone não encontrado",
+          erro: "Telefone nao encontrado",
         });
       }
 
       await pool
         .request()
-
         .input("id_telefone", sql.Int, id)
-
         .input("telefone", sql.VarChar(15), telefone).query(`
           UPDATE telefone_professor
 
@@ -233,7 +273,7 @@ router.put(
 
         idRegistro: id,
 
-        descricao: "Telefone aluno atualizado",
+        descricao: "Telefone professor atualizado",
 
         dadosAnteriores: anterior.recordset[0],
 
@@ -269,10 +309,8 @@ router.delete(
 
       const pool = await getPool();
 
-      const anterior = await pool
-        .request()
-
-        .input("id_telefone", sql.Int, id).query(`
+      const anterior = await pool.request().input("id_telefone", sql.Int, id)
+        .query(`
             SELECT *
             FROM telefone_professor
             WHERE id_telefone =
@@ -281,14 +319,11 @@ router.delete(
 
       if (anterior.recordset.length === 0) {
         return res.status(404).json({
-          erro: "Telefone não encontrado",
+          erro: "Telefone nao encontrado",
         });
       }
 
-      await pool
-        .request()
-
-        .input("id_telefone", sql.Int, id).query(`
+      await pool.request().input("id_telefone", sql.Int, id).query(`
           DELETE FROM telefone_professor
           WHERE id_telefone =
             @id_telefone
@@ -303,7 +338,7 @@ router.delete(
 
         idRegistro: id,
 
-        descricao: "Telefone aluno removido",
+        descricao: "Telefone professor removido",
 
         dadosAnteriores: anterior.recordset[0],
       });

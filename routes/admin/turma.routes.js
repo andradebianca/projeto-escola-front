@@ -11,7 +11,7 @@ const { apenasAdmin } = require("../../middlewares/admin.middleware");
 const { registrarAuditoria } = require("../../helpers/auditoria");
 
 router.get(
-  "/turma",
+  ["/turma", "/admin/turma"],
 
   verificarToken,
   apenasAdmin,
@@ -58,10 +58,7 @@ router.get(
 
       const pool = await getPool();
 
-      const result = await pool
-        .request()
-
-        .input("id_turma", sql.Int, id).query(`
+      const result = await pool.request().input("id_turma", sql.Int, id).query(`
             SELECT
               id_turma,
               ano_letivo,
@@ -76,7 +73,7 @@ router.get(
 
       if (result.recordset.length === 0) {
         return res.status(404).json({
-          erro: "Turma não encontrada",
+          erro: "Turma nao encontrada",
         });
       }
 
@@ -93,7 +90,7 @@ router.get(
 );
 
 router.post(
-  "/turma",
+  ["/turma", "/admin/turma"],
 
   verificarToken,
   apenasAdmin,
@@ -104,7 +101,7 @@ router.post(
 
       if (!ano_letivo || !cod_turma || !turno) {
         return res.status(400).json({
-          erro: "Campos obrigatórios",
+          erro: "Campos obrigatorios",
         });
       }
 
@@ -112,11 +109,8 @@ router.post(
 
       const result = await pool
         .request()
-
         .input("ano_letivo", sql.Int, ano_letivo)
-
         .input("cod_turma", sql.VarChar(100), cod_turma)
-
         .input("turno", sql.VarChar(15), turno).query(`
             INSERT INTO turma (
               ano_letivo,
@@ -175,10 +169,8 @@ router.put(
 
       const pool = await getPool();
 
-      const anterior = await pool
-        .request()
-
-        .input("id_turma", sql.Int, id).query(`
+      const anterior = await pool.request().input("id_turma", sql.Int, id)
+        .query(`
             SELECT *
             FROM turma
             WHERE id_turma =
@@ -187,19 +179,15 @@ router.put(
 
       if (anterior.recordset.length === 0) {
         return res.status(404).json({
-          erro: "Turma não encontrada",
+          erro: "Turma nao encontrada",
         });
       }
 
       await pool
         .request()
-
         .input("id_turma", sql.Int, id)
-
         .input("ano_letivo", sql.Int, ano_letivo)
-
         .input("cod_turma", sql.VarChar(100), cod_turma)
-
         .input("turno", sql.VarChar(15), turno).query(`
           UPDATE turma
 
@@ -261,10 +249,8 @@ router.delete(
 
       const pool = await getPool();
 
-      const anterior = await pool
-        .request()
-
-        .input("id_turma", sql.Int, id).query(`
+      const anterior = await pool.request().input("id_turma", sql.Int, id)
+        .query(`
             SELECT *
             FROM turma
             WHERE id_turma =
@@ -273,35 +259,41 @@ router.delete(
 
       if (anterior.recordset.length === 0) {
         return res.status(404).json({
-          erro: "Turma não encontrada",
+          erro: "Turma nao encontrada",
         });
       }
 
-      // remove vínculos turma_disciplina
-      await pool
-        .request()
+      await pool.request().input("fk_turma", sql.Int, id).query(`
+          DELETE n
+          FROM notas n
+          INNER JOIN turma_disciplina td
+            ON td.id_turma_disciplina = n.fk_turma_disciplina
+          WHERE td.fk_turma =
+            @fk_turma
+        `);
 
-        .input("fk_turma", sql.Int, id).query(`
+      await pool.request().input("fk_turma", sql.Int, id).query(`
+          DELETE ta
+          FROM telefone_aluno ta
+          INNER JOIN alunos a
+            ON a.id_aluno = ta.fk_aluno
+          WHERE a.fk_turma =
+            @fk_turma
+        `);
+
+      await pool.request().input("fk_turma", sql.Int, id).query(`
           DELETE FROM turma_disciplina
           WHERE fk_turma =
             @fk_turma
         `);
 
-      // remove alunos
-      await pool
-        .request()
-
-        .input("fk_turma", sql.Int, id).query(`
+      await pool.request().input("fk_turma", sql.Int, id).query(`
           DELETE FROM alunos
           WHERE fk_turma =
             @fk_turma
         `);
 
-      // remove turma
-      await pool
-        .request()
-
-        .input("id_turma", sql.Int, id).query(`
+      await pool.request().input("id_turma", sql.Int, id).query(`
           DELETE FROM turma
           WHERE id_turma =
             @id_turma
@@ -345,10 +337,7 @@ router.get(
 
       const pool = await getPool();
 
-      const result = await pool
-        .request()
-
-        .input("id_turma", sql.Int, id).query(`
+      const result = await pool.request().input("id_turma", sql.Int, id).query(`
             SELECT
               td.id_turma_disciplina,
 
@@ -395,13 +384,33 @@ router.post(
     try {
       const { fk_turma, fk_disciplina } = req.body || {};
 
+      if (!fk_turma || !fk_disciplina) {
+        return res.status(400).json({
+          erro: "fk_turma e fk_disciplina sao obrigatorios",
+        });
+      }
+
       const pool = await getPool();
+
+      const existente = await pool
+        .request()
+        .input("fk_turma", sql.Int, fk_turma)
+        .input("fk_disciplina", sql.Int, fk_disciplina).query(`
+          SELECT id_turma_disciplina
+          FROM turma_disciplina
+          WHERE fk_turma = @fk_turma
+            AND fk_disciplina = @fk_disciplina
+        `);
+
+      if (existente.recordset.length > 0) {
+        return res.status(409).json({
+          erro: "Disciplina ja vinculada nesta turma",
+        });
+      }
 
       const result = await pool
         .request()
-
         .input("fk_turma", sql.Int, fk_turma)
-
         .input("fk_disciplina", sql.Int, fk_disciplina).query(`
             INSERT INTO turma_disciplina (
               fk_turma,
@@ -427,7 +436,7 @@ router.post(
 
         idRegistro: vinculo.id_turma_disciplina,
 
-        descricao: "Disciplina vinculada à turma",
+        descricao: "Disciplina vinculada a turma",
 
         dadosNovos: vinculo,
       });
@@ -443,3 +452,114 @@ router.post(
     }
   },
 );
+
+router.get(
+  "/admin/turma/disciplina/:id",
+
+  verificarToken,
+  apenasAdmin,
+
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const pool = await getPool();
+
+      const result = await pool
+        .request()
+        .input("id_turma_disciplina", sql.Int, id).query(`
+          SELECT
+            td.id_turma_disciplina,
+            td.fk_turma,
+            td.fk_disciplina,
+
+            t.cod_turma,
+            t.ano_letivo,
+            t.turno,
+
+            d.nome AS disciplina
+
+          FROM turma_disciplina td
+          INNER JOIN turma t
+            ON t.id_turma = td.fk_turma
+          INNER JOIN disciplina d
+            ON d.id_disciplina = td.fk_disciplina
+          WHERE td.id_turma_disciplina = @id_turma_disciplina
+        `);
+
+      if (result.recordset.length === 0) {
+        return res.status(404).json({
+          erro: "Vinculo nao encontrado",
+        });
+      }
+
+      res.json({
+        sucesso: true,
+        vinculo: result.recordset[0],
+      });
+    } catch (err) {
+      res.status(500).json({
+        erro: err.message,
+      });
+    }
+  },
+);
+
+router.delete(
+  "/admin/turma/disciplina/:id",
+
+  verificarToken,
+  apenasAdmin,
+
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const pool = await getPool();
+
+      const anterior = await pool
+        .request()
+        .input("id_turma_disciplina", sql.Int, id).query(`
+          SELECT *
+          FROM turma_disciplina
+          WHERE id_turma_disciplina = @id_turma_disciplina
+        `);
+
+      if (anterior.recordset.length === 0) {
+        return res.status(404).json({
+          erro: "Vinculo nao encontrado",
+        });
+      }
+
+      await pool.request().input("id_turma_disciplina", sql.Int, id).query(`
+          DELETE FROM notas
+          WHERE fk_turma_disciplina = @id_turma_disciplina
+        `);
+
+      await pool.request().input("id_turma_disciplina", sql.Int, id).query(`
+          DELETE FROM turma_disciplina
+          WHERE id_turma_disciplina = @id_turma_disciplina
+        `);
+
+      await registrarAuditoria({
+        usuarioId: req.usuario.id_usuario,
+        acao: "DELETE",
+        tabela: "turma_disciplina",
+        idRegistro: id,
+        descricao: "Vinculo turma x disciplina removido",
+        dadosAnteriores: anterior.recordset[0],
+      });
+
+      res.json({
+        sucesso: true,
+        mensagem: "Vinculo removido com sucesso",
+      });
+    } catch (err) {
+      res.status(500).json({
+        erro: err.message,
+      });
+    }
+  },
+);
+
+module.exports = router;

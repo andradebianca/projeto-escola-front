@@ -445,6 +445,44 @@ router.delete(
         `);
 
       // =========================
+      // DELETE ESPECIALIZAÃ‡Ã•ES VINCULADAS
+      // =========================
+      await new sql.Request(transaction).input("fk_professor", sql.Int, id)
+        .query(`
+          DELETE FROM professor_especializacao
+          WHERE fk_professor =
+            @fk_professor
+        `);
+
+      // =========================
+      // DELETE NOTAS DAS DISCIPLINAS DO PROFESSOR
+      // =========================
+      await new sql.Request(transaction).input("fk_professor", sql.Int, id)
+        .query(`
+          DELETE n
+          FROM notas n
+          INNER JOIN turma_disciplina td
+            ON td.id_turma_disciplina = n.fk_turma_disciplina
+          INNER JOIN disciplina d
+            ON d.id_disciplina = td.fk_disciplina
+          WHERE d.fk_professor =
+            @fk_professor
+        `);
+
+      // =========================
+      // DELETE VÃNCULOS TURMA_DISCIPLINA
+      // =========================
+      await new sql.Request(transaction).input("fk_professor", sql.Int, id)
+        .query(`
+          DELETE td
+          FROM turma_disciplina td
+          INNER JOIN disciplina d
+            ON d.id_disciplina = td.fk_disciplina
+          WHERE d.fk_professor =
+            @fk_professor
+        `);
+
+      // =========================
       // DELETE DISCIPLINAS
       // =========================
       await new sql.Request(transaction).input("fk_professor", sql.Int, id)
@@ -557,3 +595,136 @@ router.get(
     }
   },
 );
+
+router.post(
+  "/admin/professor/:id/especializacao",
+
+  verificarToken,
+  apenasAdmin,
+
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { fk_especializacao } = req.body || {};
+
+      if (!fk_especializacao) {
+        return res.status(400).json({
+          erro: "fk_especializacao Ã© obrigatÃ³rio",
+        });
+      }
+
+      const pool = await getPool();
+
+      const existente = await pool
+        .request()
+        .input("fk_professor", sql.Int, id)
+        .input("fk_especializacao", sql.Int, fk_especializacao).query(`
+          SELECT id
+          FROM professor_especializacao
+          WHERE fk_professor = @fk_professor
+            AND fk_especializacao = @fk_especializacao
+        `);
+
+      if (existente.recordset.length > 0) {
+        return res.status(409).json({
+          erro: "Especialização jÃ¡ vinculada ao professor",
+        });
+      }
+
+      const result = await pool
+        .request()
+        .input("fk_professor", sql.Int, id)
+        .input("fk_especializacao", sql.Int, fk_especializacao).query(`
+          INSERT INTO professor_especializacao (
+            fk_professor,
+            fk_especializacao
+          )
+          OUTPUT INSERTED.*
+          VALUES (
+            @fk_professor,
+            @fk_especializacao
+          )
+        `);
+
+      const vinculo = result.recordset[0];
+
+      await registrarAuditoria({
+        usuarioId: req.usuario.id_usuario,
+        acao: "CREATE",
+        tabela: "professor_especializacao",
+        idRegistro: vinculo.id,
+        descricao: "Especialização vinculada ao professor",
+        dadosNovos: vinculo,
+      });
+
+      res.status(201).json({
+        sucesso: true,
+        vinculo,
+      });
+    } catch (err) {
+      res.status(500).json({
+        erro: err.message,
+      });
+    }
+  },
+);
+
+router.delete(
+  "/admin/professor/:id/especializacao/:idVinculo",
+
+  verificarToken,
+  apenasAdmin,
+
+  async (req, res) => {
+    try {
+      const { id, idVinculo } = req.params;
+
+      const pool = await getPool();
+
+      const anterior = await pool
+        .request()
+        .input("id", sql.Int, idVinculo)
+        .input("fk_professor", sql.Int, id).query(`
+          SELECT *
+          FROM professor_especializacao
+          WHERE id = @id
+            AND fk_professor = @fk_professor
+        `);
+
+      if (anterior.recordset.length === 0) {
+        return res.status(404).json({
+          erro: "VÃ­nculo de especialização nÃ£o encontrado",
+        });
+      }
+
+      await pool
+        .request()
+        .input("id", sql.Int, idVinculo)
+        .input("fk_professor", sql.Int, id).query(`
+          DELETE FROM professor_especializacao
+          WHERE id = @id
+            AND fk_professor = @fk_professor
+        `);
+
+      await registrarAuditoria({
+        usuarioId: req.usuario.id_usuario,
+        acao: "DELETE",
+        tabela: "professor_especializacao",
+        idRegistro: idVinculo,
+        descricao: "Especialização desvinculada do professor",
+        dadosAnteriores: anterior.recordset[0],
+      });
+
+      res.json({
+        sucesso: true,
+        mensagem: "Especialização removida do professor",
+      });
+    } catch (err) {
+      res.status(500).json({
+        erro: err.message,
+      });
+    }
+  },
+);
+
+module.exports = router;
