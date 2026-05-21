@@ -1,4 +1,5 @@
 import { urlBase } from "./../../script/variaveis-globais.js";
+import { showToast } from "./../../script/funcs-global.js";
 
 /* STORAGE */
 
@@ -512,7 +513,7 @@ function adicionarEventosNotas() {
         const data = await response.json();
 
         if (!data.sucesso) {
-          alert("Erro ao buscar nota.");
+          showToast("Erro ao buscar nota.", "error");
 
           return;
         }
@@ -535,7 +536,7 @@ function adicionarEventosNotas() {
       } catch (error) {
         console.error(error);
 
-        alert("Erro ao carregar nota.");
+        showToast("Erro ao carregar nota.", "error");
       }
     });
   });
@@ -579,7 +580,7 @@ btnSalvarNota.addEventListener("click", async () => {
       !inputPeriodo.value ||
       !inputData.value
     ) {
-      alert("Preencha todos os campos obrigatórios.");
+      showToast("Preencha todos os campos obrigatórios.", "warning");
 
       return;
     }
@@ -587,7 +588,7 @@ btnSalvarNota.addEventListener("click", async () => {
     /* MAX */
 
     if (valorNota > 10) {
-      alert("A nota máxima é 10.");
+      showToast("A nota máxima é 10.", "warning");
 
       return;
     }
@@ -595,7 +596,7 @@ btnSalvarNota.addEventListener("click", async () => {
     /* MIN */
 
     if (valorNota < 0) {
-      alert("A nota mínima é 0.");
+      showToast("A nota mínima é 0.", "warning");
 
       return;
     }
@@ -649,12 +650,12 @@ btnSalvarNota.addEventListener("click", async () => {
     const data = await response.json();
 
     if (!data.sucesso) {
-      alert(data.mensagem ?? "Erro ao salvar nota.");
+      showToast(data.mensagem ?? "Erro ao salvar nota.", "error");
 
       return;
     }
 
-    alert(modoEdicao ? "Nota editada!" : "Nota cadastrada!");
+    showToast(modoEdicao ? "Nota editada!" : "Nota cadastrada!");
 
     fecharModal();
 
@@ -672,7 +673,7 @@ btnSalvarNota.addEventListener("click", async () => {
   } catch (error) {
     console.error(error);
 
-    alert("Erro interno.");
+    showToast("Erro interno.", "error");
   }
 });
 
@@ -693,12 +694,12 @@ btnExcluirNota.addEventListener("click", async () => {
     const data = await response.json();
 
     if (!data.sucesso) {
-      alert(data.mensagem ?? "Erro ao excluir nota.");
+      showToast(data.mensagem ?? "Erro ao excluir nota.", "error");
 
       return;
     }
 
-    alert("Nota excluída!");
+    showToast("Nota excluída!");
 
     fecharModal();
 
@@ -716,7 +717,7 @@ btnExcluirNota.addEventListener("click", async () => {
   } catch (error) {
     console.error(error);
 
-    alert("Erro interno.");
+    showToast("Erro interno.", "error");
   }
 });
 

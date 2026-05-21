@@ -1,464 +1,540 @@
+/* ==========================================
+   CONFIGURAÇÕES GERAIS & BARRA DE PESQUISA
+   ========================================== */
 .main-content {
   flex: 1;
 }
 
-/* LIST */
+.page-title {
+  margin-bottom: 24px;
+}
 
+.page-title h2 {
+  color: var(--primary);
+  font-size: 26px;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.page-title p {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.required {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+/* INPUT DE PESQUISA REFINADO */
+.search-container {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.search-container i {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.search-container input {
+  width: 100%;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  padding: 0 18px 0 44px;
+  outline: none;
+  font-size: 14px;
+  color: #1e293b;
+  transition: all 0.2s;
+}
+
+.search-container input:focus {
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(65, 223, 255, 0.15);
+}
+
+/* ==========================================
+   LISTA DE TURMAS (ACORDEÃO COMPLETO)
+   ========================================== */
 .turmas-list {
   display: flex;
   flex-direction: column;
-
   gap: 16px;
 }
 
-/* CARD */
-
 .turma-card {
-  border-radius: 20px;
-
-  border: 1px solid rgba(65, 223, 255, 0.35);
-
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
   background: white;
-
   overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01);
 }
 
-/* HEADER */
-
 .turma-header {
-  height: 82px;
-
-  padding: 0 22px;
-
+  height: 72px;
+  padding: 0 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   cursor: pointer;
-
-  transition: 0.2s;
+  transition: background-color 0.2s;
 }
 
 .turma-header:hover {
-  background: rgba(65, 223, 255, 0.04);
+  background: #f8fafc;
 }
 
-/* INFO */
-
 .turma-info h3 {
-  color: var(--secondary);
-
-  font-size: 18px;
-
-  margin-bottom: 4px;
+  color: var(--primary);
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 2px;
 }
 
 .turma-info p {
-  color: #777;
-
+  color: #666;
   font-size: 12px;
 }
-
-/* RIGHT */
 
 .turma-right {
   display: flex;
   align-items: center;
-
-  gap: 12px;
+  gap: 16px;
 }
 
-/* PILL */
+.turma-right i {
+  color: #94a3b8;
+  transition: transform 0.2s ease;
+}
+
+.turma-card:has(.turma-body.active) .turma-right i {
+  transform: rotate(180deg);
+}
 
 .info-pill {
-  height: 32px;
-
-  padding: 0 14px;
-
-  border-radius: 999px;
-
-  background: rgba(65, 223, 255, 0.12);
-
-  color: var(--secondary);
-
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #475569;
   display: flex;
   justify-content: center;
   align-items: center;
-
   font-size: 11px;
-  font-weight: bold;
+  font-weight: 700;
 }
 
-/* BODY */
-
+/* CORREÇÃO DO ACORDEÃO (MECÂNICA FLUIDA COM TRANSITION) */
 .turma-body {
   display: none;
+  padding: 0 20px 20px;
+  border-top: 1px solid transparent;
 
-  padding: 20px;
-
-  border-top: 1px solid #ececec;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    max-height 0.3s ease-in-out,
+    opacity 0.25s ease-in-out;
+  transition-behavior: allow-discrete;
 }
 
 .turma-body.active {
   display: block;
+  max-height: 2000px;
+  opacity: 1;
+  padding-top: 20px;
+  border-top-color: #f1f5f9;
+
+  @starting-style {
+    max-height: 0;
+    opacity: 0;
+  }
 }
 
-/* ALUNOS */
-
-.alunos-list {
+/* ==========================================
+   ALUNOS LIST (TABELA COMPACTA HORIZONTAL)
+   ========================================== */
+alunos-list {
   display: flex;
   flex-direction: column;
-
-  gap: 12px;
+  gap: 0;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
-/* ALUNO */
+.alunos-list::-webkit-scrollbar {
+  width: 6px;
+}
+.alunos-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
 
 .aluno-card {
-  border-radius: 16px;
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid #f1f5f9;
+  background: transparent;
+  padding: 12px 16px;
 
-  border: 1px solid rgba(65, 223, 255, 0.15);
-
-  background: #f9fcfd;
-
-  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 
-/* HEADER */
+.aluno-card:nth-child(even) {
+  background: #f8fafc;
+}
 
+.aluno-card:hover {
+  background: #f1f5f9;
+}
+
+/* BLOCO 1: DADOS DO ALUNO (HTML: .aluno-header) */
 .aluno-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  margin-bottom: 12px;
+  align-items: center; /* Alinha o nome e os status perfeitamente no eixo horizontal */
+  gap: 20px; /* Dá um respiro elegante entre o bloco de texto e os badges */
+  flex: 1; /* Permite que essa área use o espaço necessário */
 }
 
-/* INFO */
+/* Organiza o Nome e Matrícula na vertical */
+.aluno-info {
+  display: flex;
+  flex-direction: column;
+  width: 180px;
+  min-width: 180px;
+}
 
 .aluno-info h4 {
-  color: var(--primary);
-
-  font-size: 15px;
-
-  margin-bottom: 4px;
+  color: #1e293b;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .aluno-info p {
-  color: #888;
-
-  font-size: 12px;
-}
-
-/* RIGHT */
-
-.aluno-right {
-  display: flex;
-  align-items: center;
-
-  gap: 10px;
-}
-
-/* MÉDIA */
-
-.media-pill {
-  width: 64px;
-  height: 34px;
-
-  border-radius: 12px;
-
-  background: linear-gradient(90deg, #1dcfff 0%, #1749e4 100%);
-
-  color: white;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  font-size: 13px;
-  font-weight: bold;
-}
-
-/* STATUS */
-
-.status-pill {
-  height: 34px;
-
-  padding: 0 12px;
-
-  border-radius: 999px;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
+  color: #64748b;
   font-size: 11px;
-  font-weight: bold;
+  margin-top: 2px;
 }
 
-.status-aprovado {
-  background: rgba(46, 204, 113, 0.15);
-
-  color: #27ae60;
-}
-
-.status-reprovado {
-  background: rgba(231, 76, 60, 0.15);
-
-  color: #e74c3c;
-}
-
-.status-cursando {
-  background: rgba(241, 196, 15, 0.15);
-
-  color: #f39c12;
-}
-
-/* NOTAS */
-
+/* BLOCO 2: LISTA DE NOTAS (HTML: .notas-list) */
 .notas-list {
   display: flex;
-  flex-wrap: wrap;
-
-  gap: 8px;
+  align-items: center;
+  gap: 6px;
+  margin-top: 0;
+  justify-content: flex-end; /* Empurra as notas para a ponta direita da linha */
+  padding-left: 20px;
 }
 
-/* NOTA */
-
 .nota-pill {
-  min-width: 52px;
-
-  height: 36px;
-
-  border-radius: 12px;
-
-  border: 1px solid rgba(65, 223, 255, 0.25);
-
+  min-width: 44px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
   background: white;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
-  gap: 6px;
-
+  gap: 5px;
   cursor: pointer;
-
-  transition: 0.2s;
-
+  transition: all 0.2s ease;
   color: var(--primary);
-
-  font-size: 13px;
-  font-weight: bold;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .nota-pill:hover {
-  transform: translateY(-2px);
-
-  border-color: #42deff;
+  transform: translateY(-1px);
+  border-color: var(--secondary);
+  box-shadow: 0 4px 8px rgba(65, 223, 255, 0.15);
 }
 
-/* LOCK */
+.nota-pill i {
+  font-size: 10px;
+  color: #94a3b8;
+}
 
 .nota-pill.locked {
-  background: #f3f3f3;
-
-  border-color: #ddd;
-
-  color: #999;
-
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+  color: #64748b;
   cursor: not-allowed;
 }
 
-/* ADD */
+.nota-pill.locked i {
+  color: #64748b;
+}
 
 .add-nota {
-  background: linear-gradient(90deg, #1dcfff 0%, #1749e4 100%);
-
+  background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
   color: white;
-
   border: none;
 }
 
-/* MODAL */
+/* BLOCO 3: MÉDIA E STATUS (HTML: .aluno-right) */
+.aluno-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 0; /* Zera qualquer empilhamento herdado */
+}
 
-.modal-overlay {
-  position: fixed;
-
-  inset: 0;
-
-  background: rgba(0, 0, 0, 0.45);
-
-  display: none;
-
+/* Corrigida a nomenclatura (.media-pill) */
+.media-pill {
+  width: 46px;
+  height: 26px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+  color: white;
+  display: flex;
   justify-content: center;
   align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
 
+/* Corrigida a nomenclatura (.status-pill) */
+.status-pill {
+  height: 26px;
+  min-width: 90px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+/* Vinculando os modificadores de status às classes corretas do HTML */
+.status-aprovado {
+  background: rgba(25, 135, 84, 0.1) !important;
+  color: #146c43 !important;
+}
+.status-reprovado {
+  background: rgba(220, 53, 69, 0.1) !important;
+  color: #b02a37 !important;
+}
+.status-cursando {
+  background: rgba(245, 158, 11, 0.12) !important;
+  color: #d97706 !important;
+}
+
+/* ==========================================
+   ESTILIZAÇÃO DO MODAL (UI PREMIUM INTERATIVA)
+   ========================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  display: none;
+  justify-content: center;
+  align-items: center;
   z-index: 999;
+  animation: modalFade 0.2s ease-out forwards;
 }
 
 .modal-overlay.active {
   display: flex;
 }
 
-.modal {
-  width: 100%;
-  max-width: 500px;
-
-  border-radius: 24px;
-
-  background: white;
-
-  padding: 24px;
+@keyframes modalFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-/* HEADER */
+.modal {
+  width: 100%;
+  max-width: 460px;
+  border-radius: 16px;
+  background: #ffffff;
+  padding: 28px;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: modalScale 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes modalScale {
+  from {
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    transform: scale(1) translateY(0);
+  }
+}
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .modal-header h3 {
   color: var(--primary);
+  font-size: 20px;
+  font-weight: 700;
 }
-
-/* CLOSE */
 
 .close-modal {
   background: transparent;
-
   border: none;
-
-  font-size: 22px;
-
+  font-size: 18px;
+  color: #64748b;
   cursor: pointer;
+  transition: color 0.2s;
 }
 
-/* BODY */
+.close-modal:hover {
+  color: #1e293b;
+}
 
 .modal-body {
-  display: flex;
-  flex-direction: column;
-
-  gap: 18px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
 }
-
-/* INPUT */
 
 .input-group {
   display: flex;
   flex-direction: column;
+  gap: 6px;
+}
 
-  gap: 8px;
+.input-group:nth-child(1),
+.input-group:nth-child(3) {
+  grid-column: span 1;
+}
+.input-group:nth-child(2),
+.input-group:nth-child(4) {
+  grid-column: span 2;
 }
 
 .input-group label {
-  color: var(--secondary);
-
-  font-size: 13px;
-  font-weight: bold;
+  color: #4a5568;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .input-group input,
 .input-group textarea,
 .input-group select {
-  min-height: 46px;
-
-  border-radius: 14px;
-
-  border: 1px solid rgba(65, 223, 255, 0.35);
-
-  padding: 12px 14px;
-
+  min-height: 40px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  padding: 10px 14px;
   outline: none;
+  font-size: 14px;
+  color: #1e293b;
+  transition: border-color 0.2s;
+}
+
+.input-group input:focus,
+.input-group textarea:focus,
+.input-group select:focus {
+  border-color: var(--secondary);
 }
 
 textarea {
   resize: none;
-
-  min-height: 100px;
+  min-height: 80px;
 }
 
-/* SAVE */
+.delete-btn,
+.save-btn {
+  height: 42px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition:
+    transform 0.1s,
+    opacity 0.2s;
+}
+
+.delete-btn:active,
+.save-btn:active {
+  transform: scale(0.98);
+}
 
 .save-btn {
-  height: 48px;
-
-  border-radius: 14px;
-
-  border: none;
-
-  background: linear-gradient(90deg, #1dcfff 0%, #1749e4 100%);
-
+  grid-column: span 2;
+  background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
   color: white;
-
-  font-weight: bold;
-
-  cursor: pointer;
+  border: none;
 }
-
-.required {
-  color: #e74c3c;
-
-  margin-left: 4px;
-}
-
-/* DELETE */
 
 .delete-btn {
-  height: 46px;
-
-  border-radius: 14px;
-
-  border: none;
-
-  background: #e74c3c;
-
-  color: white;
-
-  font-weight: bold;
-
-  cursor: pointer;
-
   display: none;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #e11d48;
+}
+
+.delete-btn:hover {
+  background: #ffe4e6;
 }
 
 .delete-btn.active {
-  display: block;
+  display: flex;
+  grid-column: span 1;
 }
 
-/* SEARCH */
-
-.search-container {
-  position: relative;
-
-  margin-bottom: 20px;
+.delete-btn.active + .save-btn {
+  grid-column: span 1;
 }
 
-.search-container i {
-  position: absolute;
+/* ==========================================
+   RESPONSIVIDADE COMPACTA (MOBILE)
+   ========================================== */
+@media (max-width: 768px) {
+  .aluno-card {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 14px 8px;
+  }
 
-  left: 16px;
-  top: 50%;
+  .aluno-header {
+    width: 100%;
+  }
 
-  transform: translateY(-50%);
+  .notas-list {
+    padding-left: 0;
+    width: 100%;
+  }
 
-  color: #999;
-}
-
-.search-container input {
-  width: 100%;
-  height: 48px;
-
-  border-radius: 16px;
-
-  border: 1px solid rgba(65, 223, 255, 0.25);
-
-  padding: 0 18px 0 46px;
-
-  outline: none;
+  .aluno-right {
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 4px;
+  }
 }

@@ -2,6 +2,7 @@ import {
   logout,
   verificarLogin,
   redirecionar,
+  showToast,
 } from "./../../script/funcs-global.js";
 
 import { urlBase } from "./../../script/variaveis-globais.js";
@@ -55,7 +56,7 @@ async function buscarPerfil() {
     const data = await response.json();
 
     if (!data.sucesso) {
-      alert("Erro ao carregar perfil.");
+      showToast("Erro ao carregar os dados do perfil.", "error");
 
       return;
     }
@@ -64,7 +65,7 @@ async function buscarPerfil() {
   } catch (error) {
     console.error(error);
 
-    alert("Erro interno.");
+    showToast("Erro ao interno.", "error");
   }
 }
 

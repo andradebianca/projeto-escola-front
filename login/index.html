@@ -5,99 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
     <link rel="stylesheet" href="./style/main.css" />
+    <link rel="stylesheet" href="./../style/global.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     />
-    <script src="./script/main.js" type="module"></script>
+    <link rel="icon" href="./../img/icons/book.png" type="image/x-icon" />
   </head>
   <body>
     <div class="container">
-      <!-- LEFT -->
-      <div class="left">
-        <div class="logo-area">
-          <div class="logo">ABC<span>.</span></div>
-
-          <div class="line"></div>
-
-          <div class="portal-text">Portal do<br />Aluno</div>
-        </div>
-
-        <div class="profile">
-          <div class="avatar">
-            <i class="fa-solid fa-user"></i>
-          </div>
-
-          <h1>Bem-vindo!</h1>
-
-          <p>
-            Acesse sua conta para<br />
-            continuar
-          </p>
-        </div>
-
-        <div class="menu">
-          <div class="menu-item">
-            <div class="icon-box">
-              <i class="fa-solid fa-table-columns"></i>
-            </div>
-
-            <span>Acesse seu dashboard</span>
-          </div>
-
-          <div class="menu-item">
-            <div class="icon-box">
-              <i class="fa-solid fa-user"></i>
-            </div>
-
-            <span>Gerencie seus dados</span>
-          </div>
-
-          <div class="menu-item">
-            <div class="icon-box">
-              <i class="fa-solid fa-star"></i>
-            </div>
-
-            <span>Fique por dentro</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- RIGHT -->
+      <!-- RIGHT (Agora centralizado e principal) -->
       <div class="right">
-        
-
         <div class="login-box">
           <div class="title">
             <h1>Olá, bem-vindo!</h1>
-
             <p>Entre com suas credenciais para acessar o portal</p>
           </div>
 
           <div class="input-group">
-            <label>Login</label>
-
+            <label>ABC - Login</label>
             <div class="input-box">
               <i class="fa-solid fa-user"></i>
-
-              <input id="email" type="text" placeholder="Digite seu email ou username" />
+              <input
+                id="email"
+                type="text"
+                placeholder="Digite seu email ou username"
+              />
             </div>
           </div>
 
           <div class="input-group">
             <label>Senha</label>
-
             <div class="input-box">
               <i class="fa-solid fa-lock"></i>
-
-              <input id="senha" type="password" placeholder="Digite sua senha" />
-
-              <i class="fa-solid fa-eye-slash toggle-password"id="toggle-password"></i>
+              <input
+                id="senha"
+                type="password"
+                placeholder="Digite sua senha"
+              />
+              <i
+                class="fa-solid fa-eye-slash toggle-password"
+                id="toggle-password"
+              ></i>
             </div>
           </div>
 
           <div class="forgot">
-            <a href="#"> Esqueci minha senha </a>
+            <a href="./esqueci-senha.html">Esqueci minha senha</a>
           </div>
 
           <button class="login-btn" id="btn-entrar">Entrar</button>
@@ -106,14 +60,14 @@
             <span>ou</span>
           </div>
 
-          <div class="first-access" @click="redirecionar("first-access")">
+          <div class="first-access" id="first-access">
             <h2>Primeiro acesso</h2>
-
             <p>Ainda não possui uma conta? Solicite seu acesso.</p>
           </div>
         </div>
       </div>
     </div>
     <script type="module" src="./../script/funcs-global.js"></script>
+    <script src="./script/main.js" type="module"></script>
   </body>
 </html>

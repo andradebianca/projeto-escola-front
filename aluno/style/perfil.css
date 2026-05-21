@@ -1,80 +1,124 @@
+/* ==========================================
+   CONFIGURAÇÕES DE CONTEÚDO PRINCIPAL (MAIN)
+   ========================================== */
 .main-content {
   flex: 1;
 }
 
-/* HEADER */
-
-.perfil-header {
-  margin-bottom: 30px;
-}
-
-/* GRID */
-
+/* ==========================================
+   GRID DE PERFIL AVANÇADO
+   ========================================== */
 .perfil-grid {
   display: grid;
-
-  grid-template-columns: repeat(2, 1fr);
-
+  /* Criamos um grid de 4 colunas para melhor aproveitamento de espaço */
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
 }
 
-/* ITEM */
-
+/* ==========================================
+   ESTILIZAÇÃO DOS ITENS DE INFORMAÇÃO
+   ========================================== */
 .info-item {
   display: flex;
   flex-direction: column;
-
-  gap: 8px;
+  gap: 6px;
 }
 
-/* FULL */
+/* CONTROLE DE LARGURA DO GRID (SPAN) */
 
+/* Nome Completo (Ocupa 3 colunas) e Rua (Ocupa 3 colunas) */
+.info-item:nth-child(1),
 .info-item.full {
+  grid-column: span 3;
+}
+
+/* Telefone e Bairro (Ocupam 2 colunas cada) */
+.info-item:nth-child(4),
+.info-item:nth-child(7) {
   grid-column: span 2;
 }
 
-/* LABEL */
+/* Dados pequenos (Matrícula, Nascimento, Número, CEP, Cidade, Estado) ocupam 1 coluna por padrão */
 
+/* ==========================================
+   ESTILIZAÇÃO DE LABELS E CAMPOS (UX REFINADO)
+   ========================================== */
 .label {
-  color: var(--secondary);
-
-  font-size: 13px;
-  font-weight: bold;
+  color: var(
+    --primary
+  ); /* Mudado para Primary: melhora o contraste e a leitura */
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* VALUE */
-
+/* Campo de exibição dos dados */
 .info-item p {
-  min-height: 46px;
-
-  border-radius: 14px;
-
-  border: 1px solid rgba(65, 223, 255, 0.6);
-
-  background: #f9fbfd;
-
-  padding: 12px 16px;
-
+  min-height: 44px;
+  border-radius: 10px; /* Bordas ligeiramente mais suaves */
+  border: 1px solid rgba(0, 0, 0, 0.12); /* Cinza sutil para não brigar com os inputs reais */
+  background: #fdfefe;
+  padding: 10px 14px;
   display: flex;
   align-items: center;
-
-  color: #555;
-
+  color: #333; /* Texto ligeiramente mais escuro para melhor contraste */
   font-size: 14px;
-
+  font-weight: 500;
   line-height: 1.4;
-
   overflow-wrap: break-word;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
 }
 
-/* RESPONSIVO */
+/* Efeito sutil ao passar o mouse por cima do dado */
+.info-item p:hover {
+  background: #f4f9fd;
+  border-color: var(--secondary);
+}
 
-@media (max-width: 850px) {
+/* Destaque visual específico para o Nome Completo do Aluno */
+.info-item:nth-child(1) p {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+  background: linear-gradient(to right, #f4f9fd, #ffffff);
+  border-left: 4px solid var(--secondary); /* Barra lateral de destaque na cor secundária */
+}
+
+/* ==========================================
+   RESPONSIVIDADE INTELIGENTE
+   ========================================== */
+
+/* Em tablets e notebooks médios: reduz de 4 para 2 colunas */
+@media (max-width: 1050px) {
+  .perfil-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .info-item:nth-child(1),
+  .info-item.full,
+  .info-item:nth-child(4),
+  .info-item:nth-child(7) {
+    grid-column: span 2;
+  }
+}
+
+/* Em celulares: tudo vira uma coluna única */
+@media (max-width: 600px) {
   .perfil-grid {
     grid-template-columns: 1fr;
   }
 
-  .info-item.full {
+  .info-item:nth-child(1),
+  .info-item.full,
+  .info-item:nth-child(4),
+  .info-item:nth-child(7) {
     grid-column: span 1;
+  }
+
+  .info-item p {
+    font-size: 13px; /* Redução sutil de fonte para telas pequenas */
   }
 }

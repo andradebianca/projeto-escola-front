@@ -7,335 +7,162 @@
 
 body {
   width: 100%;
-
   min-height: 100vh;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
-  padding: 18px;
-
-  background: #f3f3f3;
-
-  overflow-x: hidden;
+  padding: 20px;
+  background: #f4f6f9; /* Um cinza claro ligeiramente azulado, mais moderno */
 }
 
 .container {
   width: 100%;
-
-  max-width: 1180px;
-
-  min-height: 720px;
-
-  max-height: 95vh;
-
-  background: white;
-
-  border-radius: 30px;
-
-  overflow: hidden;
-
-  display: flex;
-
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-}
-
-/* ========================= */
-/* LEFT */
-/* ========================= */
-
-.left {
-  width: 36%;
-
-  background: linear-gradient(180deg, #1f2d90 0%, #020b40 100%);
-
-  padding: 35px;
-
-  color: white;
-
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-}
-
-.logo-area {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-
-  margin-bottom: 50px;
-}
-
-.logo {
-  font-size: 42px;
-  font-weight: bold;
-}
-
-.logo span {
-  color: #42deff;
-}
-
-.line {
-  width: 3px;
-  height: 45px;
-
-  background: #42deff;
-}
-
-.portal-text {
-  font-size: 22px;
-  font-weight: bold;
-  line-height: 1.2;
-}
-
-/* PROFILE */
-
-.profile {
-  text-align: center;
-}
-
-.avatar {
-  width: 150px;
-  height: 150px;
-
-  margin: 0 auto 20px;
-
-  border-radius: 50%;
-
-  border: 6px solid #42deff;
-
-  background: rgba(255, 255, 255, 0.18);
-
+  max-width: 520px; /* Reduzido, já que agora só temos a caixinha de login */
   display: flex;
   justify-content: center;
   align-items: center;
-
-  font-size: 55px;
-
-  color: #d8d8e4;
-}
-
-.profile h1 {
-  font-size: 34px;
-
-  color: #42e8ff;
-
-  margin-bottom: 10px;
-}
-
-.profile p {
-  font-size: 18px;
-
-  line-height: 1.5;
-}
-
-/* MENU */
-
-.menu {
-  margin-top: auto;
-
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-}
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-
-  font-size: 18px;
-}
-
-.icon-box {
-  width: 52px;
-  height: 52px;
-
-  border: 2px solid #00d8ff;
-
-  border-radius: 14px;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  font-size: 18px;
 }
 
 /* ========================= */
-/* RIGHT */
+/* ÁREA DE LOGIN */
 /* ========================= */
 
 .right {
-  flex: 1;
-
-  position: relative;
-
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-
-  padding: 24px;
-
-  overflow-y: auto;
 }
-
-.exit {
-  position: absolute;
-
-  top: 25px;
-  right: 35px;
-
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  font-size: 22px;
-  font-weight: bold;
-
-  color: #1f2d90;
-
-  cursor: pointer;
-}
-
-.exit i {
-  color: #42deff;
-}
-
-/* LOGIN BOX */
 
 .login-box {
   width: 100%;
-  max-width: 500px;
-
-  border: 2px solid #42deff;
-
-  border-radius: 28px;
-
+  background: white;
+  border-radius: 24px;
   padding: 40px;
-
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); /* Sombra mais suave */
+  /* Removida a borda azul externa para o design respirar melhor */
 }
 
 .title {
   text-align: center;
-
   margin-bottom: 35px;
 }
 
 .title h1 {
-  font-size: 34px;
-
-  color: #1f2d90;
-
-  margin-bottom: 12px;
+  font-size: 28px;
+  color: #1f2d90; /* Mantido o seu azul escuro principal */
+  margin-bottom: 10px;
 }
 
 .title p {
-  font-size: 18px;
-
-  color: #777;
-
+  font-size: 15px;
+  color: #6c757d;
   line-height: 1.4;
 }
 
 /* INPUTS */
 
 .input-group {
-  margin-bottom: 25px;
+  margin-bottom: 22px;
 }
 
 .input-group label {
   display: block;
-
   margin-bottom: 8px;
-
-  color: #00d8ff;
-
-  font-size: 18px;
-  font-weight: bold;
+  color: #1f2d90; /* Mudado para o azul escuro para dar mais leitura e elegância */
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .input-box {
   width: 100%;
-  height: 56px;
-
-  border: 2px solid #00d8ff;
-
-  border-radius: 16px;
-
+  height: 52px;
+  border: 1.5px solid #dee2e6; /* Borda neutra para não brigar com o resto */
+  border-radius: 12px;
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 0 16px;
+  transition: all 0.3s ease;
+}
 
-  padding: 0 18px;
+/* Efeito de clique nos campos */
+.input-box:focus-within {
+  border-color: #1749e4;
+  box-shadow: 0 0 0 3px rgba(23, 73, 228, 0.1);
 }
 
 .input-box i {
-  font-size: 18px;
+  font-size: 16px;
+  color: #adb5bd;
+}
 
-  color: #888;
+/* Quando o input estiver focado, o ícone ganha a cor do sistema */
+.input-box:focus-within i {
+  color: #1749e4;
 }
 
 .input-box input {
   width: 100%;
-
   border: none;
   outline: none;
-
   background: transparent;
-
-  font-size: 16px;
+  font-size: 15px;
+  color: #333;
 }
 
 /* FORGOT */
 
 .forgot {
   text-align: right;
-
   margin-bottom: 25px;
 }
 
 .forgot a {
-  color: #00d8ff;
-
+  color: #1749e4;
   text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
 
-  font-size: 16px;
+.forgot a:hover {
+  text-decoration: underline;
 }
 
 /* BUTTON */
 
 .login-btn {
   width: 100%;
-  height: 58px;
-
+  height: 52px;
   border: none;
-
-  border-radius: 16px;
-
-  background: linear-gradient(90deg, #1dcfff 0%, #1749e4 100%);
-
+  border-radius: 12px;
+  background: linear-gradient(
+    90deg,
+    #1749e4 0%,
+    #1f2d90 100%
+  ); /* Invertido os tons para um look mais sóbrio e forte */
   color: white;
-
-  font-size: 24px;
+  font-size: 18px;
   font-weight: bold;
-
   cursor: pointer;
-
-  transition: 0.3s;
+  transition:
+    transform 0.2s,
+    opacity 0.2s;
 }
 
 .login-btn:hover {
-  transform: scale(1.02);
+  transform: translateY(-1px); /* Efeito clássico de levantar de leve */
+  opacity: 0.95;
+}
+
+.login-btn:active {
+  transform: translateY(0);
 }
 
 /* DIVIDER */
 
 .divider {
-  margin: 28px 0;
-
+  margin: 24px 0;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -344,173 +171,70 @@ body {
 .divider::before,
 .divider::after {
   content: "";
-
   flex: 1;
-
   height: 1px;
-
-  background: #d7d7d7;
+  background: #e9ecef;
 }
 
 .divider span {
-  color: #999;
-
-  font-size: 18px;
+  color: #6c757d;
+  font-size: 14px;
 }
 
 /* FIRST ACCESS */
 
 .first-access {
-  border: 2px solid #00d8ff;
-
-  border-radius: 20px;
-
-  padding: 25px;
-
+  border: 1.5px dashed #1749e4; /* Borda tracejada/pontilhada para indicar ação secundária */
+  border-radius: 12px;
+  padding: 20px;
   text-align: center;
-
   cursor: pointer;
+  transition: background 0.2s;
+}
+
+.first-access:hover {
+  background: rgba(23, 73, 228, 0.03);
 }
 
 .first-access h2 {
-  color: #18dfff;
-
-  font-size: 26px;
-
-  margin-bottom: 10px;
+  color: #1749e4;
+  font-size: 18px;
+  margin-bottom: 6px;
 }
 
 .first-access p {
-  font-size: 16px;
-
-  color: #777;
-
+  font-size: 13px;
+  color: #6c757d;
   line-height: 1.4;
 }
 
 .toggle-password {
   cursor: pointer;
-
-  transition: 0.2s;
+  transition: color 0.2s;
 }
 
 .toggle-password:hover {
-  color: #00d8ff;
+  color: #1749e4 !important;
 }
 
 /* ========================= */
-/* RESPONSIVO */
+/* RESPONSIVO (MOBILE) */
 /* ========================= */
 
-@media (max-width: 980px) {
-  .left {
-    display: none;
-  }
-
-  .container {
-    height: auto;
-  }
-
-  .right {
-    padding: 25px;
-  }
-}
-
-@media (max-height: 850px) {
-  .container {
-    min-height: auto;
-
-    max-height: unset;
-  }
-
-  .left {
-    padding: 26px;
-  }
-
-  .logo-area {
-    margin-bottom: 30px;
-  }
-
-  .avatar {
-    width: 120px;
-    height: 120px;
-
-    font-size: 42px;
-  }
-
-  .profile h1 {
-    font-size: 28px;
-  }
-
-  .profile p {
-    font-size: 16px;
-  }
-
-  .menu {
-    gap: 16px;
-  }
-
-  .menu-item {
-    font-size: 15px;
-  }
-
-  .icon-box {
-    width: 46px;
-    height: 46px;
-  }
-
-  .login-box {
-    padding: 30px;
-  }
-}
-
-@media (max-width: 600px) {
+@media (max-width: 480px) {
   body {
-    padding: 10px;
+    padding: 15px;
+    align-items: flex-start; /* No mobile, se a tela for muito baixa, não corta o topo */
+    padding-top: 40px;
   }
 
   .login-box {
-    padding: 28px;
+    padding: 24px 16px;
+    box-shadow: none; /* Em telas muito pequenas, o box pode ocupar tudo sem sombra */
+    background: transparent; /* Opcional: integra com o fundo do app */
   }
 
   .title h1 {
-    font-size: 28px;
-  }
-
-  .title p {
-    font-size: 15px;
-  }
-
-  .input-group label {
-    font-size: 16px;
-  }
-
-  .input-box {
-    height: 50px;
-  }
-
-  .input-box input {
-    font-size: 14px;
-  }
-
-  .login-btn {
-    height: 52px;
-
-    font-size: 20px;
-  }
-
-  .first-access h2 {
-    font-size: 22px;
-  }
-
-  .first-access p {
-    font-size: 14px;
-  }
-
-  .exit {
-    top: 18px;
-    right: 20px;
-
-    font-size: 18px;
+    font-size: 24px;
   }
 }

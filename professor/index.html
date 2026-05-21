@@ -1,91 +1,54 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
   <head>
-
     <meta charset="UTF-8" />
 
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>
-      ABC - Professor
-    </title>
+    <title>ABC - Professor</title>
 
-    <link
-      rel="stylesheet"
-      href="../style/global.css"
-    />
+    <link rel="stylesheet" href="../style/global.css" />
 
-    <link
-      rel="stylesheet"
-      href="./style/main.css"
-    />
+    <link rel="stylesheet" href="./style/main.css" />
 
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     />
-
+    <link rel="icon" href="./../img/icons/book.png" type="image/x-icon" />
   </head>
 
   <body>
-
     <div class="app-container">
-
       <!-- HEADER -->
       <header class="top-header">
-
         <div class="logo-area">
-
-          <h1 class="logo">
-            ABC<span>.</span>
-          </h1>
+          <h1 class="logo">ABC<span>.</span></h1>
 
           <div class="logo-divider"></div>
 
-          <p class="portal-text">
-            Portal do Professor
-          </p>
-
+          <p class="portal-text">Portal do Professor</p>
         </div>
 
-        <button
-          class="logout-btn-header"
-          id="btn-sair"
-        >
-
+        <button class="logout-btn-header" id="btn-sair">
           Sair
 
           <i class="fa-solid fa-arrow-right-from-bracket"></i>
-
         </button>
-
       </header>
 
       <!-- DASHBOARD -->
       <div class="dashboard-container">
-
         <!-- SIDEBAR -->
         <aside class="sidebar">
-
           <div class="profile">
-
             <div class="avatar">
-
               <i class="fa-solid fa-user-tie"></i>
-
             </div>
 
-            <h2 id="nome-professor">
-              Professor
-            </h2>
+            <h2 id="nome-professor">Professor</h2>
 
-            <span>
-              Docente
-            </span>
-
+            <span> Docente </span>
           </div>
 
           <nav class="menu">
@@ -107,64 +70,31 @@
               Perfil
             </button>
           </nav>
-
         </aside>
 
         <!-- CONTENT -->
         <main class="main-content">
-
           <div class="page-content-card default-card">
-
             <div class="page-title">
+              <h2>Minhas Disciplinas</h2>
 
-              <h2>
-                Minhas Disciplinas
-              </h2>
-
-              <p>
-                Gerencie suas turmas e disciplinas
-              </p>
-
+              <p>Gerencie suas turmas e disciplinas</p>
             </div>
 
-            <select
-              class="semester"
-              id="select-ano"
-            ></select>
+            <select class="semester" id="select-ano"></select>
 
-            <section
-              class="disciplinas-grid"
-              id="disciplinas-grid"
-            >
-
-              <p>
-                Carregando...
-              </p>
-
+            <section class="disciplinas-grid" id="disciplinas-grid">
+              <p>Carregando...</p>
             </section>
-
           </div>
-
         </main>
-
       </div>
-
     </div>
 
-    <script
-      src="../script/global.js"
-      type="module"
-    ></script>
+    <script src="../script/global.js" type="module"></script>
 
-    <script
-      src="./script/global.js"
-      type="module"
-    ></script>
+    <script src="./script/global.js" type="module"></script>
 
-    <script
-      src="./script/main.js"
-      type="module"
-    ></script>
-
+    <script src="./script/main.js" type="module"></script>
   </body>
 </html>

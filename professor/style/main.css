@@ -1,124 +1,177 @@
+/* ==========================================
+   CONFIGURAÇÕES DE CONTEÚDO PRINCIPAL (MAIN)
+   ========================================== */
 .main-content {
   flex: 1;
+  width: 100%;
 }
 
-/* GRID */
+/* TÍTULO DA PÁGINA */
+.page-title {
+  margin-bottom: 24px;
+}
 
+.page-title h2 {
+  color: var(--primary);
+  font-size: 26px;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.page-title p {
+  color: #666;
+  font-size: 14px;
+}
+
+/* ==========================================
+   FILTRO DE ANO (SELECT LOCAL)
+   ========================================== */
+.semester {
+  width: 100%;
+  max-width: 220px; /* Alinhado com o padrão de tamanho menor */
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: white
+    url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23777'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e")
+    no-repeat right 12px center;
+  background-size: 18px;
+  padding: 0 36px 0 14px;
+  margin-bottom: 24px;
+  outline: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
+  cursor: pointer;
+  appearance: none; /* Remove a seta nativa do navegador */
+  transition: border-color 0.2s;
+}
+
+.semester:focus {
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(65, 223, 255, 0.2);
+}
+
+/* ==========================================
+   GRID DE DISCIPLINAS DO DOCENTE
+   ========================================== */
 .disciplinas-grid {
   display: grid;
-
-  grid-template-columns:
-    repeat(
-      auto-fill,
-      minmax(320px, 1fr)
-    );
-
-  gap: 18px;
+  /* Responsividade nativa: se ajusta de 1 a 3 colunas dependendo do monitor */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  width: 100%;
 }
 
-/* CARD */
+/* Mensagens de Feedback da API */
+.disciplinas-grid > p {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  color: #777;
+  font-size: 14px;
+  font-style: italic;
+}
 
+/* ==========================================
+   CARDS DE TURMAS/DISCIPLINAS (DISCIPLINA CARD)
+   ========================================== */
 .disciplina-card {
   min-height: 220px;
-
-  border-radius: 22px;
-
-  border: 1px solid rgba(65,223,255,0.5);
-
-  background: white;
-
-  padding: 22px;
-
-  transition: 0.2s;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0; /* Substituição da borda azul por cinza sutil */
+  background: #ffffff;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .disciplina-card:hover {
   transform: translateY(-2px);
-
-  box-shadow:
-    0 6px 18px rgba(0,0,0,0.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
-/* TOP */
-
+/* TEXTOS INTERNOS DO CARD */
 .disciplina-card h3 {
-  color: var(--secondary);
-
-  font-size: 22px;
-
-  margin-bottom: 10px;
+  color: var(
+    --primary
+  ); /* Mudado para Primary para melhor contraste e seriedade */
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 6px;
 }
 
 .disciplina-desc {
-  color: #888;
-
+  color: #666;
   font-size: 13px;
-
   line-height: 1.5;
-
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+  flex: 1; /* Faz a descrição ocupar o espaço restante, alinhando as pílulas abaixo */
 }
 
-/* INFO */
-
+/* CONTÊNERES DE INFORMAÇÕES ADICIONAIS */
 .disciplina-info {
   display: flex;
-
-  gap: 14px;
-
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.06); /* Linha divisória sutil */
 }
 
+/* Pílulas de Metadados (Carga Horária, Total de Turmas) */
 .info-pill {
-  height: 34px;
-
-  padding: 0 16px;
-
-  border-radius: 999px;
-
-  background:
-    rgba(65,223,255,0.12);
-
-  color: var(--secondary);
-
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 6px;
+  background: #f1f5f9; /* Fundo cinza neutro e profissional */
+  color: #475569; /* Texto em tom chumbo legível */
   display: flex;
   justify-content: center;
   align-items: center;
-
-  font-size: 12px;
-  font-weight: bold;
+  font-size: 11px;
+  font-weight: 700;
 }
 
-/* TURMAS */
-
+/* ==========================================
+   CHIPS DE TURMAS (TURMAS LIST)
+   ========================================== */
 .turmas-list {
   display: flex;
-
   flex-wrap: wrap;
-
-  gap: 10px;
+  gap: 8px;
 }
 
+/* Representação das Turmas (Ex: 1A-2025) */
 .turma-pill {
-  height: 34px;
-
-  padding: 0 14px;
-
-  border-radius: 12px;
-
-  background:
-    linear-gradient(
-      90deg,
-      #1dcfff 0%,
-      #1749e4 100%
-    );
-
-  color: white;
-
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 6px;
+  /* Gradiente mais suave e integrado com a paleta oficial */
+  background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+  color: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 6px rgba(23, 73, 228, 0.1);
+}
 
-  font-size: 12px;
-  font-weight: bold;
+/* ==========================================
+   RESPONSIVIDADE ACESSÍVEL
+   ========================================== */
+@media (max-width: 600px) {
+  .disciplinas-grid {
+    grid-template-columns: 1fr; /* Força linha única em dispositivos mobile */
+  }
+
+  .semester {
+    max-width: 100%; /* Select expande totalmente no celular para facilitar o clique */
+  }
 }

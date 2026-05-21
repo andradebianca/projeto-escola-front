@@ -1,8 +1,10 @@
-import { redirecionar } from "./../../script/funcs-global.js";
+import { redirecionar, showToast } from "./../../script/funcs-global.js";
 
 import { urlBase } from "./../../script/variaveis-globais.js";
 
 const btnEntrar = document.getElementById("btn-entrar");
+
+const btnPrimeiroAcesso = document.getElementById("first-access");
 
 const inputEmail = document.getElementById("email");
 
@@ -19,7 +21,7 @@ async function logar() {
     /* VALIDAÇÃO */
 
     if (!email || !senha) {
-      alert("Preencha email e senha.");
+      showToast("Preencha email e senha.", "warning");
 
       return;
     }
@@ -44,7 +46,7 @@ async function logar() {
     /* ERRO */
 
     if (!data.sucesso) {
-      alert("Email ou senha inválidos.");
+      showToast("Email ou senha inválidos.", "error");
 
       return;
     }
@@ -88,7 +90,7 @@ async function logar() {
   } catch (error) {
     console.error(error);
 
-    alert("Erro ao realizar login.");
+    showToast("Erro ao realizar login.", "error");
   }
 }
 
@@ -113,3 +115,8 @@ if (togglePassword) {
 if (btnEntrar) {
   btnEntrar.addEventListener("click", logar);
 }
+
+if (btnPrimeiroAcesso)
+  btnPrimeiroAcesso.addEventListener("click", () =>
+    redirecionar("login/primeiro-acesso.html"),
+  );

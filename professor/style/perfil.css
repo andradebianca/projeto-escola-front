@@ -1,167 +1,232 @@
+/* ==========================================
+   CONFIGURAÇÕES DE CONTEÚDO PRINCIPAL (MAIN)
+   ========================================== */
 .main-content {
   flex: 1;
+  width: 100%;
 }
 
-/* GRID */
-
+/* ==========================================
+   GRID DE PERFIL AVANÇADO (4 COLUNAS)
+   ========================================== */
 .perfil-grid {
   display: grid;
-
-  grid-template-columns:
-    repeat(2, 1fr);
-
-  gap: 18px;
-
-  margin-bottom: 40px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 48px;
+  width: 100%;
 }
 
-/* ITEM */
-
+/* ==========================================
+   ESTILIZAÇÃO DOS CAMPOS DE INFORMAÇÃO
+   ========================================== */
 .info-item {
   display: flex;
   flex-direction: column;
-
-  gap: 8px;
+  gap: 6px;
 }
 
-.info-item.full {
+/* CONTROLE DE LARGURA DO GRID (ALINHAMENTO MATEMÁTICO SEM BURACOS) */
+
+/* Nome Completo ocupa 4 colunas inteiras no topo (Destaque principal) */
+.info-item:nth-child(1) {
+  grid-column: span 4;
+}
+
+/* Data de Nascimento e Telefones dividem a segunda linha (2 colunas cada) */
+.info-item:nth-child(2),
+.info-item:nth-child(3) {
   grid-column: span 2;
 }
 
-/* LABEL */
-
-.info-item span {
-  color: var(--secondary);
-
-  font-size: 13px;
-  font-weight: bold;
+/* Rua ocupa 3 colunas | Número ocupa 1 coluna (terceira linha) */
+.info-item:nth-child(4) {
+  grid-column: span 3;
+}
+.info-item:nth-child(5) {
+  grid-column: span 1;
 }
 
-/* VALUE */
+/* Bairro ocupa 2 colunas | CEP ocupa 1 coluna | Cidade ocupa 1 coluna (quarta linha) */
+.info-item:nth-child(6) {
+  grid-column: span 2;
+}
+.info-item:nth-child(7) {
+  grid-column: span 1;
+}
+.info-item:nth-child(8) {
+  grid-column: span 1;
+}
+
+/* Estado ocupa 2 colunas na base do formulário */
+.info-item:nth-child(9) {
+  grid-column: span 2;
+}
+
+/* ESTILIZAÇÃO DE LABELS E CAMPOS (VALORES) */
+.info-item span {
+  color: #4a5568; /* Cinza escuro administrativo de fácil leitura */
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 4px;
+}
 
 .info-item p {
-  min-height: 48px;
-
-  border-radius: 14px;
-
-  border: 1px solid rgba(65,223,255,0.5);
-
-  background: #f8fbfd;
-
+  min-height: 44px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
   padding: 12px 16px;
-
   display: flex;
   align-items: center;
-
-  color: #555;
-
+  color: #1e293b;
   font-size: 14px;
-
+  font-weight: 500;
   line-height: 1.5;
+  transition: all 0.2s ease;
 }
 
-/* SECTION */
+.info-item p:hover {
+  background: #ffffff;
+  border-color: var(--secondary);
+  box-shadow: 0 4px 12px rgba(65, 223, 255, 0.1);
+}
+
+/* Estilização diferenciada e empoderada para o Nome do Docente */
+.info-item:nth-child(1) p {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+  background: #ffffff;
+  border-left: 3px solid var(--secondary);
+}
+
+/* ==========================================
+   SEÇÃO DE ESPECIALIZAÇÕES
+   ========================================== */
+.especializacoes-section {
+  margin-top: 20px;
+  padding-top: 32px;
+  border-top: 1px dashed rgba(0, 0, 0, 0.08); /* Divisor elegante entre as seções */
+}
 
 .section-title {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .section-title h3 {
   color: var(--primary);
-
   font-size: 22px;
+  font-weight: 700;
 }
 
-/* GRID */
-
+/* GRID DE CARDS */
 .especializacoes-grid {
   display: grid;
-
-  grid-template-columns:
-    repeat(
-      auto-fill,
-      minmax(280px, 1fr)
-    );
-
-  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  width: 100%;
 }
 
-/* CARD */
-
+/* CARD DE ESPECIALIZAÇÃO COESIVO */
 .especializacao-card {
-  min-height: 210px;
-
-  border-radius: 22px;
-
-  border: 1px solid rgba(65,223,255,0.5);
-
-  background: white;
-
-  padding: 22px;
+  min-height: 200px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
-/* TITLE */
+.especializacao-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
 
 .especializacao-card h4 {
-  color: var(--secondary);
-
-  font-size: 20px;
-
-  margin-bottom: 12px;
+  color: var(
+    --primary
+  ); /* Mudado para Primary para melhor harmonia com os títulos */
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 8px;
 }
-
-/* DESC */
 
 .especializacao-card p {
-  color: #777;
-
+  color: #666;
   font-size: 13px;
-
   line-height: 1.6;
-
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+  flex: 1; /* Garante que o rodapé alinhe perfeitamente no final da caixa */
 }
 
-/* FOOTER */
-
+/* RODAPÉ DO CARD & METADADOS */
 .especializacao-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
 }
 
-/* PILL */
-
 .carga-pill {
-  height: 34px;
-
-  padding: 0 14px;
-
-  border-radius: 999px;
-
-  background:
-    rgba(65,223,255,0.12);
-
-  color: var(--secondary);
-
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 6px;
+  background: #f1f5f9; /* Alinhado com o cinza neutro das pílulas da Dashboard */
+  color: #475569;
   display: flex;
   justify-content: center;
   align-items: center;
-
-  font-size: 12px;
-  font-weight: bold;
+  font-size: 11px;
+  font-weight: 700;
 }
 
-/* RESPONSIVO */
+/* ==========================================
+   RESPONSIVIDADE AJUSTADA
+   ========================================== */
 
-@media (max-width: 850px) {
-
+/* Notebooks e Tablets: reduz o formulário para 2 colunas */
+@media (max-width: 1050px) {
   .perfil-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  .info-item.full {
+  .info-item:nth-child(1),
+  .info-item:nth-child(2),
+  .info-item:nth-child(3),
+  .info-item:nth-child(4),
+  .info-item:nth-child(6),
+  .info-item:nth-child(9) {
+    grid-column: span 2;
+  }
+}
+
+/* Mobile: Tudo quebra para uma coluna vertical limpa */
+@media (max-width: 600px) {
+  .perfil-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .info-item:nth-child(1),
+  .info-item:nth-child(2),
+  .info-item:nth-child(3),
+  .info-item:nth-child(4),
+  .info-item:nth-child(6),
+  .info-item:nth-child(9) {
     grid-column: span 1;
   }
 
+  .especializacoes-grid {
+    grid-template-columns: 1fr;
+  }
 }

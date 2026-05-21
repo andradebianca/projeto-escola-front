@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Erro</title>
+    <style>
+      .flex {
+        display: flex;
+      }
+
+      .column {
+        flex-direction: column;
+      }
+
+      .center {
+        justify-content: center;
+      }
+
+      .items-center {
+        align-items: center;
+      }
+
+      .vh-100 {
+        height: 100vh;
+      }
+
+      .erro-mensagem-numero {
+        color: rgb(122, 122, 122);
+      }
+
+      .link {
+        text-decoration: underline;
+        color: purple;
+      }
+    </style>
+    <link rel="stylesheet" href="./../style/global.css" />
+    <link rel="icon" href="./../img/icons/alert.png" type="image/x-icon" />
+  </head>
+  <body class="flex column center items-center vh-100">
+    <h1>Não encontrado!</h1>
+    <span class="erro-mensagem-numero">404, página não encontrada</span>
+
+    <span class="mt"
+      >Infelizmente nós perdemos essa página em algum lugar.</span
+    >
+    <span>Já estamos resolvendo! Obrigado pela paciência.</span>
+
+    <a href="./" class="my-2 link">< Voltar a página anterior (Login)</a>
+  </body>
+</html>
