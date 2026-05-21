@@ -26,7 +26,7 @@ router.get(
             a.id_aluno,
             a.nome_completo,
             a.matricula,
-            a.data_nascimento,
+            a.data_nacimento,
             a.email,
 
             e.bairro,
@@ -87,7 +87,7 @@ router.get(
 
           matricula: aluno.matricula,
 
-          data_nascimento: aluno.data_nascimento,
+          data_nacimento: aluno.data_nacimento,
 
           email: aluno.email,
 

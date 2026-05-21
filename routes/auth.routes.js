@@ -49,7 +49,7 @@ router.post("/login", async (req, res) => {
             SELECT
               p.id_professor,
               p.nome_completo,
-              p.data_nascimento,
+              p.data_nacimento,
 
               (
                 SELECT DISTINCT
@@ -102,7 +102,7 @@ router.post("/login", async (req, res) => {
             a.id_aluno,
             a.nome_completo,
             a.matricula,
-            a.data_nascimento,
+            a.data_nacimento,
 
             (
               SELECT DISTINCT
