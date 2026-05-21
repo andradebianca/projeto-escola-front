@@ -291,6 +291,8 @@ function adicionarEventosNotas() {
         aluno: Number(btn.dataset.aluno),
         fkTurmaDisciplina: Number(btn.dataset.turmaDisciplina),
       };
+      preencherDataAtual();
+
       abrirModal();
     });
   });
@@ -351,6 +353,20 @@ function limparModal() {
   if (inputDescricao) inputDescricao.value = "";
   if (inputPeriodo) inputPeriodo.value = 1;
   if (inputData) inputData.value = "";
+
+  preencherDataAtual();
+}
+
+function preencherDataAtual() {
+  if (inputData) {
+    const hoje = new Date();
+    // O fuso horário local pode mudar a data, o jeito mais seguro e limpo no Brasil é:
+    const ano = hoje.getFullYear();
+    const mes = String(hoje.getMonth() + 1).padStart(2, "0"); // Meses começam em 0
+    const dia = String(hoje.getDate()).padStart(2, "0");
+
+    inputData.value = `${ano}-${mes}-${dia}`;
+  }
 }
 
 /* API: SALVAR / EDITAR NOTA */
@@ -381,7 +397,6 @@ btnSalvarNota.addEventListener("click", async () => {
 
     let response;
 
-    // REFACTOR: Toda a árvore de persistência migrada para requisicaoApi
     if (modoEdicao) {
       /* EDITAR REGISTRO */
       response = await requisicaoApi(`${urlBase}api/nota/${notaEditando.id}`, {
@@ -409,8 +424,11 @@ btnSalvarNota.addEventListener("click", async () => {
 
     const data = await response.json();
 
+    /* CAPTURA INTELIGENTE DE ERROS DA API (PROPRIEDADE data.erro OU data.mensagem) */
     if (!data.sucesso) {
-      showToast(data.mensagem ?? "Erro ao salvar nota.", "error");
+      // Se a API retornar {"erro": "..."}, exibe o erro. Senão, tenta data.mensagem ou o fallback padrão.
+      const mensagemErro = data.erro || data.mensagem || "Erro ao salvar nota.";
+      showToast(mensagemErro, "error");
       return;
     }
 
@@ -456,7 +474,7 @@ btnExcluirNota.addEventListener("click", async () => {
       return;
     }
 
-    showToast("Nota deletada com sucesso!", "warning");
+    showToast("Nota deletada com sucesso!");
     fecharModal();
 
     scrollPosicao = window.scrollY;
