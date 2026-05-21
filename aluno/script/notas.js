@@ -274,7 +274,7 @@ function renderizarDetalhes(nota, details) {
       <div class="detail-item"><span>Nota</span><p>${nota.valor_nota}</p></div>
       <div class="detail-item"><span>Data Aplicação</span><p>${formatarData(nota.data_aplicacao)}</p></div>
       <div class="detail-item"><span>Período</span><p>${nota.periodo_nota}º Bimestre</p></div>
-      <div class="detail-item"><span>Turma</span><p>${nota.turma.cod_turma}</p></div>
+      <div class="detail-item"><span>Turma</span><p>${nota.cod_turma}</p></div>
       <div class="detail-item full"><span>Descrição</span><p>${nota.descricao}</p></div>
     </div>
   `;
