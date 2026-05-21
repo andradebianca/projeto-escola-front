@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>ABC - Admin Turma x Disciplina</title>
+
+    <link rel="stylesheet" href="../style/global.css" />
+    <link rel="stylesheet" href="./style/resource.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <link rel="icon" href="./../img/icons/book.png" type="image/x-icon" />
+  </head>
+
+  <body>
+    <div class="app-container">
+      <header class="top-header">
+        <div class="logo-area">
+          <h1 class="logo">ABC<span>.</span></h1>
+          <div class="logo-divider"></div>
+          <p class="portal-text">Portal do Administrador</p>
+        </div>
+
+        <button class="logout-btn-header" id="btn-sair">
+          Sair
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </button>
+      </header>
+
+      <div class="dashboard-container">
+        <aside class="sidebar">
+          <div class="profile">
+            <div class="avatar">
+              <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <h2 id="nome-admin">Administrador</h2>
+            <span id="email-admin">admin@escola</span>
+          </div>
+
+          <nav class="menu">
+            <button class="menu-btn" id="menu-dashboard"><i class="fa-solid fa-table-columns"></i>Dashboard</button>
+            <button class="menu-btn" id="menu-alunos"><i class="fa-solid fa-graduation-cap"></i>Alunos</button>
+            <button class="menu-btn" id="menu-professores"><i class="fa-solid fa-chalkboard-user"></i>Professores</button>
+            <button class="menu-btn" id="menu-turmas"><i class="fa-solid fa-users-rectangle"></i>Turmas</button>
+            <button class="menu-btn" id="menu-disciplinas"><i class="fa-solid fa-book-open"></i>Disciplinas</button>
+            <button class="menu-btn" id="menu-especializacoes"><i class="fa-solid fa-award"></i>Especializacoes</button>
+            <button class="menu-btn" id="menu-enderecos"><i class="fa-solid fa-location-dot"></i>Enderecos</button>
+            <button class="menu-btn" id="menu-telefones-aluno"><i class="fa-solid fa-phone"></i>Telefones Aluno</button>
+            <button class="menu-btn" id="menu-telefones-professor"><i class="fa-solid fa-phone-volume"></i>Telefones Professor</button>
+            <button class="menu-btn active" id="menu-vinculos-turma-disciplina"><i class="fa-solid fa-link"></i>Turma x Disciplina</button>
+            <button class="menu-btn" id="menu-vinculos-professor-especializacao"><i class="fa-solid fa-diagram-project"></i>Professor x Especializacao</button>
+          </nav>
+        </aside>
+
+        <main class="main-content">
+          <div class="page-content-card default-card">
+            <div class="page-title">
+              <h2>Vinculos Turma x Disciplina</h2>
+              <p>Associe disciplinas as turmas e remova vinculos quando necessario</p>
+            </div>
+
+            <div class="filters-row">
+              <select class="inline-select" id="filtro-turma">
+                <option value="">Selecione a turma...</option>
+              </select>
+
+              <select class="inline-select" id="filtro-disciplina">
+                <option value="">Selecione a disciplina...</option>
+              </select>
+
+              <button class="new-btn" id="btn-vincular">
+                <i class="fa-solid fa-link"></i>
+                Vincular
+              </button>
+
+              <button class="action-btn details" id="btn-recarregar">Atualizar</button>
+            </div>
+
+            <section class="records-list" id="records-list">
+              <p>Selecione uma turma para ver os vinculos.</p>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="details-overlay">
+      <div class="modal details-modal">
+        <div class="modal-header">
+          <h3>Detalhes do Vinculo</h3>
+          <button class="close-modal" id="close-details-modal"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="details-grid" id="details-grid"></div>
+      </div>
+    </div>
+
+    <script src="./script/global.js" type="module"></script>
+    <script src="./script/vinculos-turma-disciplina.js" type="module"></script>
+  </body>
+</html>

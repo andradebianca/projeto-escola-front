@@ -1,0 +1,26 @@
+/* Estilos especificos de professores aproveitam resource.css */
+#details-especializacoes {
+  margin-top: 6px;
+}
+
+#details-especializacoes .especializacoes-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+#details-especializacoes .especializacao-pill {
+  min-height: 30px;
+  border-radius: 7px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 10px;
+}
+
+#details-especializacoes .especializacoes-vazio {
+  color: #64748b;
+  font-size: 13px;
+}

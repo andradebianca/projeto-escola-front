@@ -1,0 +1,128 @@
+.main-content {
+  flex: 1;
+  width: 100%;
+}
+
+.menu {
+  max-height: 62vh;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.menu::-webkit-scrollbar {
+  width: 4px;
+}
+
+.menu::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+}
+
+.page-title {
+  margin-bottom: 24px;
+}
+
+.page-title h2 {
+  color: var(--primary);
+  font-size: 26px;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.page-title p {
+  color: #666;
+  font-size: 14px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 26px;
+}
+
+.cards > p {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  padding: 32px;
+}
+
+.summary-card {
+  min-height: 120px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.summary-card h3 {
+  color: #475569;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.summary-card strong {
+  color: var(--primary);
+  font-size: 32px;
+  line-height: 1;
+}
+
+.summary-card p {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.quick-action {
+  height: 52px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: var(--primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.quick-action:hover {
+  border-color: var(--secondary);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(65, 223, 255, 0.15);
+}
+
+.quick-action i {
+  color: var(--secondary);
+}
+
+@media (max-width: 1200px) {
+  .cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .cards,
+  .actions-grid {
+    grid-template-columns: 1fr;
+  }
+}
