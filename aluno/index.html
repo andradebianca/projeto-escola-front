@@ -37,52 +37,59 @@
 
       <!-- DASHBOARD -->
       <div class="dashboard-container">
-        <!-- SIDEBAR -->
         <aside class="sidebar">
           <div class="profile">
             <div class="avatar">
               <i class="fa-solid fa-user"></i>
             </div>
-
             <h2 id="nome-aluno"></h2>
-
             <span id="matricula-aluno"></span>
           </div>
-
           <nav class="menu">
             <button class="menu-btn active" id="dashboard">
-              <i class="fa-solid fa-table-columns"></i>
-              DashBoard
+              <div class="menu-btn-left">
+                <i class="fa-solid fa-table-columns"></i>
+                DashBoard
+              </div>
             </button>
-
             <button class="menu-btn" id="dados-pessoais">
-              <i class="fa-solid fa-user"></i>
-              Dados Pessoais
+              <div class="menu-btn-left">
+                <i class="fa-solid fa-user"></i>
+                Dados Pessoais
+              </div>
             </button>
-
             <button class="menu-btn" id="boletins">
-              <i class="fa-solid fa-star"></i>
-              Boletins
+              <div class="menu-btn-left">
+                <i class="fa-solid fa-star"></i>
+                Boletins
+              </div>
             </button>
           </nav>
         </aside>
 
-        <!-- CONTENT -->
-        <div class="page-content-card default-card">
-          <main class="main-content">
+        <main class="main-content">
+          <div class="page-content-card default-card">
             <div class="page-title">
               <h2>DashBoard</h2>
-
               <p>Visualize o resumo de todas as notas</p>
             </div>
 
-            <select class="semester" id="select-ano">
+            <select
+              class="form-group"
+              id="select-ano"
+              style="
+                max-width: 200px;
+                min-height: 38px;
+                margin-bottom: 20px;
+                border-radius: 8px;
+              "
+            >
               <option>Carregando opções...</option>
             </select>
 
             <section class="cards" id="cards-disciplinas"></section>
-          </main>
-        </div>
+          </div>
+        </main>
       </div>
     </div>
     <script src="./script/main.js" type="module"></script>

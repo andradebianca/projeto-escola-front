@@ -535,3 +535,33 @@ textarea {
     margin-top: 4px;
   }
 }
+
+/* Envelopa os filtros para evitar quebra de linha feia */
+.dashboard-container .main-content select + .search-container {
+  margin-bottom: 0;
+}
+
+/* Garante o posicionamento perfeito do ícone de lupa dentro do input do global */
+.search-container {
+  display: inline-block;
+  vertical-align: top;
+  width: 100%;
+  max-width: 360px;
+  margin-bottom: 20px;
+}
+
+.search-container input {
+  height: 40px !important;
+  border-radius: 12px !important;
+  font-size: 13px !important;
+}
+
+.search-container i {
+  font-size: 13px !important;
+  line-height: 1;
+}
+
+/* Ajuste na listagem para casar com a nova altura compacta */
+.turmas-list {
+  margin-top: 10px;
+}

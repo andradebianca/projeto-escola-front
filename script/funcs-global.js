@@ -1,7 +1,3 @@
-// funcs-global.js
-
-const btnSair = document.getElementById("btn-sair");
-
 /* ==========================================
    MECÂNICA DE REDIRECIONAMENTO E URLS
    ========================================== */
@@ -29,7 +25,6 @@ export function verificarLogin(principal = false) {
 
   // Se não tem sessão ativa, expulsa para o login imediatamente
   if (!token || !usuario) {
-    // Evita loop infinito se já estiver na página de login
     if (!window.location.pathname.includes("login/")) {
       logout();
     }
@@ -69,32 +64,28 @@ export function logout() {
 export async function requisicaoApi(endpoint, customOptions = {}) {
   const token = localStorage.getItem("token");
 
-  // Configura os headers padrões injetando o JWT Bearer Token automaticamente se ele existir
   const headers = {
     "Content-Type": "application/json",
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 
   const config = {
-    method: "GET", // Método padrão se não for informado nenhum outro
+    method: "GET",
     ...customOptions,
     headers: {
       ...headers,
-      ...customOptions.headers, // Permite sobrescrever headers pontualmente se necessário
+      ...customOptions.headers,
     },
   };
 
-  // Se passarem um objeto no body, transforma automaticamente em String JSON
   if (config.body && typeof config.body === "object") {
     config.body = JSON.stringify(config.body);
   }
 
   const response = await fetch(endpoint, config);
 
-  // INTERCEPTOR CRUCIAL: Se der 401 (Não autorizado/Token Expirou), limpa o sistema e desloga
   if (response.status === 401) {
     showToast("Sessão expirada. Faça login novamente.", "warning");
-    // Aguarda um instante pequeno para o usuário conseguir ler o aviso na tela antes do chute
     setTimeout(() => {
       logout();
     }, 1500);
@@ -108,6 +99,8 @@ export async function requisicaoApi(endpoint, customOptions = {}) {
    SISTEMA DE TOAST NOTIFICATIONS
    ========================================== */
 export function showToast(mensagem, tipo = "success", duracao = 3500) {
+  debugger;
+
   let container = document.querySelector(".toast-container");
   if (!container) {
     container = document.createElement("div");
@@ -139,5 +132,17 @@ export function showToast(mensagem, tipo = "success", duracao = 3500) {
   }, duracao);
 }
 
-// Vincula o clique de saída global se o elemento existir na sidebar do DOM atual
-if (btnSair) btnSair.addEventListener("click", logout);
+/* ==========================================
+   INICIALIZADOR DE EVENTOS DE SESSÃO SEGUROS
+   ========================================== */
+// Delegação dinâmica ou checagem segura pós-carga do DOM
+document.addEventListener("DOMContentLoaded", () => {
+  // Configura um observador de cliques global para capturar o botão Sair
+  // mesmo se ele for injetado depois via funções assíncronas ou layouts de template
+  document.body.addEventListener("click", (event) => {
+    const botaoSair = event.target.closest("#btn-sair");
+    if (botaoSair) {
+      logout();
+    }
+  });
+});

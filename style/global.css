@@ -1,17 +1,23 @@
 @import url("./variables.css");
 
+/* ========================================
+   RESETS E CONFIGURAÇÕES DE VIEWPORT
+======================================== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-
   font-family: Arial, Helvetica, sans-serif;
 }
 
+html,
 body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* Tranca o scroll principal do navegador */
   background: var(--background);
-
   color: var(--text);
+  -webkit-font-smoothing: antialiased;
 }
 
 button,
@@ -23,7 +29,7 @@ textarea {
 
 button {
   border: none;
-
+  background: transparent;
   cursor: pointer;
 }
 
@@ -32,58 +38,70 @@ a {
 }
 
 /* ========================================
-   APP
+   ESTRUTURA DA DASHBOARD (LIMITADORES DE TAMANHO)
 ======================================== */
-
 .app-container {
   width: 100%;
-
-  padding: 24px;
-}
-
-.dashboard-container {
+  max-width: 1440px; /* TAMANHO MÁXIMO DA TELA: Não deixa o sistema esticar infinitamente */
+  height: 100vh;
+  margin: 0 auto; /* Centraliza o painel inteiro no meio de monitores grandes */
+  padding: 16px 20px; /* Reduzido para ganhar área útil */
   display: flex;
-
-  gap: 22px;
-
-  margin-top: 22px;
+  flex-direction: column;
+  overflow: hidden;
 }
-
-.main-content {
-  flex: 1;
-}
-
-/* ========================================
-   HEADER
-======================================== */
 
 .top-header {
-  height: 72px;
-
-  border-radius: 24px;
-
+  height: 60px; /* Reduzido de 72px para ficar mais discreto e elegante */
+  flex-shrink: 0;
+  border-radius: 16px; /* Bordas mais suaves e profissionais */
   background: white;
-
   border: 1px solid rgba(65, 223, 255, 0.15);
-
-  padding: 0 28px;
-
+  padding: 0 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
+.dashboard-container {
+  display: flex;
+  flex: 1;
+  gap: 18px; /* Reduzido o espaçamento entre colunas */
+  margin-top: 16px;
+  overflow: hidden;
+}
+
+.main-content {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto; /* Scroll apenas na área central */
+  padding-right: 2px;
+}
+
+/* Customização da Barra de Rolagem da Área de Conteúdo */
+.main-content::-webkit-scrollbar {
+  width: 6px;
+}
+.main-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+.main-content::-webkit-scrollbar-thumb {
+  background: rgba(65, 223, 255, 0.25);
+  border-radius: 999px;
+}
+
+/* ========================================
+   CABEÇALHO COMPONENTES (FONTES COMPACTAS)
+======================================== */
 .logo-area {
   display: flex;
   align-items: center;
-
-  gap: 18px;
+  gap: 12px;
 }
 
 .logo {
-  font-size: 28px;
+  font-size: 22px; /* Reduzido de 28px */
   font-weight: 800;
-
   color: var(--primary);
 }
 
@@ -93,30 +111,28 @@ a {
 
 .logo-divider {
   width: 2px;
-  height: 38px;
-
+  height: 24px; /* Proporcional ao novo tamanho do header */
   background: var(--secondary);
 }
 
 .portal-text {
-  font-size: 15px;
+  font-size: 13px; /* Reduzido de 15px */
   font-weight: 700;
-
   color: var(--primary);
 }
 
 .logout-btn-header {
-  background: transparent;
-
   display: flex;
   align-items: center;
-
-  gap: 10px;
-
+  gap: 8px;
   color: var(--primary);
-
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
+  transition: opacity 0.2s;
+}
+
+.logout-btn-header:hover {
+  opacity: 0.8;
 }
 
 .logout-btn-header i {
@@ -124,146 +140,120 @@ a {
 }
 
 /* ========================================
-   SIDEBAR
+   SIDEBAR COMPACTA PREMIUM
 ======================================== */
-
 .sidebar {
-  width: 230px;
-  min-width: 230px;
-
-  border-radius: 28px;
-
+  width: 240px; /* Ajustado tamanho estável */
+  min-width: 240px;
+  height: 100%;
+  border-radius: 20px; /* Combinando com o cabeçalho */
   background: linear-gradient(
     180deg,
     var(--primary) 0%,
     var(--primary-dark) 100%
   );
+  padding: 20px 14px; /* Reduzido espaçamento interno */
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
 
-  padding: 24px 18px;
+.sidebar::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
 }
 
 .profile {
   text-align: center;
-
-  margin-bottom: 34px;
+  margin-bottom: 24px; /* Diminuído para subir o menu */
+  flex-shrink: 0;
 }
 
 .avatar {
-  width: 120px;
-  height: 120px;
-
+  width: 80px; /* REDUZIDO COMPACTO: Chega de bola gigante na tela */
+  height: 80px;
   border-radius: 50%;
-
-  border: 4px solid var(--secondary);
-
+  border: 3px solid var(--secondary);
   background: #dfe1e9;
-
-  margin: 0 auto 16px;
-
+  margin: 0 auto 10px;
   display: flex;
   justify-content: center;
   align-items: center;
-
   color: #aeb3d2;
-
-  font-size: 44px;
+  font-size: 32px;
 }
 
 .profile h2 {
   color: var(--secondary);
-
-  font-size: 26px;
-
-  margin-bottom: 6px;
+  font-size: 18px; /* Reduzido de 24px, muito mais harmonioso */
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .profile span {
   color: white;
-
-  font-size: 14px;
+  font-size: 11px;
+  opacity: 0.75;
 }
 
 /* ========================================
-   MENU
+   MENU EM ACORDEÃO OTIMIZADO
 ======================================== */
-
 .menu {
   display: flex;
   flex-direction: column;
-
-  gap: 14px;
+  gap: 8px; /* Mais colados e limpos */
 }
-
-/* GRUPO */
 
 .menu-group {
   display: flex;
   flex-direction: column;
-
-  gap: 8px;
+  gap: 2px;
+  width: 100%;
 }
-
-/* BOTÕES */
 
 .menu-btn,
 .submenu-btn {
   width: 100%;
-
-  border: none;
-
-  background: transparent;
-
-  color: white;
-
-  transition: 0.2s;
-}
-
-/* MENU PRINCIPAL */
-
-.menu-btn {
-  height: 46px;
-
-  border-radius: 14px;
-
-  padding: 0 14px;
-
   display: flex;
   align-items: center;
-  justify-content: space-between;
-
-  font-size: 14px;
-  font-weight: 700;
-
-  opacity: 0.92;
+  color: white;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
-/* CONTEÚDO ESQUERDA */
+.menu-btn {
+  height: 40px; /* Reduzido de 46px */
+  border-radius: 10px;
+  padding: 0 12px;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0.9;
+}
 
 .menu-btn-left,
 .submenu-btn-left {
   display: flex;
   align-items: center;
-
-  gap: 12px;
+  gap: 10px;
 }
-
-/* ÍCONES */
 
 .menu-btn i,
 .submenu-btn i {
-  width: 18px;
-
+  width: 16px;
   display: flex;
   justify-content: center;
+  font-size: 14px;
 }
-
-/* HOVER */
 
 .menu-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
+  opacity: 1;
 }
-
-/* ACTIVE */
 
 .menu-btn.active {
   background: linear-gradient(
@@ -271,196 +261,246 @@ a {
     rgba(29, 207, 255, 0.78) 0%,
     rgba(23, 73, 228, 0.78) 100%
   );
-
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  opacity: 1;
 }
 
 /* SUBMENU */
-
 .submenu {
   display: flex;
   flex-direction: column;
-
-  gap: 10px;
-
-  padding-left: 14px;
-
-  margin-top: 2px;
+  gap: 4px;
+  padding-left: 8px;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    max-height 0.2s ease-out,
+    opacity 0.15s ease;
 }
 
-/* SUBMENU BTN */
+.menu-group.open .submenu {
+  max-height: 250px;
+  opacity: 1;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
 
 .submenu-btn {
-  height: 40px;
-
-  border-radius: 12px;
-
-  padding: 0 14px;
-
-  display: flex;
-  align-items: center;
-
-  font-size: 13px;
+  height: 34px; /* Submenu ultra elegante e menor */
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 12px;
   font-weight: 600;
-
-  color: rgba(255, 255, 255, 0.82);
-
-  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.02);
 }
-
-/* HOVER */
 
 .submenu-btn:hover {
-  background: rgba(255, 255, 255, 0.09);
-
+  background: rgba(255, 255, 255, 0.06);
   color: white;
 }
-
-/* ACTIVE */
 
 .submenu-btn.active {
   background: linear-gradient(
     90deg,
-    rgba(29, 207, 255, 0.22) 0%,
-    rgba(23, 73, 228, 0.35) 100%
+    rgba(29, 207, 255, 0.15) 0%,
+    rgba(23, 73, 228, 0.25) 100%
   );
-
-  border: 1px solid rgba(65, 223, 255, 0.18);
-
+  border: 1px solid rgba(65, 223, 255, 0.12);
   color: white;
+  font-weight: 700;
 }
-
-/* SETA */
 
 .menu-arrow {
-  font-size: 12px;
-
-  opacity: 0.7;
-
-  transition: 0.2s;
+  font-size: 11px;
+  opacity: 0.6;
+  transition: transform 0.2s ease;
 }
 
-.menu-arrow.rotate {
+.menu-group.open .menu-arrow {
   transform: rotate(180deg);
 }
 
 /* ========================================
-   PAGE CARD
+   COMPONENTES GENÉRICOS DE CARD E BUSCA
 ======================================== */
-
 .page-content-card,
 .default-card {
   width: 100%;
-
-  border-radius: 28px;
-
+  border-radius: 20px;
   background: white;
-
-  border: 1px solid rgba(65, 223, 255, 0.2);
-
-  padding: 30px;
-
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(65, 223, 255, 0.15);
+  padding: 24px; /* Reduzido de 30px */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
+  margin-bottom: 12px;
 }
 
 .page-title {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .page-title h2 {
-  font-size: 24px;
+  font-size: 20px; /* Título interno menor e assertivo */
   font-weight: 800;
-
   color: var(--primary);
-
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .page-title p {
   color: #64748b;
-
-  font-size: 14px;
+  font-size: 13px;
 }
-
-/* ========================================
-   SEARCH
-======================================== */
 
 .search-container {
   position: relative;
-
   width: 100%;
-  max-width: 420px;
-
-  margin-bottom: 24px;
+  max-width: 360px; /* Caixa de pesquisa levemente menor */
+  margin-bottom: 18px;
 }
 
 .search-container input {
   width: 100%;
-
-  height: 48px;
-
-  border-radius: 16px;
-
+  height: 40px; /* Mais fino e elegante */
+  border-radius: 12px;
   border: 1px solid rgba(65, 223, 255, 0.2);
-
-  padding: 0 18px 0 46px;
-
+  padding: 0 14px 0 38px;
   outline: none;
+  font-size: 13px;
 }
 
 .search-container i {
   position: absolute;
-
-  left: 16px;
+  left: 14px;
   top: 50%;
-
   transform: translateY(-50%);
-
   color: #94a3b8;
+  font-size: 13px;
 }
 
-/* ========================================
-   GRID
-======================================== */
-
+/* Dashboard Grid */
 .cards {
   display: grid;
-
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-
-  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
 }
 
 /* ========================================
-   RESPONSIVE
+   RESPONSIVIDADE INTELIGENTE
 ======================================== */
-
-@media (max-width: 1000px) {
+@media (max-width: 1024px) {
   .dashboard-container {
     flex-direction: column;
+    overflow-y: auto;
+  }
+
+  html,
+  body {
+    overflow: auto;
   }
 
   .sidebar {
     width: 100%;
+    height: auto;
+  }
+
+  .main-content {
+    overflow-y: visible;
   }
 }
 
 @media (max-width: 700px) {
+  .app-container {
+    padding: 10px;
+  }
+
   .top-header {
-    padding: 0 18px;
+    padding: 0 14px;
+    height: 56px;
   }
 
   .logo {
-    font-size: 22px;
+    font-size: 18px;
   }
 
   .portal-text {
-    font-size: 13px;
+    display: none; /* Esconde texto em telas muito pequenas */
   }
 
   .page-content-card,
   .default-card {
-    padding: 22px;
+    padding: 16px;
+  }
+}
+
+/* ========================================
+   SISTEMA DE TOAST NOTIFICATIONS (FIX)
+======================================= */
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 99999 !important; /* Garante que fica por cima de qualquer modal */
+}
+
+.toast {
+  background: white;
+  padding: 14px 20px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 280px;
+  max-width: 400px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  animation: toastEntrance 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+  border-left: 5px solid #10b981; /* Default success */
+}
+
+/* Variações de Cores pelo Tipo */
+.toast-success {
+  border-left-color: #10b981;
+}
+.toast-success i {
+  color: #10b981;
+}
+
+.toast-error {
+  border-left-color: #ef4444;
+}
+.toast-error i {
+  color: #ef4444;
+}
+
+.toast-warning {
+  border-left-color: #f59e0b;
+}
+.toast-warning i {
+  color: #f59e0b;
+}
+
+/* Animação de Saída controlada pela classe .hide */
+.toast.hide {
+  transform: translateX(120%);
+  opacity: 0;
+}
+
+@keyframes toastEntrance {
+  from {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
   }
 }

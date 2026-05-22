@@ -39,51 +39,50 @@
 
       <!-- DASHBOARD -->
       <div class="dashboard-container">
-        <!-- SIDEBAR -->
         <aside class="sidebar">
           <div class="profile">
             <div class="avatar">
               <i class="fa-solid fa-user-tie"></i>
             </div>
-
             <h2 id="nome-professor">Professor</h2>
-
-            <span> Docente </span>
+            <span>Docente</span>
           </div>
-
           <nav class="menu">
             <button class="menu-btn active" id="menu-dashboard">
-              <i class="fa-solid fa-table-columns"></i>
-
-              Dashboard
+              <div class="menu-btn-left">
+                <i class="fa-solid fa-table-columns"></i>
+                Dashboard
+              </div>
             </button>
-
             <button class="menu-btn" id="menu-lancar-notas">
-              <i class="fa-solid fa-pen"></i>
-
-              Gerenciar Notas
+              <div class="menu-btn-left">
+                <i class="fa-solid fa-pen"></i>
+                Gerenciar Notas
+              </div>
             </button>
-
             <button class="menu-btn" id="menu-perfil">
-              <i class="fa-solid fa-user"></i>
-
-              Perfil
+              <div class="menu-btn-left">
+                <i class="fa-solid fa-user"></i>
+                Perfil
+              </div>
             </button>
           </nav>
         </aside>
 
-        <!-- CONTENT -->
         <main class="main-content">
           <div class="page-content-card default-card">
             <div class="page-title">
               <h2>Minhas Disciplinas</h2>
-
               <p>Gerencie suas turmas e disciplinas</p>
             </div>
 
-            <select class="semester" id="select-ano"></select>
+            <select
+              class="select-ano form-group"
+              id="select-ano"
+              style="margin-bottom: 20px"
+            ></select>
 
-            <section class="disciplinas-grid" id="disciplinas-grid">
+            <section class="cards" id="disciplinas-grid">
               <p>Carregando...</p>
             </section>
           </div>
