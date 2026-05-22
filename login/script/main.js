@@ -9,12 +9,12 @@ const inputSenha = document.getElementById("senha");
 /* LOGIN REFACTOR WITH JWT TOKEN */
 async function logar() {
   try {
-    const login = inputEmail.value.trim();
+    const email = inputEmail.value.trim();
     const senha = inputSenha.value.trim();
 
     /* VALIDAÇÃO */
-    if (!login || !senha) {
-      showToast("Preencha login e senha.", "warning");
+    if (!email || !senha) {
+      showToast("Preencha email e senha.", "warning");
       return;
     }
 
@@ -25,7 +25,7 @@ async function logar() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        login,
+        email,
         senha,
       }),
     });
