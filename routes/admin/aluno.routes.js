@@ -208,13 +208,28 @@ router.post("/admin/aluno", verificarToken, apenasAdmin, async (req, res) => {
 
       await transaction.commit();
 
-      await registrarAuditoria({
-        usuarioId: req.usuario.id_usuario,
-        acao: "CREATE",
-        tabela: "alunos",
-        idRegistro: idAluno,
-        descricao: `Cadastrou o aluno(a) ${nome_completo}`,
-      });
+      try {
+        await registrarAuditoria({
+          usuarioId: req.usuario.id_usuario,
+
+          acao: "CREATE",
+
+          tabela: "alunos",
+
+          idRegistro: idAluno,
+
+          descricao: `Cadastrou o aluno(a) ${nome_completo}`,
+
+          dadosNovos: JSON.stringify({
+            email,
+            nome_completo,
+            matricula,
+            fk_turma,
+          }),
+        });
+      } catch (auditErr) {
+        console.error("Erro auditoria:", auditErr);
+      }
 
       res
         .status(201)
@@ -369,7 +384,6 @@ router.put(
           descricao: `Atualizou os dados do aluno ${nome_completo}`,
           dadosNovos: JSON.stringify({
             email,
-            user_name,
             nome_completo,
             matricula,
           }),

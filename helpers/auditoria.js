@@ -33,9 +33,9 @@ async function registrarAuditoria({
         dadosNovos ? String(dadosNovos) : null,
       ).query(`
         INSERT INTO auditoria (
-          fk_usuario, acao, tabela_afetada, id_registro, descricao, dados_anteriores, dados_novos, data_auditoria
+          fk_usuario, acao, tabela_afetada, id_registro, descricao, dados_anteriores, dados_novos
         ) VALUES (
-          @fk_usuario, @acao, @tabela_afetada, @id_registro, @descricao, @dados_anteriores, @dados_novos, GETDATE()
+          @fk_usuario, @acao, @tabela_afetada, @id_registro, @descricao, @dados_anteriores, @dados_novos
         )
       `);
   } catch (err) {
