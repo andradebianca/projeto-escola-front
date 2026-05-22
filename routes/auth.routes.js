@@ -340,4 +340,119 @@ router.post(
   }
 );
 
+router.post(
+  "/esqueci-senha",
+
+  async (req, res) => {
+
+    try {
+
+      const {
+        login,
+        novaSenha,
+      } = req.body || {};
+
+      // =========================
+      // VALIDAÇÃO
+      // =========================
+      if (
+        !login ||
+        !novaSenha
+      ) {
+
+        return res.status(400).json({
+          erro:
+            "Login e nova senha obrigatórios",
+        });
+      }
+
+      const pool = await getPool();
+
+      // =========================
+      // BUSCAR USUÁRIO
+      // =========================
+      const usuarioResult =
+        await pool
+          .request()
+
+          .input(
+            "login",
+            sql.VarChar,
+            login
+          )
+
+          .query(`
+            SELECT
+              id_usuario
+
+            FROM usuario
+
+            WHERE
+              email = @login
+              OR user_name = @login
+          `);
+
+      // =========================
+      // NÃO ENCONTRADO
+      // =========================
+      if (
+        usuarioResult.recordset.length === 0
+      ) {
+
+        return res.status(404).json({
+          erro:
+            "Usuário não encontrado",
+        });
+      }
+
+      const usuario =
+        usuarioResult.recordset[0];
+
+      // =========================
+      // UPDATE SENHA
+      // =========================
+      await pool
+        .request()
+
+        .input(
+          "id_usuario",
+          sql.Int,
+          usuario.id_usuario
+        )
+
+        .input(
+          "senha",
+          sql.VarChar(30),
+          novaSenha
+        )
+
+        .query(`
+          UPDATE usuario
+
+          SET
+            senha = @senha
+
+          WHERE id_usuario =
+            @id_usuario
+        `);
+
+      res.json({
+        sucesso: true,
+
+        mensagem:
+          "Senha redefinida com sucesso",
+      });
+
+    } catch (err) {
+
+      console.error(err);
+
+      res.status(500).json({
+        erro: err.message,
+      });
+
+    }
+  }
+);
+
 module.exports = router;
