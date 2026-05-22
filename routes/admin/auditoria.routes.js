@@ -1,13 +1,10 @@
-// routes/admin/auditoria.routes.js
 const express = require("express");
 const router = express.Router();
-const { getPool } = require("../../db");
+const { getPool, sql } = require("../../db");
 const { verificarToken } = require("../../middlewares/auth.middleware");
 const { apenasAdmin } = require("../../middlewares/admin.middleware");
 
-// =========================================================================
 // GET ALL LOGS: Lista a trilha de auditoria completa
-// =========================================================================
 router.get(
   "/admin/auditoria",
   verificarToken,
@@ -16,11 +13,10 @@ router.get(
     try {
       const pool = await getPool();
 
-      // Consulta otimizada trazendo quem realizou a ação (JOIN com tabela usuario)
       const result = await pool.request().query(`
       SELECT 
         a.id_auditoria,
-        a.data_auditoria,
+        a.data_acao,
         a.acao,
         a.tabela_afetada,
         a.id_registro,
@@ -31,7 +27,7 @@ router.get(
         u.user_name
       FROM auditoria a
       INNER JOIN usuario u ON u.id_usuario = a.fk_usuario
-      ORDER BY a.data_auditoria DESC
+      ORDER BY a.data_acao DESC
     `);
 
       res.json({
