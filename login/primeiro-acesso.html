@@ -3,49 +3,193 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Erro</title>
+    <title>ABC - Primeiro Acesso</title>
+
     <style>
-      .flex {
+      /* Estilos centralizados minimalistas para manter a identidade */
+      body {
         display: flex;
-      }
-
-      .column {
-        flex-direction: column;
-      }
-
-      .center {
-        justify-content: center;
-      }
-
-      .items-center {
         align-items: center;
-      }
-
-      .vh-100 {
+        justify-content: center;
         height: 100vh;
+        background: #f8fafc;
       }
-
-      .erro-mensagem-numero {
-        color: rgb(122, 122, 122);
+      .auth-card {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
       }
-
-      .link {
-        text-decoration: underline;
-        color: purple;
+      .logo {
+        font-size: 32px;
+        font-weight: 800;
+        color: #1e3a8a;
+        margin-bottom: 20px;
+      }
+      .logo span {
+        color: #38bdf8;
+      }
+      .auth-card h2 {
+        font-size: 18px;
+        color: #1e293b;
+        margin-bottom: 8px;
+      }
+      .auth-card p {
+        font-size: 13px;
+        color: #64748b;
+        margin-bottom: 24px;
+      }
+      .input-group {
+        text-align: left;
+        margin-bottom: 16px;
+      }
+      .input-group label {
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+      }
+      .input-group input {
+        width: 100%;
+        height: 44px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        padding: 0 14px;
+        font-size: 14px;
+        box-sizing: border-box;
+        outline: none;
+        transition: 0.2s;
+      }
+      .input-group input:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+      .btn-submit {
+        width: 100%;
+        height: 44px;
+        background: linear-gradient(
+          90deg,
+          rgba(29, 207, 255, 0.9) 0%,
+          rgba(23, 73, 228, 0.9) 100%
+        );
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s;
+        margin-top: 10px;
+      }
+      .btn-submit:hover {
+        box-shadow: 0 6px 15px rgba(23, 73, 228, 0.2);
+        transform: translateY(-2px);
+      }
+      .link-voltar {
+        display: block;
+        margin-top: 20px;
+        font-size: 13px;
+        color: #2563eb;
+        font-weight: 600;
+        text-decoration: none;
       }
     </style>
+
     <link rel="stylesheet" href="./../style/global.css" />
-    <link rel="icon" href="./../img/icons/alert.png" type="image/x-icon" />
+
+    <link rel="icon" href="./../img/icons/book.png" type="image/x-icon" />
   </head>
-  <body class="flex column center items-center vh-100">
-    <h1>Não encontrado!</h1>
-    <span class="erro-mensagem-numero">404, página não encontrada</span>
+  <body>
+    <div class="auth-card">
+      <div class="logo">ABC<span>.</span></div>
+      <h2>Primeiro Acesso</h2>
+      <p>
+        Bem-vindo! Defina uma senha segura para ativar sua conta no portal
+        acadêmico.
+      </p>
 
-    <span class="mt"
-      >Infelizmente nós perdemos essa página em algum lugar.</span
-    >
-    <span>Já estamos resolvendo! Obrigado pela paciência.</span>
+      <form id="form-primeiro-acesso">
+        <div class="input-group">
+          <label>Seu E-mail Cadastrado</label>
+          <input
+            type="email"
+            id="input-email"
+            required
+            placeholder="Digite o e-mail informado na matrícula"
+          />
+        </div>
+        <div class="input-group">
+          <label>Nova Senha</label>
+          <input
+            type="password"
+            id="input-senha"
+            required
+            placeholder="Crie uma senha forte"
+          />
+        </div>
+        <div class="input-group">
+          <label>Confirmar Senha</label>
+          <input
+            type="password"
+            id="input-confirmar-senha"
+            required
+            placeholder="Digite a senha novamente"
+          />
+        </div>
+        <button type="submit" class="btn-submit">Ativar Minha Conta</button>
+      </form>
 
-    <a href="./" class="my-2 link">< Voltar a página anterior (Login)</a>
+      <a href="index.html" class="link-voltar">Voltar para o Login</a>
+    </div>
+
+    <script src="./../script/funcs-global.js" type="module"></script>
+    <script type="module">
+      import { requisicaoApi, showToast } from "./../script/funcs-global.js";
+      import { urlBase } from "./../script/variaveis-globais.js";
+
+      document
+        .getElementById("form-primeiro-acesso")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const email = document.getElementById("input-email").value.trim();
+          const senha = document.getElementById("input-senha").value.trim();
+          const confirmarSenha = document
+            .getElementById("input-confirmar-senha")
+            .value.trim();
+
+          if (senha !== confirmarSenha) {
+            showToast("As senhas não coincidem. Digite novamente.", "warning");
+            return;
+          }
+
+          try {
+            const res = await requisicaoApi(`${urlBase}api/primeiro-acesso`, {
+              method: "POST",
+              body: { email, novaSenha: senha },
+            });
+
+            const d = await res.json();
+
+            if (d.sucesso) {
+              showToast(
+                "Senha definida com sucesso! Redirecionando...",
+                "success",
+              );
+              setTimeout(() => {
+                window.location.href = "index.html";
+              }, 2000);
+            } else {
+              showToast(d.erro || "Falha ao definir senha.", "error");
+            }
+          } catch (err) {
+            showToast("Erro de rede. Tente novamente.", "error");
+          }
+        });
+    </script>
   </body>
 </html>

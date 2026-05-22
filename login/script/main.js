@@ -34,6 +34,11 @@ async function logar() {
 
     /* TRATAMENTO DE ERRO COM BASE NA RESPOSTA */
     if (!data.sucesso) {
+      if (data.primeiroAcesso) {
+        showToast(data.mensagem, "warning");
+
+        return;
+      }
       showToast(data.mensagem || "Email ou senha inválidos.", "error");
       return;
     }
