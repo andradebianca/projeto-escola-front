@@ -230,13 +230,14 @@ router.put(
         telefones,
       } = req.body;
 
-      // Resolver parâmetros de localização antes da Transaction
-      let ufId, cidadeId, ruaId;
-
+      // 1. RESOLVER PARÂMETROS DE LOCALIZAÇÃO ANTES DA TRANSACTION (CORRIGIDO TYPOS)
+      // 1.1 UF
+      let ufId;
       const ufCheck = await pool
         .request()
         .input("uf", sql.VarChar, endereco.uf)
         .query(`SELECT id_uf FROM uf WHERE nome_estado = @uf`);
+
       ufId =
         ufCheck.recordset.length > 0
           ? ufCheck.recordset[0].id_uf
@@ -249,10 +250,13 @@ router.put(
                 )
             ).recordset[0].id_uf;
 
+      // 1.2 CIDADE (CORRIGIDO: O erro de sintaxe estava aqui!)
+      let cidadeId;
       const cidCheck = await pool
         .request()
         .input("cidade", sql.VarChar, endereco.cidade)
-        .query(`SELECT id_cidade FROM city = @cidade`);
+        .query(`SELECT id_cidade FROM cidade WHERE nome_cidade = @cidade`);
+
       cidadeId =
         cidCheck.recordset.length > 0
           ? cidCheck.recordset[0].id_cidade
@@ -265,11 +269,14 @@ router.put(
                 )
             ).recordset[0].id_cidade;
 
+      // 1.3 RUA
+      let ruaId;
       const ruaCheck = await pool
         .request()
         .input("rua", sql.VarChar, endereco.rua)
         .input("cep", sql.VarChar, endereco.cep)
         .query(`SELECT id_rua FROM rua WHERE nome_rua = @rua AND cep = @cep`);
+
       ruaId =
         ruaCheck.recordset.length > 0
           ? ruaCheck.recordset[0].id_rua
@@ -284,6 +291,7 @@ router.put(
                 )
             ).recordset[0].id_rua;
 
+      // 2. INICIAR A TRANSACTION OPERACIONAL DO CORE
       const transaction = new sql.Transaction(pool);
       await transaction.begin();
 
@@ -293,8 +301,13 @@ router.put(
           .query(
             `SELECT fk_usuario, fk_endereco FROM professor WHERE id_professor = @id_professor`,
           );
+
+        if (atualResult.recordset.length === 0) {
+          throw new Error("Professor não encontrado no sistema.");
+        }
         const current = atualResult.recordset[0];
 
+        // 2.1 Atualiza Usuário
         await new sql.Request(transaction)
           .input("id_usuario", sql.Int, current.fk_usuario)
           .input("email", sql.VarChar, email)
@@ -303,6 +316,7 @@ router.put(
             `UPDATE usuario SET email = @email, user_name = @user_name WHERE id_usuario = @id_usuario`,
           );
 
+        // 2.2 Atualiza Endereço Físico
         await new sql.Request(transaction)
           .input("id_endereco", sql.Int, current.fk_endereco)
           .input("fk_uf", sql.Int, ufId)
@@ -313,6 +327,7 @@ router.put(
             `UPDATE endereco SET fk_uf = @fk_uf, fk_cidade = @fk_cidade, fk_rua = @fk_rua, numero = @numero WHERE id_endereco = @id_endereco`,
           );
 
+        // 2.3 Atualiza Dados do Professor
         await new sql.Request(transaction)
           .input("id_professor", sql.Int, id)
           .input("nome_completo", sql.VarChar, nome_completo)
@@ -321,6 +336,7 @@ router.put(
             `UPDATE professor SET nome_completo = @nome_completo, data_nacimento = @data_nacimento WHERE id_professor = @id_professor`,
           );
 
+        // 2.4 Atualiza Lista de Telefones (Limpa antigos e insere novos)
         await new sql.Request(transaction)
           .input("fk_professor", sql.Int, id)
           .query(
@@ -348,7 +364,7 @@ router.put(
           descricao: `Atualizou os dados do professor ${nome_completo}`,
         });
 
-        res.json({ sucesso: true });
+        res.json({ sucesso: true, mensagem: "Cadastro alterado com sucesso." });
       } catch (innerErr) {
         await transaction.rollback();
         throw innerErr;
