@@ -1,173 +1,89 @@
+// routes/auth.routes.js
 const express = require("express");
-const jwt = require("jsonwebtoken");
-
 const router = express.Router();
+const { getPool, sql } = require("../db");
+// Se você usa bcrypt, importe aqui: const bcrypt = require("bcrypt");
 
-const { sql, getPool } = require("../db");
-
+// =================================================================
+// 1. ROTA DE LOGIN (Atualizada)
+// =================================================================
 router.post("/login", async (req, res) => {
-  try {
-    const { email, senha } = req.body || {};
+  const { login, senha } = req.body; // login pode ser email ou user_name
 
-    if (!email || !senha) {
-      return res.status(400).json({
-        erro: "Email e senha obrigatórios",
-      });
+  try {
+    const pool = await getPool();
+    const result = await pool
+      .request()
+      .input("login", sql.VarChar, login)
+      .query(
+        "SELECT * FROM usuario WHERE email = @login OR user_name = @login",
+      );
+
+    if (result.recordset.length === 0) {
+      return res
+        .status(401)
+        .json({ sucesso: false, erro: "Credenciais inválidas." });
     }
 
+    const usuario = result.recordset[0];
+
+    // BARREIRA DO PRIMEIRO ACESSO: Se a senha for nula
+    if (!usuario.senha) {
+      return res.json({
+        sucesso: false,
+        primeiroAcesso: true,
+        mensagem: "Conta sem senha. Defina sua senha no Primeiro Acesso.",
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ sucesso: false, erro: err.message });
+  }
+});
+
+// =================================================================
+// 2. NOVA ROTA: PRIMEIRO ACESSO (Definir Senha)
+// =================================================================
+router.post("/primeiro-acesso", async (req, res) => {
+  const { email, novaSenha } = req.body;
+
+  if (!email || !novaSenha) {
+    return res.status(400).json({ sucesso: false, erro: "Dados incompletos." });
+  }
+
+  try {
     const pool = await getPool();
 
-    const usuarioResult = await pool
+    // Verifica se o usuário existe e se REALMENTE está sem senha
+    const check = await pool
       .request()
       .input("email", sql.VarChar, email)
-      .input("senha", sql.VarChar, senha).query(`
-        SELECT
-          id_usuario,
-          email,
-          user_name,
-          nivel_acesso
-        FROM usuario
-        WHERE email = @email
-          AND senha = @senha
-      `);
+      .query("SELECT id_usuario, senha FROM usuario WHERE email = @email");
 
-    if (usuarioResult.recordset.length === 0) {
-      return res.status(401).json({
-        erro: "Email ou senha inválidos",
+    if (check.recordset.length === 0) {
+      return res
+        .status(404)
+        .json({ sucesso: false, erro: "E-mail não encontrado no sistema." });
+    }
+
+    if (check.recordset[0].senha) {
+      return res.status(400).json({
+        sucesso: false,
+        erro: "Esta conta já possui uma senha registrada. Tente fazer o login.",
       });
     }
 
-    const usuario = usuarioResult.recordset[0];
-
-    let perfil = null;
-
-    // PROFESSOR
-    if (usuario.nivel_acesso === 2) {
-      const professorResult = await pool
-        .request()
-        .input("id_usuario", sql.Int, usuario.id_usuario).query(`
-            SELECT
-              p.id_professor,
-              p.nome_completo,
-              p.data_nacimento,
-
-              (
-                SELECT DISTINCT
-                  t.ano_letivo
-                FROM disciplina d
-
-                INNER JOIN turma_disciplina td
-                  ON td.fk_disciplina =
-                    d.id_disciplina
-
-                INNER JOIN turma t
-                  ON t.id_turma =
-                    td.fk_turma
-
-                WHERE d.fk_professor =
-                  p.id_professor
-
-                FOR JSON PATH
-              ) AS opcoesAnos
-
-            FROM professor p
-
-            WHERE p.fk_usuario =
-              @id_usuario
-          `);
-
-      if (professorResult.recordset.length > 0) {
-        const professor = professorResult.recordset[0];
-
-        perfil = {
-          tipo: "professor",
-
-          dados: {
-            ...professor,
-
-            opcoesAnos: professor.opcoesAnos
-              ? JSON.parse(professor.opcoesAnos).map((x) => x.ano_letivo)
-              : [],
-          },
-        };
-      }
-    }
-
-    // ALUNO
-    if (usuario.nivel_acesso === 3) {
-      const alunoResult = await pool
-        .request()
-        .input("id_usuario", sql.Int, usuario.id_usuario).query(`
-          SELECT
-            a.id_aluno,
-            a.nome_completo,
-            a.matricula,
-            a.data_nacimento,
-
-            (
-              SELECT DISTINCT
-                t.ano_letivo
-
-              FROM turma t
-
-              WHERE t.id_turma =
-                a.fk_turma
-
-              FOR JSON PATH
-            ) AS opcoesAnos
-
-          FROM alunos a
-
-          WHERE a.fk_usuario =
-            @id_usuario
-        `);
-
-      if (alunoResult.recordset.length > 0) {
-        const aluno = alunoResult.recordset[0];
-
-        perfil = {
-          tipo: "aluno",
-
-          dados: {
-            ...aluno,
-
-            opcoesAnos: aluno.opcoesAnos
-              ? JSON.parse(aluno.opcoesAnos).map((x) => x.ano_letivo)
-              : [],
-          },
-        };
-      }
-    }
-
-    const token = jwt.sign(
-      {
-        id_usuario: usuario.id_usuario,
-
-        nivel_acesso: usuario.nivel_acesso,
-      },
-
-      process.env.JWT_SECRET,
-
-      {
-        expiresIn: "1d",
-      },
-    );
+    await pool
+      .request()
+      .input("senha", sql.VarChar, novaSenha)
+      .input("email", sql.VarChar, email)
+      .query("UPDATE usuario SET senha = @senha WHERE email = @email");
 
     res.json({
       sucesso: true,
-
-      token,
-
-      usuario,
-
-      perfil,
+      mensagem: "Senha definida com sucesso! Você já pode fazer login.",
     });
   } catch (err) {
-    console.error(err);
-
-    res.status(500).json({
-      erro: err.message,
-    });
+    res.status(500).json({ sucesso: false, erro: err.message });
   }
 });
 

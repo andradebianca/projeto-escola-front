@@ -72,16 +72,10 @@ router.post(
     const pool = await getPool();
 
     try {
-      const {
-        email,
-        user_name,
-        senha,
-        cpf,
-        nome_completo,
-        data_nacimento,
-        endereco,
-        telefones,
-      } = req.body;
+      const { email, cpf, nome_completo, data_nacimento, endereco, telefones } =
+        req.body;
+
+      const user_name_gerado = gerarUserName(nome_completo);
 
       // 1. RESOLVER DEPENDÊNCIAS DE ENDEREÇO FORA DA TRANSACTION PRINCIPAL (EVITA DEADLOCK)
       // 1.1 Validar/Inserir UF
@@ -160,10 +154,9 @@ router.post(
         // 2.2 Criar Credenciais de Usuário
         const userRes = await new sql.Request(transaction)
           .input("email", sql.VarChar, email)
-          .input("user_name", sql.VarChar, user_name)
-          .input("senha", sql.VarChar, senha)
+          .input("user_name", sql.VarChar, user_name_gerado)
           .query(`IF EXISTS (SELECT 1 FROM usuario WHERE email = @email OR user_name = @user_name) THROW 51000, 'Email/usuário indisponível.', 1; 
-                INSERT INTO usuario (email, user_name, senha, nivel_acesso) OUTPUT INSERTED.id_usuario VALUES (@email, @user_name, @senha, 2);`);
+                INSERT INTO usuario (email, user_name, nivel_acesso) OUTPUT INSERTED.id_usuario VALUES (@email, @user_name, 2);`);
         const idUsr = userRes.recordset[0].id_usuario;
 
         // 2.3 Criar Ficha do Professor

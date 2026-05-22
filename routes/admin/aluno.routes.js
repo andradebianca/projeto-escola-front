@@ -4,6 +4,7 @@ const { sql, getPool } = require("../../db");
 const { verificarToken } = require("../../middlewares/auth.middleware");
 const { apenasAdmin } = require("../../middlewares/admin.middleware");
 const { registrarAuditoria } = require("../../helpers/auditoria");
+const { gerarUserName } = require("../../helpers/gerar-user");
 
 // =========================================================================
 // GET ALL ALUNOS
@@ -87,8 +88,6 @@ router.post("/admin/aluno", verificarToken, apenasAdmin, async (req, res) => {
   try {
     const {
       email,
-      user_name,
-      senha,
       cpf,
       nome_completo,
       data_nacimento,
@@ -97,6 +96,8 @@ router.post("/admin/aluno", verificarToken, apenasAdmin, async (req, res) => {
       endereco,
       telefones,
     } = req.body;
+
+    const user_name_gerado = gerarUserName(nome_completo);
 
     // 1. RESOLVER DEPENDÊNCIAS DE ENDEREÇO NO POOL PRINCIPAL (EVITA TRAVAMENTO DE METADADOS)
     // 1.1 Validar/Inserir UF
@@ -175,10 +176,9 @@ router.post("/admin/aluno", verificarToken, apenasAdmin, async (req, res) => {
       // 2.2 Criar Credenciais de Usuário (Nível de acesso 3 = Aluno)
       const userRes = await new sql.Request(transaction)
         .input("email", sql.VarChar, email)
-        .input("user_name", sql.VarChar, user_name)
-        .input("senha", sql.VarChar, senha)
+        .input("user_name", sql.VarChar, user_name_gerado)
         .query(`IF EXISTS (SELECT 1 FROM usuario WHERE email = @email OR user_name = @user_name) THROW 51000, 'Email ou usuário indisponível.', 1; 
-                INSERT INTO usuario (email, user_name, senha, nivel_acesso) OUTPUT INSERTED.id_usuario VALUES (@email, @user_name, @senha, 3);`);
+                INSERT INTO usuario (email, user_name, nivel_acesso) OUTPUT INSERTED.id_usuario VALUES (@email, @user_name, 3);`);
       const idUsr = userRes.recordset[0].id_usuario;
 
       // 2.3 Criar Ficha Cadastral do Aluno
