@@ -26,36 +26,30 @@
         <aside class="sidebar"></aside>
         <main class="main-content">
           <div class="page-content-card">
-            <div
-              class="page-actions-header"
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 20px;
-              "
-            >
-              <div class="page-title" style="margin: 0">
+            <div class="page-header">
+              <div class="page-title">
                 <h2>Gerenciar Especializações</h2>
                 <p>
                   Configure a listagem global de Pós-Graduações, MBAs e
                   Mestrados.
                 </p>
               </div>
-              <button class="new-btn" id="btn-nova-esp">
-                <i class="fa-solid fa-plus"></i> Nova Especialização
-              </button>
             </div>
+
             <div class="toolbar">
               <div class="search-container">
-                <i class="fa-solid fa-magnifying-glass"></i
-                ><input
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input
                   type="text"
                   id="input-pesquisa"
                   placeholder="Pesquisar especialização por título..."
                 />
               </div>
+              <button class="new-btn" id="btn-nova-esp">
+                <i class="fa-solid fa-plus"></i> Nova Especialização
+              </button>
             </div>
+
             <section class="records-list" id="esp-list">
               <p>Carregando...</p>
             </section>
@@ -73,26 +67,35 @@
           </button>
         </div>
         <div class="modal-body">
-          <div class="input-group span-2">
-            <label>Nome da Titulação <span class="required">*</span></label
-            ><input
+          <div class="form-section-title first">
+            Dados Acadêmicos da Titulação
+          </div>
+          <div class="input-group span-4">
+            <label>Nome da Titulação <span class="required">*</span></label>
+            <input
               type="text"
               id="input-nome"
               placeholder="Ex: MBA em Gestão Escolar"
             />
           </div>
-          <div class="input-group">
-            <label>Carga Horária (h) <span class="required">*</span></label
-            ><input type="number" id="input-carga" min="1" />
+          <div class="input-group span-2">
+            <label>Carga Horária (h) <span class="required">*</span></label>
+            <input type="number" id="input-carga" min="1" />
           </div>
-          <div class="input-group span-3">
-            <label>Descrição / Ementa Resumida</label
-            ><textarea id="input-descricao"></textarea>
+          <div class="input-group span-6">
+            <label>Descrição / Ementa Resumida</label>
+            <textarea
+              id="input-descricao"
+              placeholder="Escreva os objetivos e ementa resumida do curso..."
+            ></textarea>
           </div>
-          <button class="delete-btn" id="btn-excluir-esp">Excluir</button>
-          <button class="save-btn" id="btn-salvar-esp">
-            Salvar Especialização
-          </button>
+
+          <div class="modal-footer-actions">
+            <button class="delete-btn" id="btn-excluir-esp">Excluir</button>
+            <button class="save-btn" id="btn-salvar-esp">
+              Salvar Especialização
+            </button>
+          </div>
         </div>
       </div>
     </div>

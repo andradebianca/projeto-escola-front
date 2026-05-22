@@ -231,7 +231,7 @@ body {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(15, 23, 42, 0.45);
   backdrop-filter: blur(4px);
   display: none;
   justify-content: center;
@@ -241,50 +241,79 @@ body {
 .modal-overlay.active {
   display: flex;
 }
+
 .modal {
   width: 100%;
-  max-width: 800px;
+  max-width: 760px; /* Largura ideal para não cansar os olhos */
   background: white;
-  border-radius: 16px;
-  padding: 28px;
+  border-radius: 20px;
+  padding: 30px;
   box-sizing: border-box;
-  max-height: 90vh;
-  overflow-y: auto;
+  max-height: 85vh; /* Evita que o modal cole no topo/base do navegador */
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
 }
+
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  padding-bottom: 16px;
   border-bottom: 1px solid #f1f5f9;
-  padding-bottom: 12px;
+  flex-shrink: 0;
 }
 .modal-header h3 {
   margin: 0;
   font-size: 18px;
+  font-weight: 800;
+  color: var(--primary);
 }
 .close-modal {
   background: transparent;
   border: none;
-  font-size: 20px;
+  font-size: 18px;
   cursor: pointer;
-  color: #64748b;
+  color: #94a3b8;
+  transition: color 0.2s;
+}
+.close-modal:hover {
+  color: var(--danger);
 }
 
+/* O Segredo do Scroll Elegante dentro do Modal */
 .modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 4px 0 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(
+    6,
+    1fr
+  ); /* Grid de 6 colunas para flexibilidade total */
   gap: 16px;
 }
+
+/* Customização sutil da barra de scroll interna do modal */
+.modal-body::-webkit-scrollbar {
+  width: 5px;
+}
+.modal-body::-webkit-scrollbar-thumb {
+  background: rgba(65, 223, 255, 0.2);
+  border-radius: 10px;
+}
+
+/* Divisores de Seção do Formulário */
 .form-section-title {
-  grid-column: span 3;
-  font-size: 13px;
-  font-weight: 700;
-  color: #2563eb;
+  grid-column: span 6;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--secondary);
   text-transform: uppercase;
+  letter-spacing: 0.5px;
   border-top: 1px dashed #e2e8f0;
-  padding-top: 16px;
-  margin: 8px 0 4px;
+  padding-top: 20px;
+  margin: 10px 0 4px 0;
 }
 .form-section-title.first {
   border-top: none;
@@ -292,117 +321,162 @@ body {
   margin-top: 0;
 }
 
+/* Modificadores Dinâmicos de Tamanho de Coluna */
 .input-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
-}
-.input-group.span-2 {
-  grid-column: span 2;
+  grid-column: span 2; /* Padrão: 3 inputs por linha (6 / 2 = 3) */
 }
 .input-group.span-3 {
   grid-column: span 3;
-}
+} /* 2 inputs por linha */
+.input-group.span-4 {
+  grid-column: span 4;
+} /* Input maior composto */
+.input-group.span-6 {
+  grid-column: span 6;
+} /* Linha inteira */
+
 .input-group label {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  color: #475569;
+  color: #64748b;
+  letter-spacing: 0.3px;
 }
+
 .input-group input,
 .input-group select,
 .input-group textarea {
   height: 40px;
-  border-radius: 6px;
-  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc; /* Fundo sutil para destacar o preenchimento */
   padding: 0 12px;
   outline: none;
-  font-size: 14px;
+  font-size: 13px;
+  color: #0f172a;
+  transition: all 0.2s ease;
   box-sizing: border-box;
 }
 .input-group input:focus,
 .input-group select:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+  background: white;
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
-.input-group textarea {
-  min-height: 80px;
-  padding: 10px 12px;
-  resize: vertical;
+
+/* Botões do Rodapé do Modal */
+.modal-footer-actions {
+  grid-column: span 6;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 14px;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
 }
 
 .save-btn {
-  grid-column: span 2;
-  height: 44px;
-  background: #2563eb;
+  height: 42px;
+  padding: 0 24px;
+  background: linear-gradient(
+    90deg,
+    rgba(29, 207, 255, 0.9) 0%,
+    rgba(23, 73, 228, 0.9) 100%
+  );
   color: white;
   border: none;
-  border-radius: 8px;
-  font-weight: 600;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
   cursor: pointer;
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.2s;
 }
+.save-btn:hover {
+  box-shadow: 0 4px 12px rgba(23, 73, 228, 0.2);
+}
+.save-btn:active {
+  transform: scale(0.98);
+}
+
 .delete-btn {
-  grid-column: span 1;
-  height: 44px;
-  background: #fff1f2;
-  border: 1px solid #fecdd3;
-  color: #e11d48;
-  border-radius: 8px;
-  font-weight: 600;
+  height: 42px;
+  padding: 0 20px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.18);
+  color: #ef4444;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
   cursor: pointer;
   display: none;
+  transition: all 0.2s;
 }
 .delete-btn.active {
   display: block;
 }
+.delete-btn:hover {
+  background: rgba(239, 68, 68, 0.14);
+}
 
-/* COMPONENTES DINÂMICOS DE TELEFONES INTERNOS (TAGS) */
+/* Gerenciador de Tags Telefônicas */
 .phone-manager-container {
-  grid-column: span 3;
+  grid-column: span 6;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 .phone-input-row {
   display: flex;
   gap: 10px;
-}
-.phone-input-row input {
-  flex: 1;
+  max-width: 340px;
 }
 .btn-add-phone {
   width: 40px;
   height: 40px;
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  background: rgba(65, 223, 255, 0.08);
+  border: 1px solid rgba(65, 223, 255, 0.18);
+  color: var(--secondary);
+  border-radius: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #475569;
+  transition: all 0.2s;
 }
+.btn-add-phone:hover {
+  background: rgba(65, 223, 255, 0.15);
+}
+
 .phone-tags-list {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 4px;
 }
 .phone-tag {
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  color: #1e40af;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 .phone-tag i {
   cursor: pointer;
-  color: #ef4444;
+  color: #94a3b8;
+  font-size: 13px;
+  transition: color 0.15s;
+}
+.phone-tag i:hover {
+  color: var(--danger);
 }
 
 /* DETALHES GRID */
@@ -1179,4 +1253,86 @@ body {
 
 .record-actions {
   flex-shrink: 0;
+}
+
+.page-header {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.page-title h2 {
+  margin: 0 0 4px 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.page-title p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* A MÁGICA ACONTECE AQUI: Deixa a pesquisa e o botão lado a lado */
+.toolbar {
+  display: flex;
+  justify-content: space-between; /* Empurra a pesquisa pro canto esquerdo e o botão pro direito */
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.search-container {
+  position: relative;
+  flex: 1; /* Permite que a barra de pesquisa ocupe o máximo de espaço disponível */
+  max-width: 420px; /* Mantém um limite elegante para não esticar demais */
+}
+
+.search-container input {
+  width: 100%;
+  height: 40px !important;
+  border-radius: 12px !important;
+  border: 1px solid #e2e8f0;
+  padding: 0 14px 0 40px;
+  outline: none;
+  font-size: 13px;
+  background: #f8fafc;
+  transition: all 0.2s;
+}
+
+.search-container input:focus {
+  background: white;
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.search-container i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+/* Botão ajustado para fluir na mesma linha */
+.new-btn {
+  height: 40px !important;
+  padding: 0 18px !important;
+  border-radius: 12px !important;
+  background: linear-gradient(
+    90deg,
+    rgba(29, 207, 255, 0.9) 0%,
+    rgba(23, 73, 228, 0.9) 100%
+  ) !important;
+  color: white !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px rgba(23, 73, 228, 0.1) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  white-space: nowrap; /* Impede o texto do botão de quebrar em telas menores */
+  flex-shrink: 0; /* Não deixa o botão esmagar de jeito nenhum */
 }

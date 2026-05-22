@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ABC - Vínculo de Especializações</title>
+    <link rel="stylesheet" href="../style/global.css" />
+    <link rel="stylesheet" href="./style/resource.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-container">
+      <header class="top-header">
+        <div class="logo-area">
+          <h1 class="logo">ABC<span>.</span></h1>
+          <div class="logo-divider"></div>
+          <p class="portal-text">Painel Administrativo</p>
+        </div>
+        <button class="logout-btn-header" id="btn-sair">
+          Sair <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </button>
+      </header>
+      <div class="dashboard-container">
+        <aside class="sidebar"></aside>
+        <main class="main-content">
+          <div class="page-content-card">
+            <div class="page-header">
+              <div class="page-title">
+                <h2>Vincular Especializações</h2>
+                <p>
+                  Atribua títulos acadêmicos, MBAs e pós-graduações ao perfil
+                  dos professores.
+                </p>
+              </div>
+            </div>
+
+            <div class="toolbar" style="max-width: 100%; gap: 14px">
+              <div
+                class="input-group"
+                style="grid-column: auto; flex: 1; max-width: 400px; gap: 4px"
+              >
+                <label
+                  style="
+                    font-size: 11px;
+                    font-weight: 700;
+                    color: var(--secondary);
+                  "
+                  >Selecionar Professor</label
+                >
+                <select
+                  id="select-professor"
+                  style="
+                    width: 100%;
+                    height: 40px;
+                    border-radius: 12px;
+                    border: 1px solid #e2e8f0;
+                    background: #f8fafc;
+                    padding: 0 12px;
+                    outline: none;
+                    font-size: 13px;
+                  "
+                >
+                  <option value="">Carregando docentes...</option>
+                </select>
+              </div>
+            </div>
+
+            <div
+              id="painel-vinculos"
+              class="is-hidden"
+              style="
+                margin-top: 24px;
+                border-top: 1px dashed #e2e8f0;
+                padding-top: 20px;
+              "
+            >
+              <h3
+                style="
+                  font-size: 15px;
+                  font-weight: 800;
+                  color: var(--primary);
+                  margin-bottom: 16px;
+                "
+              >
+                <i class="fa-solid fa-graduation-cap"></i> Titulações de:
+                <span
+                  id="nome-professor-titulo"
+                  style="color: var(--secondary)"
+                ></span>
+              </h3>
+
+              <div
+                style="
+                  display: flex;
+                  gap: 12px;
+                  align-items: flex-end;
+                  margin-bottom: 24px;
+                  max-width: 500px;
+                "
+              >
+                <div
+                  class="input-group"
+                  style="grid-column: auto; flex: 1; gap: 4px"
+                >
+                  <label
+                    style="font-size: 11px; font-weight: 700; color: #64748b"
+                    >Nova Especialização</label
+                  >
+                  <select
+                    id="select-especializacao"
+                    style="
+                      width: 100%;
+                      height: 40px;
+                      border-radius: 12px;
+                      border: 1px solid #e2e8f0;
+                      padding: 0 12px;
+                      outline: none;
+                      font-size: 13px;
+                    "
+                  >
+                    <option value="">Carregando títulos...</option>
+                  </select>
+                </div>
+                <button
+                  id="btn-adicionar-vinculo"
+                  class="new-btn"
+                  style="
+                    height: 40px !important;
+                    border-radius: 12px !important;
+                    flex-shrink: 0;
+                  "
+                >
+                  <i class="fa-solid fa-plus"></i> Vincular
+                </button>
+              </div>
+
+              <section class="records-list" id="vinculos-list"></section>
+            </div>
+
+            <div
+              id="aviso-vazio"
+              style="text-align: center; padding: 40px 20px; color: #94a3b8"
+            >
+              <i
+                class="fa-solid fa-user-check"
+                style="font-size: 32px; margin-bottom: 12px; opacity: 0.5"
+              ></i>
+              <p style="font-size: 14px">
+                Selecione um professor acima para gerenciar suas especializações
+                acadêmicas.
+              </p>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script src="./script/global.js" type="module"></script>
+    <script src="./script/vinculo-especializacao.js" type="module"></script>
+  </body>
+</html>

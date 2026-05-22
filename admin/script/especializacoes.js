@@ -1,4 +1,3 @@
-// admin/script/especializacoes.js
 import { requisicaoApi, showToast } from "./../../script/funcs-global.js";
 import { urlBase } from "./../../script/variaveis-globais.js";
 
@@ -40,13 +39,15 @@ function renderizarLista(lista) {
 
   lista.forEach((item) => {
     espList.innerHTML += `
-      <article class="record-row">
-        <div class="record-main">
-          <h3>${item.nome}</h3>
-          <p>${item.descricao || "Sem descrição disponível."}</p>
+      <article class="record-row" style="gap: 20px;">
+        <div class="record-main" style="min-width: 0;">
+          <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 4px;">${item.nome}</h3>
+          <p style="font-size: 13px; color: #64748b; margin: 0; white-space: normal; line-height: 1.4;">
+            ${item.descricao || "Sem descrição disponível."}
+          </p>
         </div>
-        <div class="status-pill">${item.carga_horaria}h</div>
-        <div class="record-actions">
+        <div class="status-pill" style="flex-shrink: 0;">${item.carga_horaria}h</div>
+        <div class="record-actions" style="flex-shrink: 0;">
           <button class="action-btn edit" data-id="${item.id_especializacao}">Editar</button>
         </div>
       </article>
@@ -143,6 +144,8 @@ btnExcluirEsp.addEventListener("click", async () => {
     showToast("Registro deletado.");
     fecharModal();
     await buscarEspecializacoes();
+  } else {
+    showToast(d.erro || "Não foi possível excluir.", "error");
   }
 });
 

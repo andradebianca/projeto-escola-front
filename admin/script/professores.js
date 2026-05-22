@@ -1,4 +1,3 @@
-// admin/script/professores.js
 import { requisicaoApi, showToast } from "./../../script/funcs-global.js";
 import { urlBase } from "./../../script/variaveis-globais.js";
 
@@ -77,7 +76,6 @@ function renderizarProfessores(lista) {
         </div>
         <div class="status-pill">${p.email ?? "Sem e-mail"}</div>
         <div class="record-actions">
-          <button class="action-btn details" data-action="detalhes" data-id="${p.id_professor}">Ficha</button>
           <button class="action-btn edit" data-action="editar" data-id="${p.id_professor}">Editar</button>
         </div>
       </article>
@@ -114,19 +112,57 @@ function atualizarTagsEspelho() {
 }
 
 btnSalvarProfessor.addEventListener("click", async () => {
+  // Captura e higienização dos valores
+  const email = inputEmail.value.trim();
+  const user_name = inputUserName.value.trim();
+  const nome_completo = inputNomeCompleto.value.trim();
+  const data_nacimento = inputDataNascimento.value;
+
+  const cep = inputCep.value.trim();
+  const rua = inputRua.value.trim();
+  const numero = inputNumeroCasa.value.trim();
+  const bairro = inputBairro.value.trim();
+  const cidade = inputCidade.value.trim();
+  const uf = inputUf.value.trim();
+
+  // 1. VALIDAÇÃO DOS CAMPOS OBRIGATÓRIOS DO DOCENTE
+  if (!email || !user_name || !nome_completo || !data_nacimento) {
+    showToast(
+      "Por favor, preencha as credenciais e as informações pessoais do professor.",
+      "warning",
+    );
+    return;
+  }
+
+  // 2. VALIDAÇÃO ESPECÍFICA PARA NOVOS CADASTROS (Senha e CPF são obrigatórios apenas se NÃO for edição)
+  if (!modoEdicao) {
+    const senha = inputSenha.value.trim();
+    const cpf = inputCpf.value.trim();
+    if (!senha || !cpf) {
+      showToast(
+        "Defina uma senha de acesso e o CPF para o novo professor.",
+        "warning",
+      );
+      return;
+    }
+  }
+
+  // 3. VALIDAÇÃO DO ENDEREÇO DE LOCALIZAÇÃO
+  if (!cep || !rua || !numero || !bairro || !cidade || !uf) {
+    showToast(
+      "Por favor, complete as informações de endereço residencial.",
+      "warning",
+    );
+    return;
+  }
+
+  // Se tudo estiver preenchido, envia para a API
   const payload = {
-    email: inputEmail.value.trim(),
-    user_name: inputUserName.value.trim(),
-    nome_completo: inputNomeCompleto.value.trim(),
-    data_nacimento: inputDataNascimento.value,
-    endereco: {
-      cep: inputCep.value.trim(),
-      rua: inputRua.value.trim(),
-      numero: inputNumeroCasa.value.trim(),
-      bairro: inputBairro.value.trim(),
-      cidade: inputCidade.value.trim(),
-      uf: inputUf.value.trim().toUpperCase(),
-    },
+    email,
+    user_name,
+    nome_completo,
+    data_nacimento,
+    endereco: { cep, rua, numero, bairro, cidade, uf: uf.toUpperCase() },
     telefones: fonesTemporarios,
   };
 
@@ -140,7 +176,10 @@ btnSalvarProfessor.addEventListener("click", async () => {
     if (modoEdicao) {
       res = await requisicaoApi(
         `${urlBase}api/admin/professor/${professorIdEditando}`,
-        { method: "PUT", body: payload },
+        {
+          method: "PUT",
+          body: payload,
+        },
       );
     } else {
       res = await requisicaoApi(`${urlBase}api/admin/professor`, {
@@ -151,11 +190,14 @@ btnSalvarProfessor.addEventListener("click", async () => {
 
     const d = await res.json();
     if (!d.sucesso) {
-      showToast(d.erro || d.mensagem || "Erro na persistência.", "error");
+      showToast(
+        d.erro || d.mensagem || "Erro na gravação do registro.",
+        "error",
+      );
       return;
     }
 
-    showToast("Docente salvo com sucesso!");
+    showToast("Ficha do docente salva com sucesso!");
     fecharModal();
     await buscarProfessores();
   } catch (e) {
@@ -213,52 +255,24 @@ professoresList.addEventListener("click", async (e) => {
     const d = await res.json();
     if (d.sucesso) {
       const p = d.professor;
-      inputEmail.value = p.email;
-      inputUserName.value = p.user_name;
-      inputNomeCompleto.value = p.nome_completo;
-      inputDataNascimento.value = p.data_nacimento?.split("T")[0];
+      inputEmail.value = p.email ?? "";
+      inputUserName.value = p.user_name ?? "";
+      inputNomeCompleto.value = p.nome_completo ?? "";
+      inputDataNascimento.value = p.data_nacimento
+        ? p.data_nacimento.split("T")[0]
+        : "";
 
-      inputCep.value = p.endereco?.cep || "";
-      inputRua.value = p.endereco?.rua || "";
-      inputNumeroCasa.value = p.endereco?.numero || "";
-      inputBairro.value = p.endereco?.bairro || "";
-      inputCidade.value = p.endereco?.cidade || "";
-      inputUf.value = p.endereco?.uf || "";
+      // CORREÇÃO: Puxando os dados diretamente da raiz do objeto
+      inputCep.value = p.cep || "";
+      inputRua.value = p.rua || "";
+      inputNumeroCasa.value = p.numero || "";
+      inputBairro.value = p.bairro || "";
+      inputCidade.value = p.cidade || "";
+      inputUf.value = p.uf || "";
 
       fonesTemporarios = p.telefones ?? [];
       atualizarTagsEspelho();
       modalOverlay.classList.add("active");
-    }
-  }
-
-  if (action === "detalhes") {
-    detailsGrid.innerHTML = "<p>Carregando...</p>";
-    detailsEspecializacoes.innerHTML = "";
-    detailsOverlay.classList.add("active");
-
-    const [resP, resE] = await Promise.all([
-      requisicaoApi(`${urlBase}api/admin/professor/${id}`),
-      requisicaoApi(`${urlBase}api/admin/professor/${id}/especializacao`),
-    ]);
-    const [dP, dE] = await Promise.all([resP.json(), resE.json()]);
-
-    if (dP.sucesso) {
-      const p = dP.professor;
-      detailsGrid.innerHTML = `
-        <div class="detail-item full"><span>Nome</span><p>${p.nome_completo}</p></div>
-        <div class="detail-item"><span>Email</span><p>${p.email}</p></div>
-        <div class="detail-item"><span>Usuário</span><p>${p.user_name}</p></div>
-        <div class="detail-item full"><span>Endereço</span><p>${p.endereco ? `${p.endereco.rua}, ${p.endereco.numero} - ${p.endereco.cidade}/${p.endereco.uf}` : "Não informado"}</p></div>
-      `;
-
-      detailsEspecializacoes.innerHTML = '<div class="pills-list"></div>';
-      const container = detailsEspecializacoes.querySelector(".pills-list");
-      (dE.especializacoes ?? []).forEach((esp) => {
-        container.innerHTML += `<span class="pill">${esp.nome} (${esp.carga_horaria}h)</span>`;
-      });
-      if (!(dE.especializacoes ?? []).length)
-        detailsEspecializacoes.innerHTML =
-          "<p>Nenhuma especialização vinculada.</p>";
     }
   }
 });
@@ -266,6 +280,7 @@ professoresList.addEventListener("click", async (e) => {
 closeDetailsModal.addEventListener("click", () =>
   detailsOverlay.classList.remove("active"),
 );
+
 inputPesquisa.addEventListener("input", () => {
   const q = inputPesquisa.value.toLowerCase().trim();
   renderizarProfessores(

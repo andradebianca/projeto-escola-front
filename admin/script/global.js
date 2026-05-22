@@ -153,6 +153,15 @@ function renderizarSidebarEfetiva() {
 
         </button>
 
+        <button class="submenu-btn" id="menu-vinculo-especializacao">
+        <div class="submenu-btn-left">
+        <i class="fa-solid fa-graduation-cap"></i> 
+        <span>Vincular Títulos</span>
+
+        </div>
+          
+        </button>
+
         <button class="submenu-btn" id="menu-relatorios">
 
           <div class="submenu-btn-left">
@@ -202,6 +211,11 @@ function ativarItemMenuCorrente() {
   } else if (path.includes("relatorios.html")) {
     document.getElementById("menu-relatorios")?.classList.add("active");
     document.getElementById("grp-parametros")?.classList.add("open");
+  } else if (path.includes("vinculo-especializacao.html")) {
+    document
+      .getElementById("menu-vinculo-especializacao")
+      ?.classList.add("active");
+    document.getElementById("grp-parametros")?.classList.add("open");
   } else {
     document.getElementById("menu-dashboard")?.classList.add("active");
   }
@@ -217,6 +231,7 @@ function configurarCliquesNavegacao() {
     "menu-vinculos": "admin/vinculos-turma-disciplina.html",
     "menu-especializacoes": "admin/especializacoes.html",
     "menu-relatorios": "admin/relatorios.html",
+    "menu-vinculo-especializacao": "admin/vinculo-especializacao.html",
   };
 
   Object.entries(rotas).forEach(([id, target]) => {

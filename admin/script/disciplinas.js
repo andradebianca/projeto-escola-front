@@ -1,4 +1,3 @@
-// admin/script/disciplinas.js
 import { requisicaoApi, showToast } from "./../../script/funcs-global.js";
 import { urlBase } from "./../../script/variaveis-globais.js";
 
@@ -14,10 +13,35 @@ const btnExcluirDisciplina = document.getElementById("btn-excluir-disciplina");
 const inputNome = document.getElementById("input-nome");
 const inputCargaHoraria = document.getElementById("input-carga-horaria");
 const inputDescricao = document.getElementById("input-descricao");
+const inputFkProfessor = document.getElementById("input-fk-professor"); // Captura do novo seletor
 
 let disciplinasCache = [];
 let disciplinaIdEditando = null;
 let modoEdicao = false;
+
+async function init() {
+  await carregarProfessoresSelect();
+  await buscarDisciplinas();
+}
+
+// Busca os professores cadastrados para alimentar o campo Select
+async function carregarProfessoresSelect() {
+  try {
+    const res = await requisicaoApi(`${urlBase}api/admin/professor`);
+    const d = await res.json();
+    if (d.sucesso) {
+      inputFkProfessor.innerHTML =
+        '<option value="">Selecione um professor...</option>';
+      (d.professores ?? []).forEach((p) => {
+        inputFkProfessor.innerHTML += `<option value="${p.id_professor}">${p.nome_completo}</option>`;
+      });
+    }
+  } catch (e) {
+    console.error("Erro ao popular select de professores:", e);
+    inputFkProfessor.innerHTML =
+      '<option value="">Erro ao carregar docentes</option>';
+  }
+}
 
 async function buscarDisciplinas() {
   try {
@@ -40,13 +64,18 @@ function renderizarDisciplinas(lista) {
 
   lista.forEach((disc) => {
     disciplinasList.innerHTML += `
-      <article class="record-row">
-        <div class="record-main">
-          <h3>${disc.nome}</h3>
-          <p>${disc.descricao || "Sem ementa detalhada."}</p>
+      <article class="record-row" style="gap: 20px;">
+        <div class="record-main" style="min-width: 0;">
+          <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 4px;">${disc.nome}</h3>
+          <p style="font-size: 13px; color: #64748b; margin-bottom: 6px; white-space: normal; line-height: 1.4;">
+            ${disc.descricao || "Sem ementa detalhada."}
+          </p>
+          <p style="font-size: 12px; color: #94a3b8; display: flex; align-items: center; gap: 6px; margin: 0;">
+            <i class="fa-solid fa-user-tie"></i> Professor: <b style="color: #475569;">${disc.professor || "Não atribuído"}</b>
+          </p>
         </div>
-        <div class="status-pill">${disc.carga_horaria}h</div>
-        <div class="record-actions">
+        <div class="status-pill" style="flex-shrink: 0;">${disc.carga_horaria}h</div>
+        <div class="record-actions" style="flex-shrink: 0;">
           <button class="action-btn edit" data-id="${disc.id_disciplina}">Editar</button>
         </div>
       </article>
@@ -59,10 +88,16 @@ btnSalvarDisciplina.addEventListener("click", async () => {
     nome: inputNome.value.trim(),
     carga_horaria: Number(inputCargaHoraria.value),
     descricao: inputDescricao.value.trim() || null,
+    fk_professor: inputFkProfessor.value
+      ? Number(inputFkProfessor.value)
+      : null, // Mapeamento crucial pro back
   };
 
-  if (!payload.nome || !payload.carga_horaria) {
-    showToast("Preencha todos os campos obrigatórios.", "warning");
+  if (!payload.nome || !payload.carga_horaria || !payload.fk_professor) {
+    showToast(
+      "Preencha todos os campos obrigatórios, incluindo o professor.",
+      "warning",
+    );
     return;
   }
 
@@ -100,9 +135,13 @@ btnNovaDisciplina.addEventListener("click", () => {
   modalTitle.innerText = "Nova Disciplina";
   btnSalvarDisciplina.innerText = "Salvar Disciplina";
   btnExcluirDisciplina.classList.remove("active");
+
+  // Limpa campos
   inputNome.value = "";
   inputCargaHoraria.value = "";
   inputDescricao.value = "";
+  inputFkProfessor.value = "";
+
   modalOverlay.classList.add("active");
 });
 
@@ -128,12 +167,18 @@ disciplinasList.addEventListener("click", async (e) => {
     inputNome.value = d.disciplina.nome;
     inputCargaHoraria.value = d.disciplina.carga_horaria;
     inputDescricao.value = d.disciplina.descricao || "";
+    inputFkProfessor.value = d.disciplina.fk_professor || ""; // Preenche o ID correto do professor na edição
     modalOverlay.classList.add("active");
   }
 });
 
 btnExcluirDisciplina.addEventListener("click", async () => {
-  if (!confirm("Deseja realmente deletar esta disciplina do sistema?")) return;
+  if (
+    !confirm(
+      "Deseja realmente deletar esta disciplina? Isso apagará os diários de classe e notas vinculadas!",
+    )
+  )
+    return;
   const res = await requisicaoApi(
     `${urlBase}api/admin/disciplina/${disciplinaIdEditando}`,
     { method: "DELETE" },
@@ -155,4 +200,5 @@ inputPesquisa.addEventListener("input", () => {
   );
 });
 
-document.addEventListener("DOMContentLoaded", buscarDisciplinas);
+// Inicialização segura atrelada à função DOMContentLoaded
+document.addEventListener("DOMContentLoaded", init);

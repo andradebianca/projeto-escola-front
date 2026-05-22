@@ -88,7 +88,6 @@ function renderizarAlunos(lista) {
         </div>
         <div class="status-pill">${aluno.email}</div>
         <div class="record-actions">
-          <button class="action-btn details" data-action="detalhes" data-id="${aluno.id_aluno}">Ficha</button>
           <button class="action-btn edit" data-action="editar" data-id="${aluno.id_aluno}">Editar</button>
         </div>
       </article>
@@ -126,21 +125,68 @@ function atualizarTagsEspelho() {
 }
 
 btnSalvarAluno.addEventListener("click", async () => {
+  // Captura e higienização dos valores
+  const email = inputEmail.value.trim();
+  const user_name = inputUserName.value.trim();
+  const nome_completo = inputNomeCompleto.value.trim();
+  const data_nacimento = inputDataNascimento.value;
+  const matricula = inputMatricula.value;
+  const fk_turma = inputFkTurma.value;
+
+  const cep = inputCep.value.trim();
+  const rua = inputRua.value.trim();
+  const numero = inputNumeroCasa.value.trim();
+  const bairro = inputBairro.value.trim();
+  const cidade = inputCidade.value.trim();
+  const uf = inputUf.value.trim();
+
+  // 1. VALIDAÇÃO DOS CAMPOS OBRIGATÓRIOS GERAIS
+  if (
+    !email ||
+    !user_name ||
+    !nome_completo ||
+    !data_nacimento ||
+    !matricula ||
+    !fk_turma
+  ) {
+    showToast(
+      "Por favor, preencha todos os campos obrigatórios da ficha do estudante.",
+      "warning",
+    );
+    return;
+  }
+
+  // 2. VALIDAÇÃO ESPECÍFICA PARA NOVOS CADASTROS (Senha e CPF são obrigatórios apenas se NÃO for edição)
+  if (!modoEdicao) {
+    const senha = inputSenha.value.trim();
+    const cpf = inputCpf.value.trim();
+    if (!senha || !cpf) {
+      showToast(
+        "A senha inicial e o CPF são obrigatórios para novos cadastros.",
+        "warning",
+      );
+      return;
+    }
+  }
+
+  // 3. VALIDAÇÃO DO ENDEREÇO RESIDENCIAL
+  if (!cep || !rua || !numero || !bairro || !cidade || !uf) {
+    showToast(
+      "Ficha de endereço incompleta. Preencha todos os campos residenciais.",
+      "warning",
+    );
+    return;
+  }
+
+  // Se passou em todas as barreiras, monta o payload limpo para a API
   const payload = {
-    email: inputEmail.value.trim(),
-    user_name: inputUserName.value.trim(),
-    nome_completo: inputNomeCompleto.value.trim(),
-    data_nacimento: inputDataNascimento.value,
-    matricula: Number(inputMatricula.value),
-    fk_turma: Number(inputFkTurma.value),
-    endereco: {
-      cep: inputCep.value.trim(),
-      rua: inputRua.value.trim(),
-      numero: inputNumeroCasa.value.trim(),
-      bairro: inputBairro.value.trim(),
-      cidade: inputCidade.value.trim(),
-      uf: inputUf.value.trim().toUpperCase(),
-    },
+    email,
+    user_name,
+    nome_completo,
+    data_nacimento,
+    matricula: Number(matricula),
+    fk_turma: Number(fk_turma),
+    endereco: { cep, rua, numero, bairro, cidade, uf: uf.toUpperCase() },
     telefones: fonesTemporarios,
   };
 
@@ -154,7 +200,10 @@ btnSalvarAluno.addEventListener("click", async () => {
     if (modoEdicao) {
       res = await requisicaoApi(
         `${urlBase}api/admin/aluno/${alunoIdEditando}`,
-        { method: "PUT", body: payload },
+        {
+          method: "PUT",
+          body: payload,
+        },
       );
     } else {
       res = await requisicaoApi(`${urlBase}api/admin/aluno`, {
@@ -165,11 +214,14 @@ btnSalvarAluno.addEventListener("click", async () => {
 
     const d = await res.json();
     if (!d.sucesso) {
-      showToast(d.erro || d.mensagem || "Erro na operação.", "error");
+      showToast(
+        d.erro || d.mensagem || "Erro na consolidação dos dados.",
+        "error",
+      );
       return;
     }
 
-    showToast("Registro consolidado com sucesso!");
+    showToast("Registro do estudante consolidado com sucesso!");
     fecharModal();
     await buscarAlunos();
   } catch (e) {
@@ -225,28 +277,45 @@ alunosList.addEventListener("click", async (e) => {
     document.getElementById("field-senha").classList.add("is-hidden");
     document.getElementById("field-cpf").classList.add("is-hidden");
 
-    const res = await requisicaoApi(`${urlBase}api/admin/aluno/${id}`);
-    const d = await res.json();
-    if (d.sucesso) {
-      const a = d.aluno;
-      inputEmail.value = a.email;
-      inputUserName.value = a.user_name;
-      inputNomeCompleto.value = a.nome_completo;
-      inputDataNascimento.value = a.data_nacimento?.split("T")[0];
-      inputMatricula.value = a.matricula;
-      inputFkTurma.value = a.id_turma || "";
+    try {
+      const res = await requisicaoApi(`${urlBase}api/admin/aluno/${id}`);
+      const d = await res.json();
 
-      // Carregamento preventivo do sub-objeto de endereço retornado pelo seu back unificado
-      inputCep.value = a.endereco?.cep || "";
-      inputRua.value = a.endereco?.rua || "";
-      inputNumeroCasa.value = a.endereco?.numero || "";
-      inputBairro.value = a.endereco?.bairro || "";
-      inputCidade.value = a.endereco?.cidade || "";
-      inputUf.value = a.endereco?.uf || "";
+      if (d.sucesso) {
+        const a = d.aluno;
 
-      fonesTemporarios = a.telefones ?? [];
-      atualizarTagsEspelho();
-      modalOverlay.classList.add("active");
+        // Dados de Ficha Base
+        inputEmail.value = a.email ?? "";
+        inputUserName.value = a.user_name ?? "";
+        inputNomeCompleto.value = a.nome_completo ?? "";
+        inputDataNascimento.value = a.data_nacimento
+          ? a.data_nacimento.split("T")[0]
+          : "";
+        inputMatricula.value = a.matricula ?? "";
+        inputFkTurma.value = a.id_turma || "";
+
+        // CORREÇÃO PONTUAL: Mapeamento direto da raiz do objeto retornado pelo back-end
+        inputCep.value = a.cep || "";
+        inputRua.value = a.rua || "";
+        inputNumeroCasa.value = a.numero || "";
+        inputBairro.value = a.bairro || "";
+        inputCidade.value = a.cidade || "";
+        inputUf.value = a.uf || "";
+
+        // Contatos Telefônicos Integrados
+        fonesTemporarios = a.telefones ?? [];
+        atualizarTagsEspelho();
+
+        modalOverlay.classList.add("active");
+      } else {
+        showToast(
+          d.erro || "Não foi possível carregar os dados do estudante.",
+          "error",
+        );
+      }
+    } catch (err) {
+      console.error("Erro na busca do registro:", err);
+      showToast("Erro interno de comunicação com o servidor.", "error");
     }
   }
 });
