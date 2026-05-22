@@ -19,8 +19,6 @@ const detailsEspecializacoes = document.getElementById(
 
 /* CAPTURA DOS INPUTS */
 const inputEmail = document.getElementById("input-email");
-const inputUserName = document.getElementById("input-user-name");
-const inputSenha = document.getElementById("input-senha");
 const inputCpf = document.getElementById("input-cpf");
 const inputNomeCompleto = document.getElementById("input-nome-completo");
 const inputDataNascimento = document.getElementById("input-data-nascimento");
@@ -114,7 +112,6 @@ function atualizarTagsEspelho() {
 btnSalvarProfessor.addEventListener("click", async () => {
   // Captura e higienização dos valores
   const email = inputEmail.value.trim();
-  const user_name = inputUserName.value.trim();
   const nome_completo = inputNomeCompleto.value.trim();
   const data_nacimento = inputDataNascimento.value;
 
@@ -136,7 +133,6 @@ btnSalvarProfessor.addEventListener("click", async () => {
 
   // 2. VALIDAÇÃO ESPECÍFICA PARA NOVOS CADASTROS (Senha e CPF são obrigatórios apenas se NÃO for edição)
   if (!modoEdicao) {
-    const senha = inputSenha.value.trim();
     const cpf = inputCpf.value.trim();
     if (!senha || !cpf) {
       showToast(
@@ -167,7 +163,6 @@ btnSalvarProfessor.addEventListener("click", async () => {
   };
 
   if (!modoEdicao) {
-    payload.senha = inputSenha.value.trim();
     payload.cpf = inputCpf.value.trim();
   }
 
@@ -223,8 +218,6 @@ closeModal.addEventListener("click", fecharModal);
 
 function limparFormulario() {
   inputEmail.value = "";
-  inputUserName.value = "";
-  inputSenha.value = "";
   inputCpf.value = "";
   inputNomeCompleto.value = "";
   inputDataNascimento.value = "";
@@ -256,7 +249,6 @@ professoresList.addEventListener("click", async (e) => {
     if (d.sucesso) {
       const p = d.professor;
       inputEmail.value = p.email ?? "";
-      inputUserName.value = p.user_name ?? "";
       inputNomeCompleto.value = p.nome_completo ?? "";
       inputDataNascimento.value = p.data_nacimento
         ? p.data_nacimento.split("T")[0]

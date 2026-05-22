@@ -13,7 +13,6 @@ const btnExcluirAluno = document.getElementById("btn-excluir-aluno");
 
 /* CONFIGURAÇÕES DE INPUTS */
 const inputEmail = document.getElementById("input-email");
-const inputUserName = document.getElementById("input-user-name");
 const inputSenha = document.getElementById("input-senha");
 const inputCpf = document.getElementById("input-cpf");
 const inputNomeCompleto = document.getElementById("input-nome-completo");
@@ -124,116 +123,210 @@ function atualizarTagsEspelho() {
   });
 }
 
-btnSalvarAluno.addEventListener("click", async () => {
-  // Captura e higienização dos valores
-  const email = inputEmail.value.trim();
-  const user_name = inputUserName.value.trim();
-  const nome_completo = inputNomeCompleto.value.trim();
-  const data_nacimento = inputDataNascimento.value;
-  const matricula = inputMatricula.value;
-  const fk_turma = inputFkTurma.value;
+btnSalvarAluno.addEventListener(
+  "click",
 
-  const cep = inputCep.value.trim();
-  const rua = inputRua.value.trim();
-  const numero = inputNumeroCasa.value.trim();
-  const bairro = inputBairro.value.trim();
-  const cidade = inputCidade.value.trim();
-  const uf = inputUf.value.trim();
+  async () => {
 
-  // 1. VALIDAÇÃO DOS CAMPOS OBRIGATÓRIOS GERAIS
-  if (
-    !email ||
-    !user_name ||
-    !nome_completo ||
-    !data_nacimento ||
-    !matricula ||
-    !fk_turma
-  ) {
-    showToast(
-      "Por favor, preencha todos os campos obrigatórios da ficha do estudante.",
-      "warning",
-    );
-    return;
-  }
+    const email =
+      inputEmail.value.trim();
 
-  // 2. VALIDAÇÃO ESPECÍFICA PARA NOVOS CADASTROS (Senha e CPF são obrigatórios apenas se NÃO for edição)
-  if (!modoEdicao) {
-    const senha = inputSenha.value.trim();
-    const cpf = inputCpf.value.trim();
-    if (!senha || !cpf) {
+    const nome_completo =
+      inputNomeCompleto.value.trim();
+
+    const data_nacimento =
+      inputDataNascimento.value;
+
+    const matricula =
+      inputMatricula.value;
+
+    const fk_turma =
+      inputFkTurma.value;
+
+    const cep =
+      inputCep.value.trim();
+
+    const rua =
+      inputRua.value.trim();
+
+    const numero =
+      inputNumeroCasa.value.trim();
+
+    const bairro =
+      inputBairro.value.trim();
+
+    const cidade =
+      inputCidade.value.trim();
+
+    const uf =
+      inputUf.value.trim();
+
+    // =========================
+    // VALIDAÇÃO
+    // =========================
+    if (
+      !email ||
+      !nome_completo ||
+      !data_nacimento ||
+      !matricula ||
+      !fk_turma
+    ) {
+
       showToast(
-        "A senha inicial e o CPF são obrigatórios para novos cadastros.",
-        "warning",
+        "Preencha os campos obrigatórios",
+        "warning"
       );
-      return;
-    }
-  }
 
-  // 3. VALIDAÇÃO DO ENDEREÇO RESIDENCIAL
-  if (!cep || !rua || !numero || !bairro || !cidade || !uf) {
-    showToast(
-      "Ficha de endereço incompleta. Preencha todos os campos residenciais.",
-      "warning",
-    );
-    return;
-  }
-
-  // Se passou em todas as barreiras, monta o payload limpo para a API
-  const payload = {
-    email,
-    user_name,
-    nome_completo,
-    data_nacimento,
-    matricula: Number(matricula),
-    fk_turma: Number(fk_turma),
-    endereco: { cep, rua, numero, bairro, cidade, uf: uf.toUpperCase() },
-    telefones: fonesTemporarios,
-  };
-
-  if (!modoEdicao) {
-    payload.senha = inputSenha.value.trim();
-    payload.cpf = inputCpf.value.trim();
-  }
-
-  try {
-    let res;
-    if (modoEdicao) {
-      res = await requisicaoApi(
-        `${urlBase}api/admin/aluno/${alunoIdEditando}`,
-        {
-          method: "PUT",
-          body: payload,
-        },
-      );
-    } else {
-      res = await requisicaoApi(`${urlBase}api/admin/aluno`, {
-        method: "POST",
-        body: payload,
-      });
-    }
-
-    const d = await res.json();
-    if (!d.sucesso) {
-      showToast(
-        d.erro || d.mensagem || "Erro na consolidação dos dados.",
-        "error",
-      );
       return;
     }
 
-    showToast("Registro do estudante consolidado com sucesso!");
-    fecharModal();
-    await buscarAlunos();
-  } catch (e) {
-    showToast("Erro interno de rede.", "error");
+    // CPF só no cadastro
+    if (!modoEdicao) {
+
+      const cpf =
+        inputCpf.value.trim();
+
+      if (!cpf) {
+
+        showToast(
+          "CPF obrigatório",
+          "warning"
+        );
+
+        return;
+      }
+    }
+
+    // endereço
+    if (
+      !cep ||
+      !rua ||
+      !numero ||
+      !bairro ||
+      !cidade ||
+      !uf
+    ) {
+
+      showToast(
+        "Preencha o endereço completo",
+        "warning"
+      );
+
+      return;
+    }
+
+    // =========================
+    // PAYLOAD
+    // =========================
+    const payload = {
+
+      email,
+
+      nome_completo,
+
+      data_nacimento,
+
+      matricula:
+        Number(matricula),
+
+      fk_turma:
+        Number(fk_turma),
+
+      endereco: {
+        cep,
+        rua,
+        numero,
+        bairro,
+        cidade,
+        uf:
+          uf.toUpperCase(),
+      },
+
+      telefones:
+        fonesTemporarios,
+    };
+
+    // cpf apenas criação
+    if (!modoEdicao) {
+
+      payload.cpf =
+        inputCpf.value.trim();
+    }
+
+    try {
+
+      let res;
+
+      // =========================
+      // UPDATE
+      // =========================
+      if (modoEdicao) {
+
+        res =
+          await requisicaoApi(
+
+            `${urlBase}api/admin/aluno/${alunoIdEditando}`,
+
+            {
+              method: "PUT",
+              body: payload,
+            }
+          );
+
+      } else {
+
+        // =========================
+        // CREATE
+        // =========================
+        res =
+          await requisicaoApi(
+
+            `${urlBase}api/admin/aluno`,
+
+            {
+              method: "POST",
+              body: payload,
+            }
+          );
+      }
+
+      const d =
+        await res.json();
+
+      if (!d.sucesso) {
+
+        showToast(
+          d.erro ||
+            "Erro ao salvar",
+          "error"
+        );
+
+        return;
+      }
+
+      showToast(
+        "Aluno salvo com sucesso",
+        "success"
+      );
+
+      fecharModal();
+
+      await buscarAlunos();
+
+    } catch (err) {
+
+      showToast(
+        "Erro interno",
+        "error"
+      );
+    }
   }
-});
+);
 
 btnNovoAluno.addEventListener("click", () => {
   modoEdicao = false;
   alunoIdEditando = null;
   modalTitle.innerText = "Novo Aluno";
-  document.getElementById("field-senha").classList.remove("is-hidden");
   document.getElementById("field-cpf").classList.remove("is-hidden");
   limparFormulario();
   modalOverlay.classList.add("active");
@@ -246,21 +339,33 @@ function fecharModal() {
 closeModal.addEventListener("click", fecharModal);
 
 function limparFormulario() {
+
   inputEmail.value = "";
-  inputUserName.value = "";
-  inputSenha.value = "";
+
   inputCpf.value = "";
+
   inputNomeCompleto.value = "";
+
   inputDataNascimento.value = "";
+
   inputMatricula.value = "";
+
   inputFkTurma.value = "";
+
   inputCep.value = "";
+
   inputRua.value = "";
+
   inputNumeroCasa.value = "";
+
   inputBairro.value = "";
+
   inputCidade.value = "";
+
   inputUf.value = "";
+
   fonesTemporarios = [];
+
   atualizarTagsEspelho();
 }
 
@@ -274,7 +379,6 @@ alunosList.addEventListener("click", async (e) => {
     modoEdicao = true;
     alunoIdEditando = id;
     modalTitle.innerText = "Modificar Ficha do Aluno";
-    document.getElementById("field-senha").classList.add("is-hidden");
     document.getElementById("field-cpf").classList.add("is-hidden");
 
     try {
@@ -286,7 +390,6 @@ alunosList.addEventListener("click", async (e) => {
 
         // Dados de Ficha Base
         inputEmail.value = a.email ?? "";
-        inputUserName.value = a.user_name ?? "";
         inputNomeCompleto.value = a.nome_completo ?? "";
         inputDataNascimento.value = a.data_nacimento
           ? a.data_nacimento.split("T")[0]
