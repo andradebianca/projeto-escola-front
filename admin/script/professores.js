@@ -123,7 +123,7 @@ btnSalvarProfessor.addEventListener("click", async () => {
   const uf = inputUf.value.trim();
 
   // 1. VALIDAÇÃO DOS CAMPOS OBRIGATÓRIOS DO DOCENTE
-  if (!email || !user_name || !nome_completo || !data_nacimento) {
+  if (!email || !nome_completo || !data_nacimento) {
     showToast(
       "Por favor, preencha as credenciais e as informações pessoais do professor.",
       "warning",
@@ -155,7 +155,6 @@ btnSalvarProfessor.addEventListener("click", async () => {
   // Se tudo estiver preenchido, envia para a API
   const payload = {
     email,
-    user_name,
     nome_completo,
     data_nacimento,
     endereco: { cep, rua, numero, bairro, cidade, uf: uf.toUpperCase() },
