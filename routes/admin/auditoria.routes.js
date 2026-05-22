@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const { getPool, sql } = require("../db");
-const { verificarToken } = require("../middlewares/auth.middleware");
-const { apenasAdmin } = require("../middlewares/admin.middleware");
+const { sql, getPool } = require("../../db");
+const { verificarToken } = require("../../middlewares/auth.middleware");
+const { apenasAdmin } = require("../../middlewares/admin.middleware");
 // GET ALL LOGS: Lista a trilha de auditoria pura e estável
 router.get(
   "/admin/auditoria",
