@@ -7,74 +7,111 @@ const { sql, getPool } = require("../db");
 
 router.post("/login", async (req, res) => {
   try {
-    const { email, senha } = req.body || {};
+    const { login, senha } = req.body || {};
 
-    if (!email || !senha) {
+    // =========================
+    // VALIDAÇÃO
+    // =========================
+    if (!login) {
       return res.status(400).json({
-        erro: "Email e senha obrigatórios",
+        erro: "Login obrigatório",
       });
     }
 
     const pool = await getPool();
 
+    // =========================
+    // BUSCA USUÁRIO
+    // =========================
     const usuarioResult = await pool
       .request()
-      .input("email", sql.VarChar, email)
-      .input("senha", sql.VarChar, senha).query(`
+
+      .input("login", sql.VarChar, login).query(`
         SELECT
           id_usuario,
           email,
           user_name,
+          senha,
           nivel_acesso
+
         FROM usuario
-        WHERE email = @email
-          AND senha = @senha
+
+        WHERE
+          email = @login
+          OR user_name = @login
       `);
 
+    // =========================
+    // NÃO ENCONTRADO
+    // =========================
     if (usuarioResult.recordset.length === 0) {
       return res.status(401).json({
-        erro: "Email ou senha inválidos",
+        erro: "Usuário não encontrado",
       });
     }
 
     const usuario = usuarioResult.recordset[0];
 
+    // =========================
+    // PRIMEIRO ACESSO
+    // =========================
+    if (!usuario.senha) {
+      return res.status(401).json({
+        primeiro_acesso: true,
+
+        erro: "É necessário cadastrar uma senha antes de acessar",
+      });
+    }
+
+    // =========================
+    // SENHA INVÁLIDA
+    // =========================
+    if (usuario.senha !== senha) {
+      return res.status(401).json({
+        erro: "Senha inválida",
+      });
+    }
+
     let perfil = null;
 
+    // =========================
     // PROFESSOR
+    // =========================
     if (usuario.nivel_acesso === 2) {
       const professorResult = await pool
         .request()
+
         .input("id_usuario", sql.Int, usuario.id_usuario).query(`
-            SELECT
-              p.id_professor,
-              p.nome_completo,
-              p.data_nacimento,
+          SELECT
+            p.id_professor,
+            p.nome_completo,
+            p.data_nascimento,
 
-              (
-                SELECT DISTINCT
-                  t.ano_letivo
-                FROM disciplina d
+            (
+              SELECT DISTINCT
+                t.ano_letivo
 
-                INNER JOIN turma_disciplina td
-                  ON td.fk_disciplina =
-                    d.id_disciplina
+              FROM disciplina d
 
-                INNER JOIN turma t
-                  ON t.id_turma =
-                    td.fk_turma
+              INNER JOIN turma_disciplina td
+                ON td.fk_disciplina =
+                  d.id_disciplina
 
-                WHERE d.fk_professor =
-                  p.id_professor
+              INNER JOIN turma t
+                ON t.id_turma =
+                  td.fk_turma
 
-                FOR JSON PATH
-              ) AS opcoesAnos
+              WHERE d.fk_professor =
+                p.id_professor
 
-            FROM professor p
+              FOR JSON PATH
+            ) AS opcoesAnos
 
-            WHERE p.fk_usuario =
-              @id_usuario
-          `);
+          FROM professor p
+
+          WHERE p.fk_usuario =
+            @id_usuario
+        `);
 
       if (professorResult.recordset.length > 0) {
         const professor = professorResult.recordset[0];
@@ -93,16 +130,19 @@ router.post("/login", async (req, res) => {
       }
     }
 
+    // =========================
     // ALUNO
+    // =========================
     if (usuario.nivel_acesso === 3) {
       const alunoResult = await pool
         .request()
+
         .input("id_usuario", sql.Int, usuario.id_usuario).query(`
           SELECT
             a.id_aluno,
             a.nome_completo,
             a.matricula,
-            a.data_nacimento,
+            a.data_nascimento,
 
             (
               SELECT DISTINCT
@@ -139,6 +179,9 @@ router.post("/login", async (req, res) => {
       }
     }
 
+    // =========================
+    // TOKEN
+    // =========================
     const token = jwt.sign(
       {
         id_usuario: usuario.id_usuario,
@@ -153,6 +196,12 @@ router.post("/login", async (req, res) => {
       },
     );
 
+    // remove senha
+    delete usuario.senha;
+
+    // =========================
+    // RESPOSTA
+    // =========================
     res.json({
       sucesso: true,
 
@@ -170,5 +219,125 @@ router.post("/login", async (req, res) => {
     });
   }
 });
+
+router.post(
+  "/primeiro-acesso",
+
+  async (req, res) => {
+
+    try {
+
+      const {
+        email,
+        novaSenha,
+      } = req.body || {};
+
+      // =========================
+      // VALIDAÇÃO
+      // =========================
+      if (
+        !email ||
+        !novaSenha
+      ) {
+        return res.status(400).json({
+          erro:
+            "Email e senha obrigatórios",
+        });
+      }
+
+      const pool = await getPool();
+
+      // =========================
+      // BUSCA USUÁRIO
+      // =========================
+      const usuarioResult =
+        await pool
+          .request()
+
+          .input(
+            "email",
+            sql.VarChar,
+            email
+          )
+
+          .query(`
+            SELECT
+              id_usuario,
+              senha
+
+            FROM usuario
+
+            WHERE email =
+              @email
+          `);
+
+      if (
+        usuarioResult.recordset.length === 0
+      ) {
+        return res.status(404).json({
+          erro:
+            "Usuário não encontrado",
+        });
+      }
+
+      const usuario =
+        usuarioResult.recordset[0];
+
+      // =========================
+      // JÁ POSSUI SENHA
+      // =========================
+      if (usuario.senha) {
+
+        return res.status(400).json({
+          erro:
+            "Usuário já possui senha cadastrada",
+        });
+      }
+
+      // =========================
+      // UPDATE SENHA
+      // =========================
+      await pool
+        .request()
+
+        .input(
+          "id_usuario",
+          sql.Int,
+          usuario.id_usuario
+        )
+
+        .input(
+          "senha",
+          sql.VarChar(30),
+          novaSenha
+        )
+
+        .query(`
+          UPDATE usuario
+
+          SET
+            senha = @senha
+
+          WHERE id_usuario =
+            @id_usuario
+        `);
+
+      res.json({
+        sucesso: true,
+        mensagem:
+          "Senha cadastrada com sucesso",
+      });
+
+    } catch (err) {
+
+      console.error(err);
+
+      res.status(500).json({
+        erro: err.message,
+      });
+
+    }
+  }
+);
 
 module.exports = router;
