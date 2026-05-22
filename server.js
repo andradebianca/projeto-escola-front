@@ -16,7 +16,6 @@ const alunoRoutes = require("./routes/aluno.routes");
 const professorRoutes = require("./routes/professor.routes");
 const notaRoutes = require("./routes/nota.routes");
 const turmaRoutes = require("./routes/turma.routes");
-const auditoriaRoutes = require("./routes/auditoria.routes");
 
 const app = express();
 
@@ -37,7 +36,6 @@ app.use("/api", alunoRoutes);
 app.use("/api", professorRoutes);
 app.use("/api", notaRoutes);
 app.use("/api", turmaRoutes);
-app.use("/api", auditoriaRoutes);
 
 app.listen(3000, () => {
   console.log("API rodando na porta 3000");
