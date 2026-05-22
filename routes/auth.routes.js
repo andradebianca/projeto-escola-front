@@ -1,94 +1,173 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
+
 const router = express.Router();
-const { getPool, sql } = require("../db");
+
+const { sql, getPool } = require("../db");
 
 router.post("/login", async (req, res) => {
-  const { login, senha } = req.body;
-
   try {
-    const pool = await getPool();
-    const result = await pool
-      .request()
-      .input("login", sql.VarChar, login)
-      .query(
-        "SELECT * FROM usuario WHERE email = @login OR user_name = @login",
-      );
+    const { email, senha } = req.body || {};
 
-    if (result.recordset.length === 0) {
-      return res
-        .status(401)
-        .json({ sucesso: false, erro: "Credenciais inválidas." });
-    }
-
-    const usuario = result.recordset[0];
-
-    // Se senha for nula/vazia
-    if (!usuario.senha || usuario.senha === "") {
-      return res
-        .status(200)
-        .json({
-          sucesso: false,
-          primeiroAcesso: true,
-          mensagem: "Primeiro acesso.",
-        });
-    }
-
-    if (senha !== usuario.senha) {
-      return res.status(401).json({ sucesso: false, erro: "Senha incorreta." });
-    }
-
-    // LOGIN SUCESSO - RETORNO GARANTIDO
-    return res
-      .status(200)
-      .json({ sucesso: true, usuario: { id: usuario.id_usuario } });
-  } catch (err) {
-    console.error("Erro Fatal:", err);
-    // IMPORTANTE: Se o servidor der erro e não responder, ele trava o cliente
-    return res
-      .status(500)
-      .json({ sucesso: false, erro: "Erro interno no servidor." });
-  }
-});
-router.post("/primeiro-acesso", async (req, res) => {
-  const { email, novaSenha } = req.body;
-
-  if (!email || !novaSenha) {
-    return res.status(400).json({ sucesso: false, erro: "Dados incompletos." });
-  }
-
-  try {
-    const pool = await getPool();
-
-    const check = await pool
-      .request()
-      .input("email", sql.VarChar, email)
-      .query("SELECT id_usuario, senha FROM usuario WHERE email = @email");
-
-    if (check.recordset.length === 0) {
-      return res
-        .status(404)
-        .json({ sucesso: false, erro: "E-mail não encontrado no sistema." });
-    }
-
-    if (check.recordset[0].senha) {
+    if (!email || !senha) {
       return res.status(400).json({
-        sucesso: false,
-        erro: "Esta conta já possui uma senha registrada. Tente fazer o login.",
+        erro: "Email e senha obrigatórios",
       });
     }
 
-    await pool
+    const pool = await getPool();
+
+    const usuarioResult = await pool
       .request()
-      .input("senha", sql.VarChar, novaSenha)
       .input("email", sql.VarChar, email)
-      .query("UPDATE usuario SET senha = @senha WHERE email = @email");
+      .input("senha", sql.VarChar, senha).query(`
+        SELECT
+          id_usuario,
+          email,
+          user_name,
+          nivel_acesso
+        FROM usuario
+        WHERE email = @email
+          AND senha = @senha
+      `);
+
+    if (usuarioResult.recordset.length === 0) {
+      return res.status(401).json({
+        erro: "Email ou senha inválidos",
+      });
+    }
+
+    const usuario = usuarioResult.recordset[0];
+
+    let perfil = null;
+
+    // PROFESSOR
+    if (usuario.nivel_acesso === 2) {
+      const professorResult = await pool
+        .request()
+        .input("id_usuario", sql.Int, usuario.id_usuario).query(`
+            SELECT
+              p.id_professor,
+              p.nome_completo,
+              p.data_nacimento,
+
+              (
+                SELECT DISTINCT
+                  t.ano_letivo
+                FROM disciplina d
+
+                INNER JOIN turma_disciplina td
+                  ON td.fk_disciplina =
+                    d.id_disciplina
+
+                INNER JOIN turma t
+                  ON t.id_turma =
+                    td.fk_turma
+
+                WHERE d.fk_professor =
+                  p.id_professor
+
+                FOR JSON PATH
+              ) AS opcoesAnos
+
+            FROM professor p
+
+            WHERE p.fk_usuario =
+              @id_usuario
+          `);
+
+      if (professorResult.recordset.length > 0) {
+        const professor = professorResult.recordset[0];
+
+        perfil = {
+          tipo: "professor",
+
+          dados: {
+            ...professor,
+
+            opcoesAnos: professor.opcoesAnos
+              ? JSON.parse(professor.opcoesAnos).map((x) => x.ano_letivo)
+              : [],
+          },
+        };
+      }
+    }
+
+    // ALUNO
+    if (usuario.nivel_acesso === 3) {
+      const alunoResult = await pool
+        .request()
+        .input("id_usuario", sql.Int, usuario.id_usuario).query(`
+          SELECT
+            a.id_aluno,
+            a.nome_completo,
+            a.matricula,
+            a.data_nacimento,
+
+            (
+              SELECT DISTINCT
+                t.ano_letivo
+
+              FROM turma t
+
+              WHERE t.id_turma =
+                a.fk_turma
+
+              FOR JSON PATH
+            ) AS opcoesAnos
+
+          FROM alunos a
+
+          WHERE a.fk_usuario =
+            @id_usuario
+        `);
+
+      if (alunoResult.recordset.length > 0) {
+        const aluno = alunoResult.recordset[0];
+
+        perfil = {
+          tipo: "aluno",
+
+          dados: {
+            ...aluno,
+
+            opcoesAnos: aluno.opcoesAnos
+              ? JSON.parse(aluno.opcoesAnos).map((x) => x.ano_letivo)
+              : [],
+          },
+        };
+      }
+    }
+
+    const token = jwt.sign(
+      {
+        id_usuario: usuario.id_usuario,
+
+        nivel_acesso: usuario.nivel_acesso,
+      },
+
+      process.env.JWT_SECRET,
+
+      {
+        expiresIn: "1d",
+      },
+    );
 
     res.json({
       sucesso: true,
-      mensagem: "Senha definida com sucesso! Você já pode fazer login.",
+
+      token,
+
+      usuario,
+
+      perfil,
     });
   } catch (err) {
-    res.status(500).json({ sucesso: false, erro: err.message });
+    console.error(err);
+
+    res.status(500).json({
+      erro: err.message,
+    });
   }
 });
 
