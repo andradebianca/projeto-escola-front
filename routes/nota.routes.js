@@ -463,16 +463,10 @@ router.delete(
       // =========================
       await registrarAuditoria({
         usuarioId: req.usuario.id_usuario,
-
         acao: "DELETE",
-
         tabela: "notas",
-
         idRegistro: id,
-
-        descricao: "Nota removida",
-
-        dadosAnteriores: nota,
+        descricao: `Removeu a nota ${nota.valor_nota} do aluno (ID: ${nota.fk_aluno})`,
       });
 
       res.json({

@@ -6,12 +6,10 @@ require("dotenv").config();
 const authRoutes = require("./routes/auth.routes");
 
 const admAlunoRoutes = require("./routes/admin/aluno.routes");
+const admAuditoriaRoutes = require("./routes/admin/auditoria.routes");
 const admDisciplinaRoutes = require("./routes/admin/disciplina.routes");
-const admEnderecoRoutes = require("./routes/admin/endereco.routes");
 const admEspecializacaoRoutes = require("./routes/admin/especializacao.routes");
 const admProfessorRoutes = require("./routes/admin/professor.routes");
-const admTelefonesAlunoRoutes = require("./routes/admin/telefonesAluno.routes");
-const admTelefonesProfessorRoutes = require("./routes/admin/telefonesProfessor.routes");
 const admTurmaRoutes = require("./routes/admin/turma.routes");
 
 const alunoRoutes = require("./routes/aluno.routes");
@@ -30,11 +28,9 @@ app.use("/api", authRoutes);
 
 app.use("/api", admAlunoRoutes);
 app.use("/api", admDisciplinaRoutes);
-app.use("/api", admEnderecoRoutes);
+app.use("/api", admAuditoriaRoutes);
 app.use("/api", admEspecializacaoRoutes);
 app.use("/api", admProfessorRoutes);
-app.use("/api", admTelefonesAlunoRoutes);
-app.use("/api", admTelefonesProfessorRoutes);
 app.use("/api", admTurmaRoutes);
 
 app.use("/api", alunoRoutes);
