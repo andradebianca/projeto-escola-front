@@ -99,8 +99,6 @@ export async function requisicaoApi(endpoint, customOptions = {}) {
    SISTEMA DE TOAST NOTIFICATIONS
    ========================================== */
 export function showToast(mensagem, tipo = "success", duracao = 3500) {
-  debugger;
-
   let container = document.querySelector(".toast-container");
   if (!container) {
     container = document.createElement("div");

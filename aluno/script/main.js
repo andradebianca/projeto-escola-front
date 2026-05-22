@@ -13,7 +13,7 @@ const cardsDisciplinas = document.getElementById("cards-disciplinas");
 const selectAno = document.getElementById("select-ano");
 const btnSair = document.getElementById("btn-sair");
 
-/* STORAGE */
+/* STORAGE - Puxa o perfil com os dados do aluno e anos disponíveis */
 const perfil = JSON.parse(localStorage.getItem("perfil"));
 
 /* LOGOUT */
@@ -21,11 +21,17 @@ if (btnSair) {
   btnSair.addEventListener("click", logout);
 }
 
-/* ANO */
-let anoSelecionado = 2025;
+/* STORAGE / CACHE CONTROL */
+let anoSelecionado = null;
 
 /* INIT */
 async function init() {
+  // 1. Alimenta o Select IMEDIATAMENTE usando os dados salvos no LocalStorage do perfil
+  if (perfil && perfil.dados && perfil.dados.opcoesAnos) {
+    preencherSelectAnos(perfil.dados.opcoesAnos);
+  }
+
+  // 2. Busca as disciplinas na API (já vai com o maior ano cravado pelo preencherSelectAnos)
   await buscarDisciplinas();
 }
 
@@ -34,19 +40,18 @@ async function buscarDisciplinas() {
   try {
     cardsDisciplinas.innerHTML = "<p>Carregando disciplinas...</p>";
 
-    // REFACTOR: Utilizando a função centralizada com injeção automática de JWT
-    const response = await requisicaoApi(
-      `${urlBase}api/aluno/${perfil.dados.id_aluno}/disciplinas?ano=${anoSelecionado}`,
-    );
+    // Se já houver um anoSelecionado (definido pelo select), manda na URL.
+    const url =
+      `${urlBase}api/aluno/${perfil.dados.id_aluno}/disciplinas` +
+      (anoSelecionado ? `?ano=${anoSelecionado}` : "");
+
+    const response = await requisicaoApi(url);
     const data = await response.json();
 
     if (!data.sucesso) {
       cardsDisciplinas.innerHTML = "<p>Erro ao carregar disciplinas.</p>";
       return;
     }
-
-    /* SELECT */
-    preencherSelectAnos(data.aluno.opcoesAnos);
 
     /* DISCIPLINAS */
     renderizarDisciplinas(data.disciplinas);
@@ -58,15 +63,20 @@ async function buscarDisciplinas() {
 
 /* SELECT ANOS */
 function preencherSelectAnos(anos) {
-  if (!selectAno || !anos) return;
+  if (!selectAno || !anos || !anos.length) return;
   selectAno.innerHTML = "";
 
+  // Ordena do maior para o menor ano letivo (ex: 2026, 2025...)
   const anosOrdenados = [...anos].sort((a, b) => b - a);
-  anoSelecionado = anosOrdenados[0];
+
+  // REGRA: Se for a primeira carga (anoSelecionado vazio), crava o maior ano disponível do array
+  if (!anoSelecionado) {
+    anoSelecionado = anosOrdenados[0];
+  }
 
   anosOrdenados.forEach((ano) => {
     selectAno.innerHTML += `
-      <option value="${ano}" ${ano === anoSelecionado ? "selected" : ""}>
+      <option value="${ano}" ${Number(ano) === Number(anoSelecionado) ? "selected" : ""}>
         ${ano}
       </option>
     `;
@@ -91,12 +101,16 @@ function renderizarDisciplinas(disciplinas) {
   cardsDisciplinas.innerHTML = "";
 
   if (!disciplinas || !disciplinas.length) {
-    cardsDisciplinas.innerHTML = "<p>Nenhuma disciplina encontrada.</p>";
+    cardsDisciplinas.innerHTML =
+      "<p>Nenhuma disciplina encontrada para o ano selecionado.</p>";
     return;
   }
 
   disciplinas.forEach((disciplina) => {
     const status = obterStatus(disciplina.notes, disciplina.media);
+    const mediaFormatada = disciplina.media
+      ? Number(disciplina.media).toFixed(2)
+      : "0.00";
 
     cardsDisciplinas.innerHTML += `
       <div class="subject-card default-card">
@@ -105,7 +119,7 @@ function renderizarDisciplinas(disciplinas) {
         <p class="quantidade-notas">Quantidade de notas: ${disciplina.notes?.length ?? 0}/3</p>
         <div class="info-row">
           <div class="media">
-            Média: <strong>${Number(disciplina.media).toFixed(2)}</strong>
+            Média: <strong>${mediaFormatada}</strong>
           </div>
           <div class="status ${status.classe}">${status.texto}</div>
         </div>
