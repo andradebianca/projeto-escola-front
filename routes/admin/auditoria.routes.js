@@ -4,7 +4,7 @@ const { getPool, sql } = require("../../db");
 const { verificarToken } = require("../../middlewares/auth.middleware");
 const { apenasAdmin } = require("../../middlewares/admin.middleware");
 
-// GET ALL LOGS: Lista a trilha de auditoria completa
+// GET ALL LOGS: Lista a trilha de auditoria pura e estável
 router.get(
   "/admin/auditoria",
   verificarToken,
