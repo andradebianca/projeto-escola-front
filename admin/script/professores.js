@@ -204,7 +204,6 @@ btnNovoProfessor.addEventListener("click", () => {
   modoEdicao = false;
   professorIdEditando = null;
   modalTitle.innerText = "Novo Professor";
-  document.getElementById("field-senha").classList.remove("is-hidden");
   document.getElementById("field-cpf").classList.remove("is-hidden");
   limparFormulario();
   modalOverlay.classList.add("active");
@@ -241,7 +240,6 @@ professoresList.addEventListener("click", async (e) => {
     modoEdicao = true;
     professorIdEditando = id;
     modalTitle.innerText = "Editar Professor";
-    document.getElementById("field-senha").classList.add("is-hidden");
     document.getElementById("field-cpf").classList.add("is-hidden");
 
     const res = await requisicaoApi(`${urlBase}api/admin/professor/${id}`);
