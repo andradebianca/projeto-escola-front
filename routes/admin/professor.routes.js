@@ -4,6 +4,7 @@ const { sql, getPool } = require("../../db");
 const { verificarToken } = require("../../middlewares/auth.middleware");
 const { apenasAdmin } = require("../../middlewares/admin.middleware");
 const { registrarAuditoria } = require("../../helpers/auditoria");
+const { gerarUserName } = require("../../helpers/gerar-user");
 
 router.get(
   "/admin/professor",
