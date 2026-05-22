@@ -26,12 +26,14 @@
         <aside class="sidebar"></aside>
         <main class="main-content">
           <div class="page-content-card">
-            <div class="page-title">
-              <h2>Logs de Auditoria</h2>
-              <p>
-                Rastreabilidade completa de todas as ações realizadas no
-                sistema.
-              </p>
+            <div class="page-header">
+              <div class="page-title">
+                <h2>Logs de Auditoria</h2>
+                <p>
+                  Rastreabilidade completa de alterações, cadastros e remoções
+                  no sistema.
+                </p>
+              </div>
             </div>
 
             <div class="toolbar">
@@ -40,7 +42,7 @@
                 <input
                   type="text"
                   id="input-pesquisa"
-                  placeholder="Filtrar logs por ação, tabela ou usuário..."
+                  placeholder="Filtrar por ação, tabela, descrição ou usuário..."
                 />
               </div>
             </div>
@@ -54,6 +56,6 @@
     </div>
 
     <script src="./script/global.js" type="module"></script>
-    <script src="./script/relatorios.js" type="module"></script>
+    <script src="./script/logs.js" type="module"></script>
   </body>
 </html>

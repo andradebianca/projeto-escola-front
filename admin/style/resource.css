@@ -1336,3 +1336,84 @@ body {
   white-space: nowrap; /* Impede o texto do botão de quebrar em telas menores */
   flex-shrink: 0; /* Não deixa o botão esmagar de jeito nenhum */
 }
+
+#logs-list .record-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 20px;
+  padding: 16px 20px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Container do texto do log: toma todo o espaço restante e permite quebra de linha */
+#logs-list .record-main {
+  flex: 1; /* Faz ocupar 100% do espaço restante da linha horizontal */
+  min-width: 0; /* Quebra a trava de largura padrão do Flexbox */
+}
+
+#logs-list .record-main h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 6px 0;
+  white-space: normal !important; /* Sobrescreve o ellipsis do global e quebra linha */
+  word-break: break-word;
+  line-height: 1.5;
+}
+
+#logs-list .record-main p {
+  font-size: 11px;
+  color: #94a3b8;
+  margin: 0;
+  white-space: normal !important;
+}
+
+/* Caixas de dados retrocompatíveis (Antes e Depois) */
+#logs-list .record-main div[style*="background"] {
+  background-color: #f8fafc !important;
+  border: 1px dashed #cbd5e1 !important;
+  border-radius: 8px !important;
+  padding: 10px 14px !important;
+  margin-top: 10px !important;
+  font-family: "Courier New", Courier, monospace; /* Estilo código para dados */
+  font-size: 11px !important;
+  line-height: 1.5 !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Customização dos textos internos de modificações */
+#logs-list .record-main div span {
+  font-family: inherit;
+  font-size: 11px;
+}
+
+/* Badges customizadas de ação do log */
+#logs-list .status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  min-width: 80px;
+  padding: 0 10px;
+  border-radius: 6px;
+  font-size: 10px !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0; /* Impede a badge de encolher ou sumir */
+}
+
+/* Ajuste na coluna de tempo para não quebrar a data de linha */
+#logs-list div[style*="width: 130px"] {
+  font-size: 12px !important;
+  color: #475569 !important;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
