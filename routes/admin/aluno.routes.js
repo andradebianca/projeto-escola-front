@@ -43,7 +43,7 @@ router.get(
         .query(`
       SELECT
         a.id_aluno, a.nome_completo, a.data_nacimento, a.matricula, a.cpf, a.fk_turma AS id_turma,
-        u.email, u.user_name,
+        u.email,
         e.id_endereco, e.numero,
         r.nome_rua AS rua, r.cep, r.bairro,
         c.nome_cidade AS cidade,
@@ -244,7 +244,6 @@ router.put(
     try {
       const {
         email,
-        user_name,
         nome_completo,
         data_nacimento,
         matricula,
@@ -321,9 +320,8 @@ router.put(
         await new sql.Request(transaction)
           .input("id_usuario", sql.Int, current.fk_usuario)
           .input("email", sql.VarChar, email)
-          .input("user_name", sql.VarChar, user_name)
           .query(
-            `UPDATE usuario SET email = @email, user_name = @user_name WHERE id_usuario = @id_usuario`,
+            `UPDATE usuario SET email = @email WHERE id_usuario = @id_usuario`,
           );
 
         await new sql.Request(transaction)

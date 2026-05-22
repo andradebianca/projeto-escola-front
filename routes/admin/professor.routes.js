@@ -14,7 +14,7 @@ router.get(
     try {
       const pool = await getPool();
       const result = await pool.request().query(`
-      SELECT p.id_professor, p.nome_completo, p.data_nacimento, p.cpf, u.id_usuario, u.email, u.user_name
+      SELECT p.id_professor, p.nome_completo, p.data_nacimento, p.cpf, u.id_usuario, u.email
       FROM professor p INNER JOIN usuario u ON u.id_usuario = p.fk_usuario ORDER BY p.nome_completo
     `);
       res.json({ sucesso: true, professores: result.recordset });
@@ -34,7 +34,7 @@ router.get(
       const pool = await getPool();
       const profResult = await pool.request().input("id_professor", sql.Int, id)
         .query(`
-      SELECT p.id_professor, p.nome_completo, p.data_nacimento, p.cpf, u.email, u.user_name,
+      SELECT p.id_professor, p.nome_completo, p.data_nacimento, p.cpf, u.email, 
       e.id_endereco, e.numero, r.nome_rua AS rua, r.cep, r.bairro, c.nome_cidade AS cidade, uf.nome_estado AS uf
       FROM professor p INNER JOIN usuario u ON u.id_usuario = p.fk_usuario
       LEFT JOIN endereco e ON e.id_endereco = p.fk_endereco LEFT JOIN rua r ON r.id_rua = e.fk_rua
@@ -217,7 +217,6 @@ router.put(
     try {
       const {
         email,
-        user_name,
         nome_completo,
         data_nacimento,
         endereco,
@@ -305,9 +304,8 @@ router.put(
         await new sql.Request(transaction)
           .input("id_usuario", sql.Int, current.fk_usuario)
           .input("email", sql.VarChar, email)
-          .input("user_name", sql.VarChar, user_name)
           .query(
-            `UPDATE usuario SET email = @email, user_name = @user_name WHERE id_usuario = @id_usuario`,
+            `UPDATE usuario SET email = @email WHERE id_usuario = @id_usuario`,
           );
 
         // 2.2 Atualiza Endereço Físico
