@@ -1,23 +1,3 @@
-.main-content {
-  flex: 1;
-  width: 100%;
-}
-
-.menu {
-  max-height: 62vh;
-  overflow-y: auto;
-  padding-right: 2px;
-}
-
-.menu::-webkit-scrollbar {
-  width: 4px;
-}
-
-.menu::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.25);
-  border-radius: 999px;
-}
-
 .page-title {
   margin-bottom: 24px;
 }
@@ -32,21 +12,6 @@
 .page-title p {
   color: #666;
   font-size: 14px;
-}
-
-.cards {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 16px;
-  margin-bottom: 26px;
-}
-
-.cards > p {
-  grid-column: 1 / -1;
-  text-align: center;
-  color: #666;
-  font-size: 14px;
-  padding: 32px;
 }
 
 .summary-card {
@@ -111,18 +76,7 @@
 }
 
 @media (max-width: 1200px) {
-  .cards {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
   .actions-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 700px) {
-  .cards,
-  .actions-grid {
-    grid-template-columns: 1fr;
   }
 }

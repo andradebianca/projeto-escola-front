@@ -1,11 +1,6 @@
 /* ==========================================
    CONFIGURAÇÕES DE CONTEÚDO PRINCIPAL (MAIN)
    ========================================== */
-.main-content {
-  flex: 1;
-  padding-top: 2px;
-}
-
 /* TÍTULO DA PÁGINA */
 .page-title {
   margin-bottom: 24px;
@@ -53,26 +48,6 @@
 .semester:focus {
   border-color: var(--secondary);
   box-shadow: 0 0 0 3px rgba(65, 223, 255, 0.2);
-}
-
-/* ==========================================
-   GRID DE DISCIPLINAS
-   ========================================== */
-.cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  max-width: 100%; /* Permite expandir melhor no espaço da direita */
-}
-
-/* Mensagens de feedback do JS (Carregando, Erro, Vazio) */
-.cards > p {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 40px;
-  color: #666;
-  font-size: 14px;
-  font-style: italic;
 }
 
 /* ==========================================
@@ -175,17 +150,8 @@
 /* ==========================================
    RESPONSIVIDADE REFINADA
    ========================================== */
-@media (max-width: 1200px) {
-  .cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
 
 @media (max-width: 600px) {
-  .cards {
-    grid-template-columns: 1fr;
-  }
-
   .semester {
     max-width: 100%; /* No mobile o select ocupa a largura total para facilitar o toque */
   }

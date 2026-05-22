@@ -1,3 +1,4 @@
+// admin/script/vinculos-turma-disciplina.js
 import { requisicaoApi, showToast } from "./../../script/funcs-global.js";
 import { urlBase } from "./../../script/variaveis-globais.js";
 
@@ -6,251 +7,113 @@ const selectDisciplina = document.getElementById("filtro-disciplina");
 const btnVincular = document.getElementById("btn-vincular");
 const btnRecarregar = document.getElementById("btn-recarregar");
 const recordsList = document.getElementById("records-list");
-const detailsOverlay = document.getElementById("details-overlay");
-const detailsGrid = document.getElementById("details-grid");
-const closeDetailsModal = document.getElementById("close-details-modal");
 
-let turmas = [];
-let disciplinas = [];
 let vinculos = [];
 
-async function carregarBases() {
+async function carregarDropdownsBases() {
   try {
     const [resTurmas, resDisciplinas] = await Promise.all([
       requisicaoApi(`${urlBase}api/admin/turma`),
       requisicaoApi(`${urlBase}api/admin/disciplina`),
     ]);
-
-    const [dadosTurmas, dadosDisciplinas] = await Promise.all([
+    const [dT, dD] = await Promise.all([
       resTurmas.json(),
       resDisciplinas.json(),
     ]);
 
-    if (!dadosTurmas?.sucesso || !dadosDisciplinas?.sucesso) {
-      showToast("Erro ao carregar bases de vinculo.", "error");
-      return;
+    if (dT.sucesso) {
+      selectTurma.innerHTML = '<option value="">Selecione a turma...</option>';
+      dT.turmas.forEach(
+        (t) =>
+          (selectTurma.innerHTML += `<option value="${t.id_turma}">${t.cod_turma} (${t.turno})</option>`),
+      );
     }
-
-    turmas = dadosTurmas.turmas || [];
-    disciplinas = dadosDisciplinas.disciplinas || [];
-
-    preencherSelects();
-  } catch (error) {
-    console.error("Erro ao carregar bases de vinculo:", error);
-    showToast("Erro interno ao carregar bases de vinculo.", "error");
+    if (dD.sucesso) {
+      selectDisciplina.innerHTML =
+        '<option value="">Selecione a disciplina...</option>';
+      dD.disciplinas.forEach(
+        (d) =>
+          (selectDisciplina.innerHTML += `<option value="${d.id_disciplina}">${d.nome}</option>`),
+      );
+    }
+  } catch (e) {
+    console.error(e);
   }
-}
-
-function preencherSelects() {
-  const turmaAtual = selectTurma.value;
-  const disciplinaAtual = selectDisciplina.value;
-
-  selectTurma.innerHTML = '<option value="">Selecione a turma...</option>';
-  turmas.forEach((turma) => {
-    selectTurma.innerHTML += `
-      <option value="${turma.id_turma}">${turma.cod_turma} � ${turma.ano_letivo}</option>
-    `;
-  });
-
-  selectDisciplina.innerHTML = '<option value="">Selecione a disciplina...</option>';
-  disciplinas.forEach((disciplina) => {
-    selectDisciplina.innerHTML += `
-      <option value="${disciplina.id_disciplina}">${disciplina.nome}</option>
-    `;
-  });
-
-  selectTurma.value = turmaAtual || "";
-  selectDisciplina.value = disciplinaAtual || "";
-}
-
-function turmaSelecionada() {
-  return turmas.find((item) => Number(item.id_turma) === Number(selectTurma.value));
-}
-
-function renderizarVinculos() {
-  recordsList.innerHTML = "";
-
-  if (!selectTurma.value) {
-    recordsList.innerHTML = "<p>Selecione uma turma para ver os vinculos.</p>";
-    return;
-  }
-
-  if (!vinculos.length) {
-    recordsList.innerHTML = "<p>Nenhuma disciplina vinculada para esta turma.</p>";
-    return;
-  }
-
-  vinculos.forEach((vinculo) => {
-    recordsList.innerHTML += `
-      <article class="record-row">
-        <div class="record-main">
-          <h3>${vinculo.nome}</h3>
-          <p>Professor: ${vinculo.professor || "-"}</p>
-        </div>
-
-        <div class="status-pill">${vinculo.carga_horaria || 0}h</div>
-
-        <div class="record-actions">
-          <button class="action-btn details" data-action="detalhes" data-id="${vinculo.id_turma_disciplina}">Detalhes</button>
-          <button class="action-btn remove" data-action="remover" data-id="${vinculo.id_turma_disciplina}">Remover</button>
-        </div>
-      </article>
-    `;
-  });
 }
 
 async function buscarVinculosDaTurma() {
   if (!selectTurma.value) {
-    vinculos = [];
-    renderizarVinculos();
+    recordsList.innerHTML = "<p>Selecione uma turma para analisar.</p>";
     return;
   }
+  recordsList.innerHTML = "<p>Buscando conexões de diário...</p>";
 
   try {
-    recordsList.innerHTML = "<p>Carregando vinculos...</p>";
-
-    const response = await requisicaoApi(
+    const res = await requisicaoApi(
       `${urlBase}api/admin/turma/${selectTurma.value}/disciplina`,
     );
-    const data = await response.json();
+    const d = await res.json();
+    vinculos = d.disciplinas || [];
 
-    if (!data?.sucesso) {
-      recordsList.innerHTML = "<p>Erro ao carregar vinculos.</p>";
+    recordsList.innerHTML = "";
+    if (!vinculos.length) {
+      recordsList.innerHTML =
+        "<p>Nenhuma disciplina vinculada para esta turma.</p>";
       return;
     }
 
-    vinculos = data.disciplinas || [];
-    renderizarVinculos();
-  } catch (error) {
-    console.error("Erro ao buscar vinculos:", error);
-    recordsList.innerHTML = "<p>Erro interno ao carregar vinculos.</p>";
+    vinculos.forEach((v) => {
+      recordsList.innerHTML += `
+        <article class="record-row">
+          <div class="record-main"><h3>${v.nome}</h3><p>Professor Alocado: ${v.professor || "Não atribuído"}</p></div>
+          <div class="status-pill">${v.carga_horaria}h</div>
+          <div class="record-actions"><button class="action-btn remove" data-id="${v.id_turma_disciplina}">Remover</button></div>
+        </article>
+      `;
+    });
+  } catch (e) {
+    recordsList.innerHTML = "<p>Erro na requisição acadêmica.</p>";
   }
 }
 
-async function vincularDisciplina() {
+btnVincular.addEventListener("click", async () => {
   const fk_turma = Number(selectTurma.value);
   const fk_disciplina = Number(selectDisciplina.value);
-
   if (!fk_turma || !fk_disciplina) {
-    showToast("Selecione turma e disciplina.", "warning");
+    showToast("Gatilho inválido. Selecione os dois campos.", "warning");
     return;
   }
 
-  try {
-    const response = await requisicaoApi(`${urlBase}api/admin/turma/disciplina`, {
-      method: "POST",
-      body: { fk_turma, fk_disciplina },
-    });
-
-    const data = await response.json();
-
-    if (!data?.sucesso) {
-      showToast(data?.erro || "Erro ao vincular disciplina.", "error");
-      return;
-    }
-
-    showToast("Disciplina vinculada com sucesso!");
+  const res = await requisicaoApi(`${urlBase}api/admin/turma/disciplina`, {
+    method: "POST",
+    body: { fk_turma, fk_disciplina },
+  });
+  const d = await res.json();
+  if (d.sucesso) {
+    showToast("Matriz vinculada com sucesso!");
     await buscarVinculosDaTurma();
-  } catch (error) {
-    console.error("Erro ao vincular disciplina:", error);
-    showToast("Erro interno ao vincular disciplina.", "error");
+  } else {
+    showToast(d.erro || "Falha ao vincular.", "error");
   }
-}
+});
 
-function abrirDetalhes(vinculo) {
-  const turma = turmaSelecionada();
+recordsList.addEventListener("click", async (e) => {
+  const btn = e.target.closest(".action-btn.remove");
+  if (!btn) return;
+  if (!confirm("Deseja quebrar o vínculo desta disciplina com a turma?"))
+    return;
 
-  detailsGrid.innerHTML = `
-    <div class="detail-item full">
-      <span>Disciplina</span>
-      <p>${vinculo.nome}</p>
-    </div>
-    <div class="detail-item">
-      <span>Professor</span>
-      <p>${vinculo.professor || "-"}</p>
-    </div>
-    <div class="detail-item">
-      <span>Carga Horaria</span>
-      <p>${vinculo.carga_horaria || 0}h</p>
-    </div>
-    <div class="detail-item full">
-      <span>Turma</span>
-      <p>${turma ? `${turma.cod_turma} � ${turma.ano_letivo} � ${turma.turno}` : "-"}</p>
-    </div>
-  `;
-
-  detailsOverlay.classList.add("active");
-}
-
-async function removerVinculo(idVinculo) {
-  const confirmar = confirm("Deseja remover este vinculo? As notas relacionadas serao removidas.");
-  if (!confirmar) return;
-
-  try {
-    const response = await requisicaoApi(
-      `${urlBase}api/admin/turma/disciplina/${idVinculo}`,
-      {
-        method: "DELETE",
-      },
-    );
-
-    const data = await response.json();
-
-    if (!data?.sucesso) {
-      showToast(data?.erro || "Erro ao remover vinculo.", "error");
-      return;
-    }
-
-    showToast("Vinculo removido com sucesso!");
-    await buscarVinculosDaTurma();
-  } catch (error) {
-    console.error("Erro ao remover vinculo:", error);
-    showToast("Erro interno ao remover vinculo.", "error");
-  }
-}
-
-recordsList.addEventListener("click", (event) => {
-  const botao = event.target.closest(".action-btn");
-  if (!botao) return;
-
-  const idVinculo = Number(botao.dataset.id);
-  const acao = botao.dataset.action;
-
-  if (!idVinculo || !acao) return;
-
-  const vinculo = vinculos.find(
-    (item) => Number(item.id_turma_disciplina) === idVinculo,
+  const res = await requisicaoApi(
+    `${urlBase}api/admin/turma/disciplina/${btn.dataset.id}`,
+    { method: "DELETE" },
   );
-
-  if (!vinculo) return;
-
-  if (acao === "detalhes") {
-    abrirDetalhes(vinculo);
-    return;
-  }
-
-  if (acao === "remover") {
-    removerVinculo(idVinculo);
+  const d = await res.json();
+  if (d.sucesso) {
+    showToast("Vínculo desfeito!");
+    await buscarVinculosDaTurma();
   }
 });
 
 selectTurma.addEventListener("change", buscarVinculosDaTurma);
-btnVincular.addEventListener("click", vincularDisciplina);
 btnRecarregar.addEventListener("click", buscarVinculosDaTurma);
-
-closeDetailsModal.addEventListener("click", () => {
-  detailsOverlay.classList.remove("active");
-});
-
-detailsOverlay.addEventListener("click", (event) => {
-  if (event.target === detailsOverlay) {
-    detailsOverlay.classList.remove("active");
-  }
-});
-
-async function init() {
-  await carregarBases();
-  await buscarVinculosDaTurma();
-}
-
-init();
+document.addEventListener("DOMContentLoaded", carregarDropdownsBases);

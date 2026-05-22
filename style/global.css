@@ -1,36 +1,29 @@
 @import url("./variables.css");
 
-/* ==========================================
-   RESET & CONFIGURAÇÕES BASE (ANTI-PULO)
-   ========================================== */
-html {
-  /* Reserva o espaço da scrollbar na janela principal do navegador */
-  scrollbar-gutter: stable both-edges;
-}
-
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+
   font-family: Arial, Helvetica, sans-serif;
 }
 
 body {
   background: var(--background);
+
   color: var(--text);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
 }
 
 button,
 input,
-select {
+select,
+textarea {
   font-family: inherit;
 }
 
 button {
   border: none;
+
   cursor: pointer;
 }
 
@@ -38,59 +31,59 @@ a {
   text-decoration: none;
 }
 
-/* ==========================================
-   COMPONENTES GERAIS
-   ========================================== */
-.semester {
-  width: 100%;
-  max-width: 240px; /* Reduzido para ficar proporcional ao ano */
-  height: 38px;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  background: white;
-  padding: 0 14px;
-  margin-bottom: 14px;
-  outline: none;
-  color: #444;
-  font-size: 14px;
-}
+/* ========================================
+   APP
+======================================== */
 
-.default-card {
-  background: white;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-}
-
-/* ==========================================
-   ESTRUTURA DO APP & HEADER
-   ========================================== */
 .app-container {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 40px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+
+  padding: 24px;
 }
 
+.dashboard-container {
+  display: flex;
+
+  gap: 22px;
+
+  margin-top: 22px;
+}
+
+.main-content {
+  flex: 1;
+}
+
+/* ========================================
+   HEADER
+======================================== */
+
 .top-header {
+  height: 72px;
+
+  border-radius: 24px;
+
+  background: white;
+
+  border: 1px solid rgba(65, 223, 255, 0.15);
+
+  padding: 0 28px;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 18px;
 }
 
 .logo-area {
   display: flex;
   align-items: center;
-  gap: 20px;
+
+  gap: 18px;
 }
 
 .logo {
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 28px;
+  font-weight: 800;
+
   color: var(--primary);
 }
 
@@ -101,300 +94,373 @@ a {
 .logo-divider {
   width: 2px;
   height: 38px;
+
   background: var(--secondary);
 }
 
 .portal-text {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
+
   color: var(--primary);
 }
 
 .logout-btn-header {
   background: transparent;
+
   display: flex;
   align-items: center;
+
   gap: 10px;
+
   color: var(--primary);
+
   font-size: 14px;
-  font-weight: bold;
+  font-weight: 700;
 }
 
 .logout-btn-header i {
   color: var(--secondary);
 }
 
-.dashboard-container {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  display: flex;
-  gap: 32px;
-  align-items: flex-start;
-  width: 100%;
-}
+/* ========================================
+   SIDEBAR
+======================================== */
 
-/* ==========================================
-   BARRA LATERAL (SIDEBAR)
-   ========================================== */
 .sidebar {
-  width: 240px;
-  min-width: 240px;
-  border-radius: 12px;
+  width: 230px;
+  min-width: 230px;
+
+  border-radius: 28px;
+
   background: linear-gradient(
     180deg,
     var(--primary) 0%,
     var(--primary-dark) 100%
   );
-  padding: 32px 20px;
-  position: sticky;
-  top: 30px;
-  max-height: calc(100vh - 60px);
-  overflow-y: auto;
-}
 
-.sidebar::-webkit-scrollbar {
-  width: 0px;
+  padding: 24px 18px;
 }
 
 .profile {
   text-align: center;
-  margin-bottom: 40px;
+
+  margin-bottom: 34px;
 }
 
 .avatar {
-  width: 90px;
-  height: 90px;
+  width: 120px;
+  height: 120px;
+
   border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.1);
+
+  border: 4px solid var(--secondary);
+
+  background: #dfe1e9;
+
   margin: 0 auto 16px;
+
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 32px;
-  color: #ffffff;
+
+  color: #aeb3d2;
+
+  font-size: 44px;
 }
 
 .profile h2 {
   color: var(--secondary);
-  font-size: 14px;
-  margin-bottom: 28px;
+
+  font-size: 26px;
+
+  margin-bottom: 6px;
 }
 
 .profile span {
   color: white;
-  font-size: 12px;
-  font-weight: bold;
+
+  font-size: 14px;
 }
 
-/* ==========================================
-   MENU DE NAVEGAÇÃO
-   ========================================== */
+/* ========================================
+   MENU
+======================================== */
+
 .menu {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+
+  gap: 14px;
 }
+
+/* GRUPO */
+
+.menu-group {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+/* BOTÕES */
+
+.menu-btn,
+.submenu-btn {
+  width: 100%;
+
+  border: none;
+
+  background: transparent;
+
+  color: white;
+
+  transition: 0.2s;
+}
+
+/* MENU PRINCIPAL */
 
 .menu-btn {
-  width: 100%;
-  height: 42px;
-  border-radius: 8px;
-  border: none;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 13px;
-  font-weight: 500;
+  height: 46px;
+
+  border-radius: 14px;
+
+  padding: 0 14px;
+
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 0 16px;
-  transition: all 0.2s ease;
+  justify-content: space-between;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  opacity: 0.92;
 }
 
-.menu-btn:hover:not(.active) {
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateX(4px);
+/* CONTEÚDO ESQUERDA */
+
+.menu-btn-left,
+.submenu-btn-left {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
 }
+
+/* ÍCONES */
+
+.menu-btn i,
+.submenu-btn i {
+  width: 18px;
+
+  display: flex;
+  justify-content: center;
+}
+
+/* HOVER */
+
+.menu-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ACTIVE */
 
 .menu-btn.active {
-  background: var(--secondary);
-  color: var(--primary);
+  background: linear-gradient(
+    90deg,
+    rgba(29, 207, 255, 0.78) 0%,
+    rgba(23, 73, 228, 0.78) 100%
+  );
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+/* SUBMENU */
+
+.submenu {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  padding-left: 14px;
+
+  margin-top: 2px;
+}
+
+/* SUBMENU BTN */
+
+.submenu-btn {
+  height: 40px;
+
+  border-radius: 12px;
+
+  padding: 0 14px;
+
+  display: flex;
+  align-items: center;
+
+  font-size: 13px;
   font-weight: 600;
+
+  color: rgba(255, 255, 255, 0.82);
+
+  background: rgba(255, 255, 255, 0.04);
 }
 
-/* ==========================================
-   CONTEÚDO PRINCIPAL (MAIN)
-   ========================================== */
-.main-content {
-  padding-top: 2px;
-  flex: 1;
+/* HOVER */
+
+.submenu-btn:hover {
+  background: rgba(255, 255, 255, 0.09);
+
+  color: white;
 }
 
-.page-content-card {
+/* ACTIVE */
+
+.submenu-btn.active {
+  background: linear-gradient(
+    90deg,
+    rgba(29, 207, 255, 0.22) 0%,
+    rgba(23, 73, 228, 0.35) 100%
+  );
+
+  border: 1px solid rgba(65, 223, 255, 0.18);
+
+  color: white;
+}
+
+/* SETA */
+
+.menu-arrow {
+  font-size: 12px;
+
+  opacity: 0.7;
+
+  transition: 0.2s;
+}
+
+.menu-arrow.rotate {
+  transform: rotate(180deg);
+}
+
+/* ========================================
+   PAGE CARD
+======================================== */
+
+.page-content-card,
+.default-card {
   width: 100%;
-  flex: 1;
-  min-height: 550px;
-  padding: 0;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
+
+  border-radius: 28px;
+
+  background: white;
+
+  border: 1px solid rgba(65, 223, 255, 0.2);
+
+  padding: 30px;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
 }
 
 .page-title {
-  margin-bottom: 30px;
+  margin-bottom: 24px;
 }
 
 .page-title h2 {
+  font-size: 24px;
+  font-weight: 800;
+
   color: var(--primary);
-  font-size: 28px;
+
   margin-bottom: 8px;
 }
 
 .page-title p {
-  color: #777;
+  color: #64748b;
+
   font-size: 14px;
 }
+
+/* ========================================
+   SEARCH
+======================================== */
+
+.search-container {
+  position: relative;
+
+  width: 100%;
+  max-width: 420px;
+
+  margin-bottom: 24px;
+}
+
+.search-container input {
+  width: 100%;
+
+  height: 48px;
+
+  border-radius: 16px;
+
+  border: 1px solid rgba(65, 223, 255, 0.2);
+
+  padding: 0 18px 0 46px;
+
+  outline: none;
+}
+
+.search-container i {
+  position: absolute;
+
+  left: 16px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  color: #94a3b8;
+}
+
+/* ========================================
+   GRID
+======================================== */
 
 .cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  max-width: 100%;
+
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+
+  gap: 18px;
 }
 
-.subject-card {
-  min-height: 145px;
-  border-radius: 20px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-}
+/* ========================================
+   RESPONSIVE
+======================================== */
 
-.subject-card h3 {
-  color: var(--secondary);
-  font-size: 14px;
-  margin-bottom: 8px;
-}
-
-.subject-card p {
-  color: #b2b2b2;
-  font-size: 11px;
-}
-
-.toast-container {
-  /* Força o container a ficar preso na janela do navegador, não importa a tela */
-  position: fixed !important;
-  top: 24px !important;
-  right: 24px !important;
-
-  /* Reseta qualquer interferência de flexbox ou alinhamento do login */
-  left: auto !important;
-  bottom: auto !important;
-  transform: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: auto;
-
-  /* Deixa o toast na camada mais alta do universo (acima de modais e cards) */
-  z-index: 999999 !important;
-}
-
-.toast {
-  min-width: 300px;
-  max-width: 380px;
-  background: #ffffff;
-  border-radius: 8px;
-  padding: 14px 18px;
-  box-shadow:
-    0 10px 25px -5px rgba(0, 0, 0, 0.08),
-    0 8px 10px -6px rgba(0, 0, 0, 0.05);
-  border-left: 4px solid #cbd5e1;
-
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: #1e293b;
-  font-size: 14px;
-  font-weight: 600;
-  box-sizing: border-box;
-
-  /* Animação suave deslizando da direita */
-  animation: toastIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
-}
-
-.toast.hide {
-  opacity: 0;
-  transform: translateX(40px);
-}
-
-@keyframes toastIn {
-  from {
-    opacity: 0;
-    transform: translateX(60px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-/* Modificadores de Tipo */
-.toast.toast-success {
-  border-left-color: #10b981 !important; /* Verde oficial Nuxt/Vue */
-}
-.toast.toast-success i {
-  color: #10b981 !important;
-}
-
-.toast.toast-error {
-  border-left-color: #ef4444 !important; /* Vermelho */
-}
-.toast.toast-error i {
-  color: #ef4444 !important;
-}
-
-.toast.toast-warning {
-  border-left-color: #f59e0b !important; /* Amarelo */
-}
-.toast.toast-warning i {
-  color: #f59e0b !important;
-}
-
-/* ==========================================
-   REGRAS DE RESPONSIVIDADE
-   ========================================== */
-@media (max-width: 1100px) {
-  .cards {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-  }
-}
-
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .dashboard-container {
     flex-direction: column;
   }
+
   .sidebar {
     width: 100%;
-    position: static;
-    max-height: none;
-    overflow-y: visible;
   }
 }
 
-@media (max-width: 850px) {
-  .cards {
-    grid-template-columns: 1fr;
+@media (max-width: 700px) {
+  .top-header {
+    padding: 0 18px;
+  }
+
+  .logo {
+    font-size: 22px;
+  }
+
+  .portal-text {
+    font-size: 13px;
+  }
+
+  .page-content-card,
+  .default-card {
+    padding: 22px;
   }
 }

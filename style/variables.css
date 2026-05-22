@@ -1,24 +1,12 @@
 :root {
-  /* COLORS */
-  --primary: #1f2d90;
-  --primary-dark: #000d3a;
+  --primary: #1e3a8a;
+  --primary-dark: #06113c;
 
   --secondary: #41dfff;
 
-  --background: #f4f6f9;
+  --background: #f4f7fb;
 
   --white: #ffffff;
 
-  --text: #222222;
-
-  --text-light: #9f9f9f;
-
-  /* RADIUS */
-  --radius-xl: 26px;
-  --radius-lg: 24px;
-  --radius-md: 18px;
-  --radius-sm: 999px;
-
-  /* SHADOW */
-  --shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+  --text: #1e293b;
 }

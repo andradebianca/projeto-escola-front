@@ -2,80 +2,60 @@
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>ABC - Admin Turmas</title>
-
+    <title>ABC - Gerenciar Turmas</title>
     <link rel="stylesheet" href="../style/global.css" />
     <link rel="stylesheet" href="./style/resource.css" />
-
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     />
-    <link rel="icon" href="./../img/icons/book.png" type="image/x-icon" />
   </head>
-
   <body>
     <div class="app-container">
       <header class="top-header">
         <div class="logo-area">
           <h1 class="logo">ABC<span>.</span></h1>
           <div class="logo-divider"></div>
-          <p class="portal-text">Portal do Administrador</p>
+          <p class="portal-text">Painel Administrativo</p>
         </div>
-
         <button class="logout-btn-header" id="btn-sair">
-          Sair
-          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          Sair <i class="fa-solid fa-arrow-right-from-bracket"></i>
         </button>
       </header>
-
       <div class="dashboard-container">
-        <aside class="sidebar">
-          <div class="profile">
-            <div class="avatar">
-              <i class="fa-solid fa-user-shield"></i>
-            </div>
-            <h2 id="nome-admin">Administrador</h2>
-            <span id="email-admin">admin@escola</span>
-          </div>
-
-          <nav class="menu">
-            <button class="menu-btn" id="menu-dashboard"><i class="fa-solid fa-table-columns"></i>Dashboard</button>
-            <button class="menu-btn" id="menu-alunos"><i class="fa-solid fa-graduation-cap"></i>Alunos</button>
-            <button class="menu-btn" id="menu-professores"><i class="fa-solid fa-chalkboard-user"></i>Professores</button>
-            <button class="menu-btn active" id="menu-turmas"><i class="fa-solid fa-users-rectangle"></i>Turmas</button>
-            <button class="menu-btn" id="menu-disciplinas"><i class="fa-solid fa-book-open"></i>Disciplinas</button>
-            <button class="menu-btn" id="menu-especializacoes"><i class="fa-solid fa-award"></i>Especializacoes</button>
-            <button class="menu-btn" id="menu-enderecos"><i class="fa-solid fa-location-dot"></i>Enderecos</button>
-            <button class="menu-btn" id="menu-telefones-aluno"><i class="fa-solid fa-phone"></i>Telefones Aluno</button>
-            <button class="menu-btn" id="menu-telefones-professor"><i class="fa-solid fa-phone-volume"></i>Telefones Professor</button>
-            <button class="menu-btn" id="menu-vinculos-turma-disciplina"><i class="fa-solid fa-link"></i>Turma x Disciplina</button>
-            <button class="menu-btn" id="menu-vinculos-professor-especializacao"><i class="fa-solid fa-diagram-project"></i>Professor x Especializacao</button>
-          </nav>
-        </aside>
-
+        <aside class="sidebar"></aside>
         <main class="main-content">
-          <div class="page-content-card default-card">
-            <div class="page-title">
-              <h2>Gerenciar Turmas</h2>
-              <p>Cadastre e mantenha as turmas da escola</p>
-            </div>
-
-            <div class="toolbar">
-              <div class="search-container">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="input-pesquisa" placeholder="Pesquisar por codigo, ano ou turno..." />
+          <div class="page-content-card">
+            <div
+              class="page-actions-header"
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+              "
+            >
+              <div class="page-title" style="margin: 0">
+                <h2>Gerenciar Turmas</h2>
+                <p>
+                  Controle de salas, anos letivos vigentes e períodos de aulas.
+                </p>
               </div>
-
-              <button class="new-btn" id="btn-novo">
-                <i class="fa-solid fa-plus"></i>
-                Nova Turma
+              <button class="new-btn" id="btn-nova-turma">
+                <i class="fa-solid fa-plus"></i> Nova Turma
               </button>
             </div>
-
-            <section class="records-list" id="records-list">
+            <div class="toolbar">
+              <div class="search-container">
+                <i class="fa-solid fa-magnifying-glass"></i
+                ><input
+                  type="text"
+                  id="input-pesquisa"
+                  placeholder="Pesquisar turma por código ou turno..."
+                />
+              </div>
+            </div>
+            <section class="records-list" id="turmas-list">
               <p>Carregando turmas...</p>
             </section>
           </div>
@@ -87,44 +67,43 @@
       <div class="modal">
         <div class="modal-header">
           <h3 id="modal-title">Nova Turma</h3>
-          <button class="close-modal" id="close-modal"><i class="fa-solid fa-xmark"></i></button>
+          <button class="close-modal" id="close-modal">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
         </div>
-
         <div class="modal-body">
-          <div class="input-group" id="field-ano_letivo">
-            <label>Ano Letivo <span class="required">*</span></label>
-            <input type="number" id="input-ano_letivo" min="2000" max="2100" />
+          <div class="input-group">
+            <label>Código da Turma <span class="required">*</span></label
+            ><input
+              type="text"
+              id="input-cod-turma"
+              placeholder="Ex: 3º Ano A"
+            />
           </div>
-
-          <div class="input-group" id="field-cod_turma">
-            <label>Codigo Turma <span class="required">*</span></label>
-            <input type="text" id="input-cod_turma" />
+          <div class="input-group">
+            <label>Ano Letivo <span class="required">*</span></label
+            ><input
+              type="number"
+              id="input-ano-letivo"
+              min="2024"
+              max="2100"
+              value="2025"
+            />
           </div>
-
-          <div class="input-group full" id="field-turno">
+          <div class="input-group">
             <label>Turno <span class="required">*</span></label>
             <select id="input-turno">
               <option value="">Selecione...</option>
               <option value="Matutino">Matutino</option>
               <option value="Vespertino">Vespertino</option>
               <option value="Noturno">Noturno</option>
-              <option value="Integral">Integral</option>
             </select>
           </div>
-
-          <button class="delete-btn" id="btn-excluir">Excluir Turma</button>
-          <button class="save-btn" id="btn-salvar">Salvar Turma</button>
+          <button class="delete-btn" id="btn-excluir-turma">
+            Excluir Turma
+          </button>
+          <button class="save-btn" id="btn-salvar-turma">Salvar Turma</button>
         </div>
-      </div>
-    </div>
-
-    <div class="modal-overlay" id="details-overlay">
-      <div class="modal details-modal">
-        <div class="modal-header">
-          <h3>Detalhes da Turma</h3>
-          <button class="close-modal" id="close-details-modal"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="details-grid" id="details-grid"></div>
       </div>
     </div>
 

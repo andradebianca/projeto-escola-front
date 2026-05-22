@@ -2,7 +2,7 @@
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
-    <title>ABC - Vínculos Turma x Disciplina</title>
+    <title>ABC - Auditoria do Sistema</title>
     <link rel="stylesheet" href="../style/global.css" />
     <link rel="stylesheet" href="./style/resource.css" />
     <link
@@ -27,31 +27,33 @@
         <main class="main-content">
           <div class="page-content-card">
             <div class="page-title">
-              <h2>Diário de Classe (Matriz)</h2>
-              <p>Associe as disciplinas às turmas ativas do sistema.</p>
+              <h2>Logs de Auditoria</h2>
+              <p>
+                Rastreabilidade completa de todas as ações realizadas no
+                sistema.
+              </p>
             </div>
-            <div class="filters-row">
-              <select class="inline-select" id="filtro-turma">
-                <option value="">Selecione a turma...</option>
-              </select>
-              <select class="inline-select" id="filtro-disciplina">
-                <option value="">Selecione a disciplina...</option>
-              </select>
-              <button class="new-btn" id="btn-vincular">
-                <i class="fa-solid fa-link"></i> Vincular
-              </button>
-              <button class="action-btn details" id="btn-recarregar">
-                Atualizar
-              </button>
+
+            <div class="toolbar">
+              <div class="search-container">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input
+                  type="text"
+                  id="input-pesquisa"
+                  placeholder="Filtrar logs por ação, tabela ou usuário..."
+                />
+              </div>
             </div>
-            <section class="records-list" id="records-list">
-              <p>Selecione uma turma para ver os vínculos.</p>
+
+            <section class="records-list" id="logs-list">
+              <p>Carregando histórico de eventos...</p>
             </section>
           </div>
         </main>
       </div>
     </div>
+
     <script src="./script/global.js" type="module"></script>
-    <script src="./script/vinculos-turma-disciplina.js" type="module"></script>
+    <script src="./script/relatorios.js" type="module"></script>
   </body>
 </html>

@@ -2,123 +2,62 @@
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>ABC - Admin Alunos</title>
-
+    <title>ABC - Controle de Alunos</title>
     <link rel="stylesheet" href="../style/global.css" />
     <link rel="stylesheet" href="./style/resource.css" />
-    <link rel="stylesheet" href="./style/alunos.css" />
-
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     />
-    <link rel="icon" href="./../img/icons/book.png" type="image/x-icon" />
   </head>
-
   <body>
     <div class="app-container">
       <header class="top-header">
         <div class="logo-area">
           <h1 class="logo">ABC<span>.</span></h1>
-
           <div class="logo-divider"></div>
-
-          <p class="portal-text">Portal do Administrador</p>
+          <p class="portal-text">Painel Administrativo</p>
         </div>
-
         <button class="logout-btn-header" id="btn-sair">
-          Sair
-          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          Sair <i class="fa-solid fa-arrow-right-from-bracket"></i>
         </button>
       </header>
-
       <div class="dashboard-container">
-        <aside class="sidebar">
-          <div class="profile">
-            <div class="avatar">
-              <i class="fa-solid fa-user-shield"></i>
-            </div>
-
-            <h2 id="nome-admin">Administrador</h2>
-            <span id="email-admin">admin@escola</span>
-          </div>
-
-          <nav class="menu">
-            <button class="menu-btn" id="menu-dashboard">
-              <i class="fa-solid fa-table-columns"></i>
-              Dashboard
-            </button>
-            <button class="menu-btn active" id="menu-alunos">
-              <i class="fa-solid fa-graduation-cap"></i>
-              Alunos
-            </button>
-            <button class="menu-btn" id="menu-professores">
-              <i class="fa-solid fa-chalkboard-user"></i>
-              Professores
-            </button>
-            <button class="menu-btn" id="menu-turmas">
-              <i class="fa-solid fa-users-rectangle"></i>
-              Turmas
-            </button>
-            <button class="menu-btn" id="menu-disciplinas">
-              <i class="fa-solid fa-book-open"></i>
-              Disciplinas
-            </button>
-            <button class="menu-btn" id="menu-especializacoes">
-              <i class="fa-solid fa-award"></i>
-              Especializacoes
-            </button>
-            <button class="menu-btn" id="menu-enderecos">
-              <i class="fa-solid fa-location-dot"></i>
-              Enderecos
-            </button>
-            <button class="menu-btn" id="menu-telefones-aluno">
-              <i class="fa-solid fa-phone"></i>
-              Telefones Aluno
-            </button>
-            <button class="menu-btn" id="menu-telefones-professor">
-              <i class="fa-solid fa-phone-volume"></i>
-              Telefones Professor
-            </button>
-            <button class="menu-btn" id="menu-vinculos-turma-disciplina">
-              <i class="fa-solid fa-link"></i>
-              Turma x Disciplina
-            </button>
-            <button class="menu-btn" id="menu-vinculos-professor-especializacao">
-              <i class="fa-solid fa-diagram-project"></i>
-              Professor x Especializacao
-            </button>
-          </nav>
-        </aside>
-
+        <aside class="sidebar"></aside>
         <main class="main-content">
-          <div class="page-content-card default-card">
-            <div class="page-title">
-              <h2>Gerenciar Alunos</h2>
-              <p>Cadastre, edite, visualize e remova alunos</p>
-            </div>
-
-            <div class="toolbar">
-              <div class="search-container">
-                <i class="fa-solid fa-magnifying-glass"></i>
-
-                <input
-                  type="text"
-                  id="input-pesquisa"
-                  placeholder="Pesquisar aluno por nome, email ou matricula..."
-                />
+          <div class="page-content-card">
+            <div
+              class="page-actions-header"
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+              "
+            >
+              <div class="page-title" style="margin: 0">
+                <h2>Gerenciar Alunos</h2>
+                <p>
+                  Cadastro completo de estudantes, contatos telefônicos e
+                  residência.
+                </p>
               </div>
-
               <button class="new-btn" id="btn-novo-aluno">
-                <i class="fa-solid fa-plus"></i>
-                Novo Aluno
+                <i class="fa-solid fa-plus"></i> Novo Aluno
               </button>
             </div>
-
+            <div class="toolbar">
+              <div class="search-container">
+                <i class="fa-solid fa-magnifying-glass"></i
+                ><input
+                  type="text"
+                  id="input-pesquisa"
+                  placeholder="Pesquisar por nome, cpf, matrícula ou email..."
+                />
+              </div>
+            </div>
             <section class="records-list" id="alunos-list">
-              <p>Carregando alunos...</p>
+              <p>Carregando...</p>
             </section>
           </div>
         </main>
@@ -128,65 +67,110 @@
     <div class="modal-overlay" id="modal-overlay">
       <div class="modal">
         <div class="modal-header">
-          <h3 id="modal-title">Novo Aluno</h3>
-
+          <h3 id="modal-title">Novo Registro de Aluno</h3>
           <button class="close-modal" id="close-modal">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
-
         <div class="modal-body">
-          <div class="input-group" id="field-email">
-            <label>Email <span class="required">*</span></label>
-            <input type="email" id="input-email" />
+          <div class="form-section-title first">Dados de Acesso Base</div>
+          <div class="input-group">
+            <label>Email <span class="required">*</span></label
+            ><input type="email" id="input-email" />
           </div>
-
-          <div class="input-group" id="field-user-name">
-            <label>Usuario <span class="required">*</span></label>
-            <input type="text" id="input-user-name" />
+          <div class="input-group">
+            <label>Nome de Usuário <span class="required">*</span></label
+            ><input type="text" id="input-user-name" />
           </div>
-
           <div class="input-group" id="field-senha">
-            <label>Senha <span class="required">*</span></label>
-            <input type="text" id="input-senha" />
+            <label>Senha Inicial <span class="required">*</span></label
+            ><input type="text" id="input-senha" />
           </div>
 
+          <div class="form-section-title">Ficha do Estudante</div>
+          <div class="input-group span-2">
+            <label>Nome Completo <span class="required">*</span></label
+            ><input type="text" id="input-nome-completo" />
+          </div>
           <div class="input-group" id="field-cpf">
-            <label>CPF <span class="required">*</span></label>
-            <input type="text" id="input-cpf" />
+            <label>CPF <span class="required">*</span></label
+            ><input type="text" id="input-cpf" placeholder="000.000.000-00" />
           </div>
-
-          <div class="input-group full" id="field-nome-completo">
-            <label>Nome Completo <span class="required">*</span></label>
-            <input type="text" id="input-nome-completo" />
+          <div class="input-group">
+            <label>Data Nascimento <span class="required">*</span></label
+            ><input type="date" id="input-data-nascimento" />
           </div>
-
-          <div class="input-group" id="field-data-nascimento">
-            <label>Data Nascimento <span class="required">*</span></label>
-            <input type="date" id="input-data-nascimento" />
+          <div class="input-group">
+            <label>Matrícula <span class="required">*</span></label
+            ><input type="number" id="input-matricula" />
           </div>
-
-          <div class="input-group" id="field-matricula">
-            <label>Matricula <span class="required">*</span></label>
-            <input type="number" id="input-matricula" min="1" step="1" />
-          </div>
-
-          <div class="input-group" id="field-fk-turma">
-            <label>Turma <span class="required">*</span></label>
-            <select id="input-fk-turma">
+          <div class="input-group">
+            <label>Turma de Vínculo <span class="required">*</span></label
+            ><select id="input-fk-turma">
               <option value="">Selecione...</option>
             </select>
           </div>
 
-          <div class="input-group" id="field-fk-endereco">
-            <label>Endereco <span class="required">*</span></label>
-            <select id="input-fk-endereco">
-              <option value="">Selecione...</option>
-            </select>
+          <div class="form-section-title">
+            Endereço Residencial (Direto no Banco)
+          </div>
+          <div class="input-group">
+            <label>CEP <span class="required">*</span></label
+            ><input type="text" id="input-cep" placeholder="00000-000" />
+          </div>
+          <div class="input-group span-2">
+            <label>Rua / Logradouro <span class="required">*</span></label
+            ><input type="text" id="input-rua" />
+          </div>
+          <div class="input-group">
+            <label>Número <span class="required">*</span></label
+            ><input type="text" id="input-numero-casa" />
+          </div>
+          <div class="input-group">
+            <label>Bairro <span class="required">*</span></label
+            ><input type="text" id="input-bairro" />
+          </div>
+          <div class="input-group">
+            <label>Cidade <span class="required">*</span></label
+            ><input type="text" id="input-cidade" />
+          </div>
+          <div class="input-group">
+            <label>UF <span class="required">*</span></label
+            ><input
+              type="text"
+              id="input-uf"
+              maxlength="2"
+              placeholder="Ex: SP"
+            />
           </div>
 
-          <button class="delete-btn" id="btn-excluir-aluno">Excluir Aluno</button>
-          <button class="save-btn" id="btn-salvar-aluno">Salvar Aluno</button>
+          <div class="form-section-title">
+            Gerenciador de Contatos Dinâmicos
+          </div>
+          <div class="phone-manager-container">
+            <div class="phone-input-row">
+              <input
+                type="text"
+                id="input-telefone-novo"
+                placeholder="Ex: (11) 99999-9999"
+              />
+              <button
+                type="button"
+                class="btn-add-phone"
+                id="btn-add-lista-fone"
+              >
+                <i class="fa-solid fa-plus"></i>
+              </button>
+            </div>
+            <div class="phone-tags-list" id="lista-fones-tags"></div>
+          </div>
+
+          <button class="delete-btn" id="btn-excluir-aluno">
+            Remover Registro
+          </button>
+          <button class="save-btn" id="btn-salvar-aluno">
+            Salvar Cadastro Completo
+          </button>
         </div>
       </div>
     </div>
@@ -194,13 +178,11 @@
     <div class="modal-overlay" id="details-overlay">
       <div class="modal details-modal">
         <div class="modal-header">
-          <h3>Detalhes do Aluno</h3>
-
+          <h3>Ficha Cadastral Simplificada</h3>
           <button class="close-modal" id="close-details-modal">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
-
         <div class="details-grid" id="details-grid"></div>
       </div>
     </div>
