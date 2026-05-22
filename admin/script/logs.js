@@ -1,3 +1,4 @@
+// admin/script/logs.js
 import { requisicaoApi } from "./../../script/funcs-global.js";
 import { urlBase } from "./../../script/variaveis-globais.js";
 
@@ -24,10 +25,8 @@ async function carregarLogsAuditoria() {
 // MOTOR DE RETROCOMPATIBILIDADE: Decifra JSON legado ou Texto Novo
 function interpretarDadoLog(dadoBruto) {
   if (!dadoBruto) return null;
-
   const texto = String(dadoBruto).trim();
 
-  // Verifica se é o formato antigo de JSON salvo como string
   if (texto.startsWith("{") || texto.startsWith("[")) {
     try {
       const obj = JSON.parse(texto);
@@ -37,12 +36,8 @@ function interpretarDadoLog(dadoBruto) {
             `<b>${chave}</b>: ${typeof valor === "object" ? JSON.stringify(valor) : valor}`,
         )
         .join(" &bull; ");
-    } catch (e) {
-      // Se falhar o parse por string corrompida, deixa seguir como texto puro
-    }
+    } catch (e) {}
   }
-
-  // Se for o formato novo de texto limpo, apenas retorna
   return texto;
 }
 
@@ -54,19 +49,21 @@ function renderizarLogs(lista) {
     return;
   }
 
+  // Mapeamento de cores direto no Front-end para evitar quebrar o SQL Server
+  const coresAcao = {
+    CREATE: "#10b981", // Verde
+    UPDATE: "#f59e0b", // Laranja / Amarelo
+    DELETE: "#ef4444", // Vermelho
+  };
+
   lista.forEach((log) => {
-    // Cores dinâmicas para as Badges baseadas na Ação
-    let classeBadge = "status-cursando"; // Amarelo para UPDATE
-    if (log.acao === "CREATE") classeBadge = "status-aprovado"; // Verde
-    if (log.acao === "DELETE") classeBadge = "status-reprovado"; // Vermelho
-
     const dataFormatada = new Date(log.data_acao).toLocaleString("pt-BR");
-
-    // Passa os dados pelo interpretador inteligente
     const valorAntes = interpretarDadoLog(log.dados_anteriores);
     const valorDepois = interpretarDadoLog(log.dados_novos);
 
-    // Monta a caixa de histórico apenas se houver metadados salvos
+    // Seleciona a cor baseada na ação, se não mapeada usa cinza escuro
+    const corBadge = coresAcao[log.acao.toUpperCase()] || "#475569";
+
     let htmlAlteracao = "";
     if (valorAntes || valorDepois) {
       htmlAlteracao = `
@@ -78,16 +75,16 @@ function renderizarLogs(lista) {
     }
 
     logsList.innerHTML += `
-      <article class="record-row" style="gap: 16px; align-items: flex-start; padding: 16px 20px;">
+      <article class="record-row" style="gap: 16px; align-items: flex-start; padding: 16px 20px; width: 100%;">
         <div style="font-size: 11px; color: #64748b; width: 130px; flex-shrink: 0; font-weight: 600; margin-top: 4px;">
           ${dataFormatada}
         </div>
         <div style="width: 80px; flex-shrink: 0; display: flex; margin-top: 2px;">
-          <span class="status-pill ${classeBadge}" style="min-width: 76px; text-align: center; text-transform: uppercase; font-size: 9px; height: 22px;">
+          <span class="status-pill" style="min-width: 76px; text-align: center; text-transform: uppercase; font-size: 9px; height: 22px; color: white; background-color: ${corBadge} !important; border: none;">
             ${log.acao}
           </span>
         </div>
-        <div class="record-main" style="min-width: 0;">
+        <div class="record-main" style="min-width: 0; flex: 1;">
           <h3 style="font-size: 14px; font-weight: 700; margin: 0 0 4px 0; white-space: normal;">${log.descricao}</h3>
           <p style="font-size: 11px; color: #94a3b8; margin: 0;">
             <i class="fa-solid fa-user"></i> Executor: <b style="color: #475569;">${log.user_name}</b> &bull; Tabela: <u style="color: #64748b;">${log.tabela_afetada}</u> (ID Ref: ${log.id_registro || "N/A"})
@@ -99,7 +96,6 @@ function renderizarLogs(lista) {
   });
 }
 
-// Filtro de pesquisa inteligente e em tempo real
 inputPesquisa.addEventListener("input", () => {
   const q = inputPesquisa.value.toLowerCase().trim();
   const filtrados = logsCache.filter((l) =>
