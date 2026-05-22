@@ -4,7 +4,6 @@ const { getPool, sql } = require("../db");
 
 router.post("/login", async (req, res) => {
   const { login, senha } = req.body;
-  console.log("Tentativa de login recebida para:", login); // LOG NO SERVIDOR
 
   try {
     const pool = await getPool();
@@ -15,11 +14,6 @@ router.post("/login", async (req, res) => {
         "SELECT * FROM usuario WHERE email = @login OR user_name = @login",
       );
 
-    console.log(
-      "Query executada. Usuários encontrados:",
-      result.recordset.length,
-    );
-
     if (result.recordset.length === 0) {
       return res
         .status(401)
@@ -27,39 +21,34 @@ router.post("/login", async (req, res) => {
     }
 
     const usuario = result.recordset[0];
-    console.log(
-      "Usuário encontrado. Senha no banco:",
-      usuario.senha ? "EXISTE" : "NULA/VAZIA",
-    );
 
-    // Barreira primeiro acesso
+    // Se senha for nula/vazia
     if (!usuario.senha || usuario.senha === "") {
-      console.log("Fluxo: Primeiro Acesso detectado.");
-      return res.json({
-        sucesso: false,
-        primeiroAcesso: true,
-        mensagem: "Primeiro acesso.",
-      });
+      return res
+        .status(200)
+        .json({
+          sucesso: false,
+          primeiroAcesso: true,
+          mensagem: "Primeiro acesso.",
+        });
     }
 
-    // Comparação de senha
     if (senha !== usuario.senha) {
-      console.log("Fluxo: Senha incorreta.");
       return res.status(401).json({ sucesso: false, erro: "Senha incorreta." });
     }
 
-    console.log("Fluxo: Login aprovado. Enviando resposta...");
-    // AQUI ESTÁ O PULO DO GATO: Certifique-se que o retorno é finalizado
-    return res.json({
-      sucesso: true,
-      usuario: { id: usuario.id_usuario, email: usuario.email },
-    });
+    // LOGIN SUCESSO - RETORNO GARANTIDO
+    return res
+      .status(200)
+      .json({ sucesso: true, usuario: { id: usuario.id_usuario } });
   } catch (err) {
-    console.error("Erro no catch do login:", err);
-    return res.status(500).json({ sucesso: false, erro: err.message });
+    console.error("Erro Fatal:", err);
+    // IMPORTANTE: Se o servidor der erro e não responder, ele trava o cliente
+    return res
+      .status(500)
+      .json({ sucesso: false, erro: "Erro interno no servidor." });
   }
 });
-
 router.post("/primeiro-acesso", async (req, res) => {
   const { email, novaSenha } = req.body;
 
