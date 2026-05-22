@@ -1,14 +1,9 @@
-// routes/auth.routes.js
 const express = require("express");
 const router = express.Router();
 const { getPool, sql } = require("../db");
-// Se você usa bcrypt, importe aqui: const bcrypt = require("bcrypt");
 
-// =================================================================
-// 1. ROTA DE LOGIN (Atualizada)
-// =================================================================
 router.post("/login", async (req, res) => {
-  const { login, senha } = req.body; // login pode ser email ou user_name
+  const { login, senha } = req.body;
 
   try {
     const pool = await getPool();
@@ -27,7 +22,6 @@ router.post("/login", async (req, res) => {
 
     const usuario = result.recordset[0];
 
-    // BARREIRA DO PRIMEIRO ACESSO: Se a senha for nula
     if (!usuario.senha) {
       return res.json({
         sucesso: false,
@@ -40,9 +34,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// =================================================================
-// 2. NOVA ROTA: PRIMEIRO ACESSO (Definir Senha)
-// =================================================================
 router.post("/primeiro-acesso", async (req, res) => {
   const { email, novaSenha } = req.body;
 
@@ -53,7 +44,6 @@ router.post("/primeiro-acesso", async (req, res) => {
   try {
     const pool = await getPool();
 
-    // Verifica se o usuário existe e se REALMENTE está sem senha
     const check = await pool
       .request()
       .input("email", sql.VarChar, email)
