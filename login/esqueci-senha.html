@@ -2,50 +2,199 @@
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Erro</title>
+
+    <title>ABC - Recuperar Senha</title>
+
     <style>
-      .flex {
+      body {
+        margin: 0;
+        padding: 0;
+
+        min-height: 100vh;
+
         display: flex;
-      }
-
-      .column {
-        flex-direction: column;
-      }
-
-      .center {
-        justify-content: center;
-      }
-
-      .items-center {
         align-items: center;
+        justify-content: center;
+
+        background: #f4f7fb;
+
+        font-family: "Segoe UI", sans-serif;
       }
 
-      .vh-100 {
-        height: 100vh;
+      .auth-container {
+        width: 100%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 20px;
       }
 
-      .erro-mensagem-numero {
-        color: rgb(122, 122, 122);
+      .auth-card {
+        width: 100%;
+        max-width: 420px;
+
+        background: #fff;
+
+        border-radius: 18px;
+
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+
+        overflow: hidden;
       }
 
-      .link {
-        text-decoration: underline;
-        color: purple;
+      .auth-header {
+        background: #2563eb;
+
+        color: white;
+
+        padding: 32px 24px;
+
+        text-align: center;
+      }
+
+      .auth-header h1 {
+        margin: 0;
+
+        font-size: 42px;
+        font-weight: 700;
+      }
+
+      .auth-header h1 span {
+        color: #93c5fd;
+      }
+
+      .auth-header p {
+        margin-top: 10px;
+
+        font-size: 15px;
+
+        opacity: 0.9;
+      }
+
+      .auth-body {
+        padding: 28px 24px;
+      }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+
+        margin-bottom: 18px;
+      }
+
+      .input-group label {
+        margin-bottom: 8px;
+
+        font-size: 14px;
+        font-weight: 600;
+
+        color: #374151;
+      }
+
+      .input-group input {
+        height: 48px;
+
+        padding: 0 14px;
+
+        border: 1px solid #d1d5db;
+        border-radius: 12px;
+
+        font-size: 15px;
+
+        outline: none;
+
+        transition: 0.2s;
+      }
+
+      .input-group input:focus {
+        border-color: #2563eb;
+
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+      }
+
+      .save-btn {
+        width: 100%;
+        height: 50px;
+
+        border: none;
+        border-radius: 12px;
+
+        background: #2563eb;
+
+        color: white;
+
+        font-size: 15px;
+        font-weight: 600;
+
+        cursor: pointer;
+
+        transition: 0.2s;
+      }
+
+      .save-btn:hover {
+        background: #1d4ed8;
+      }
+
+      .save-btn:active {
+        transform: scale(0.98);
+      }
+
+      @media (max-width: 500px) {
+        .auth-card {
+          border-radius: 14px;
+        }
+
+        .auth-header {
+          padding: 28px 20px;
+        }
+
+        .auth-body {
+          padding: 22px 18px;
+        }
       }
     </style>
-    <link rel="stylesheet" href="./../style/global.css" />
-    <link rel="icon" href="./../img/icons/alert.png" type="image/x-icon" />
+
+    <link rel="stylesheet" href="../style/global.css" />
+
+    <link rel="stylesheet" href="./style/auth.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
   </head>
-  <body class="flex column center items-center vh-100">
-    <h1>Não encontrado!</h1>
-    <span class="erro-mensagem-numero">404, página não encontrada</span>
 
-    <span class="mt"
-      >Infelizmente nós perdemos essa página em algum lugar.</span
-    >
-    <span>Já estamos resolvendo! Obrigado pela paciência.</span>
+  <body>
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-header">
+          <h1>ABC<span>.</span></h1>
 
-    <a href="./" class="my-2 link">< Voltar a página anterior (Login)</a>
+          <p>Recuperação de senha</p>
+        </div>
+
+        <div class="auth-body">
+          <div class="input-group">
+            <label> Email ou Usuário </label>
+
+            <input type="text" id="input-login" />
+          </div>
+
+          <div class="input-group">
+            <label> Nova Senha </label>
+
+            <input type="password" id="input-senha" />
+          </div>
+
+          <button id="btn-recuperar" class="save-btn">Atualizar Senha</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="./script/esqueci-senha.js" type="module"></script>
   </body>
 </html>
