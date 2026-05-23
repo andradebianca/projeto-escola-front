@@ -169,7 +169,7 @@ router.post("/nota", verificarToken, async (req, res) => {
       periodo_nota,
       data_aplicacao,
     });
-    verificarLimiteNotas(pool, fk_turma_disciplina, fk_aluno);
+    await verificarLimiteNotas(pool, fk_turma_disciplina, fk_aluno);
     await verificarPeriodoNota(
       pool,
       null,
