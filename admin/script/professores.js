@@ -134,9 +134,9 @@ btnSalvarProfessor.addEventListener("click", async () => {
   // 2. VALIDAÇÃO ESPECÍFICA PARA NOVOS CADASTROS (Senha e CPF são obrigatórios apenas se NÃO for edição)
   if (!modoEdicao) {
     const cpf = inputCpf.value.trim();
-    if (!senha || !cpf) {
+    if (!cpf) {
       showToast(
-        "Defina uma senha de acesso e o CPF para o novo professor.",
+        "Digite o CPF para o novo professor.",
         "warning",
       );
       return;
