@@ -346,4 +346,156 @@ router.get(
   },
 );
 
+router.get(
+  "/:id/disciplinas",
+
+  verificarToken,
+
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { ano } = req.query;
+
+      const pool = await getPool();
+
+      // =========================
+      // REQUEST
+      // =========================
+      const request = pool
+        .request()
+        .input("id_aluno", sql.Int, id);
+
+      let filtroAno = "";
+
+      if (ano) {
+        filtroAno = `
+          AND t.ano_letivo = @ano
+        `;
+
+        request.input("ano", sql.Int, ano);
+      }
+
+      // =========================
+      // QUERY
+      // =========================
+      const result = await request.query(`
+        SELECT
+          d.id_disciplina,
+          d.nome AS disciplina,
+
+          p.nome_completo AS professor,
+
+          n.id_nota,
+          n.valor_nota,
+
+          AVG(
+            CAST(n.valor_nota AS FLOAT)
+          ) OVER (
+            PARTITION BY d.id_disciplina
+          ) AS media
+
+        FROM alunos a
+
+        INNER JOIN turma t
+          ON t.id_turma =
+            a.fk_turma
+
+        INNER JOIN turma_disciplina td
+          ON td.fk_turma =
+            t.id_turma
+
+        INNER JOIN disciplina d
+          ON d.id_disciplina =
+            td.fk_disciplina
+
+        INNER JOIN professor p
+          ON p.id_professor =
+            d.fk_professor
+
+        LEFT JOIN notas n
+          ON n.fk_aluno =
+            a.id_aluno
+
+          AND n.fk_turma_disciplina =
+            td.id_turma_disciplina
+
+        WHERE a.id_aluno =
+          @id_aluno
+
+        ${filtroAno}
+
+        ORDER BY
+          d.nome,
+          n.id_nota
+      `);
+
+      // =========================
+      // MAP
+      // =========================
+      const disciplinasMap = {};
+
+      result.recordset.forEach((item) => {
+
+        // cria disciplina
+        if (!disciplinasMap[item.id_disciplina]) {
+
+          disciplinasMap[item.id_disciplina] = {
+
+            id_disciplina:
+              item.id_disciplina,
+
+            disciplina:
+              item.disciplina,
+
+            professor:
+              item.professor,
+
+            media:
+              item.media !== null
+                ? Number(
+                    item.media.toFixed(2)
+                  )
+                : null,
+
+            notes: [],
+          };
+        }
+
+        // adiciona nota
+        if (item.id_nota) {
+
+          disciplinasMap[item.id_disciplina]
+            .notes
+            .push({
+
+              id_nota:
+                item.id_nota,
+
+              valor_nota:
+                item.valor_nota,
+            });
+        }
+      });
+
+      // =========================
+      // RESPONSE
+      // =========================
+      res.json({
+        sucesso: true,
+
+        disciplinas:
+          Object.values(disciplinasMap),
+      });
+
+    } catch (err) {
+
+      console.error(err);
+
+      res.status(500).json({
+        erro: err.message,
+      });
+    }
+  }
+);
+
 module.exports = router;
