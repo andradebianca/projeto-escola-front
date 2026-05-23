@@ -248,7 +248,7 @@ router.put("/nota/:id", verificarToken, async (req, res) => {
       tabela: "notas",
       idRegistro: id,
       descricao: "Nota atualizada",
-      dadosAnteriores: nota,
+      dadosAnteriores: JSON.stringify(nota),
       dadosNovos: JSON.stringify({ valor_nota, descricao, periodo_nota }),
     });
     res.json({ sucesso: true, mensagem: "Nota atualizada com sucesso" });
