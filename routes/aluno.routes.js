@@ -347,7 +347,7 @@ router.get(
 );
 
 router.get(
-  "/:id/disciplinas",
+  "/aluno/:id/disciplinas",
 
   verificarToken,
 
