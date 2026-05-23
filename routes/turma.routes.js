@@ -150,43 +150,48 @@ router.get(
       // QUERY
       // =========================
       const result = await request.query(`
+  SELECT
+    a.id_aluno,
+    a.nome_completo,
+    a.matricula,
 
-          SELECT
-            a.id_aluno,
-            a.nome_completo,
-            a.matricula,
+    n.id_nota,
+    n.valor_nota,
+    n.data_criacao,
 
-            n.id_nota,
-            n.valor_nota,
-            n.data_criacao,
+    AVG(
+      CAST(n.valor_nota AS FLOAT)
+    ) OVER (
+      PARTITION BY a.id_aluno
+    ) AS media
 
-            AVG(
-              CAST(
-                n.valor_nota AS FLOAT
-              )
-            ) OVER (
-              PARTITION BY a.id_aluno
-            ) AS media
+  FROM alunos a
 
-          FROM alunos a
+  LEFT JOIN notas n
+    ON n.fk_aluno = a.id_aluno
 
-          LEFT JOIN notas n
-            ON n.fk_aluno =
-              a.id_aluno
+    ${
+      disciplinaId
+        ? `
+      AND EXISTS (
+        SELECT 1
+        FROM turma_disciplina td
+        WHERE td.id_turma_disciplina =
+          n.fk_turma_disciplina
 
-          LEFT JOIN turma_disciplina td
-            ON td.id_turma_disciplina =
-              n.fk_turma_disciplina
+        AND td.fk_disciplina =
+          @disciplinaId
+      )
+    `
+        : ""
+    }
 
-            ${filtroDisciplinaJoin}
+  WHERE a.fk_turma = @id_turma
 
-          WHERE a.fk_turma =
-            @id_turma
-
-          ORDER BY
-            a.nome_completo,
-            n.data_criacao
-        `);
+  ORDER BY
+    a.nome_completo,
+    n.data_criacao
+`);
 
       // =========================
       // MAPEAR ALUNOS
