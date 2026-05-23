@@ -192,11 +192,11 @@ router.post("/nota", verificarToken, async (req, res) => {
       acao: "CREATE",
       tabela: "notas",
       descricao: "Nota cadastrada",
-      dadosNovos: { fk_turma_disciplina, fk_aluno, valor_nota, periodo_nota },
+      dadosNovos: JSON.stringify({ fk_turma_disciplina, fk_aluno, valor_nota, periodo_nota }),
     });
     res
       .status(201)
-      .json({ sucesso: true, mensagem: "Nota cadastrada com sucesso" });
+      .json({ sucesso: true, mensagem: "Nota cadastrada com sucesso" });''
   } catch (err) {
     console.error(err);
     res.status(500).json({ erro: err.message });
@@ -249,7 +249,7 @@ router.put("/nota/:id", verificarToken, async (req, res) => {
       idRegistro: id,
       descricao: "Nota atualizada",
       dadosAnteriores: nota,
-      dadosNovos: { valor_nota, descricao, periodo_nota },
+      dadosNovos: JSON.stringify({ valor_nota, descricao, periodo_nota }),
     });
     res.json({ sucesso: true, mensagem: "Nota atualizada com sucesso" });
   } catch (err) {
