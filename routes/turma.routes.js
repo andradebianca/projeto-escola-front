@@ -122,62 +122,85 @@ router.get(
   async (req, res) => {
     try {
       const { id } = req.params;
+
       const { disciplinaId } = req.query;
 
       const pool = await getPool();
 
-      let filtroDisciplina = "";
+      // =========================
+      // FILTRO DISCIPLINA
+      // =========================
+      let filtroDisciplinaJoin = "";
 
-      const request = pool.request().input("id_turma", sql.Int, id);
+      const request = pool
+        .request()
+
+        .input("id_turma", sql.Int, id);
 
       if (disciplinaId) {
-        filtroDisciplina = `
-          AND td.fk_disciplina = @disciplinaId
+        filtroDisciplinaJoin = `
+          AND td.fk_disciplina =
+            @disciplinaId
         `;
 
         request.input("disciplinaId", sql.Int, disciplinaId);
       }
 
+      // =========================
+      // QUERY
+      // =========================
       const result = await request.query(`
-        SELECT
-          a.id_aluno,
-          a.nome_completo,
-          a.matricula,
 
-          n.id_nota,
-          n.valor_nota,
-          n.data_criacao,
+          SELECT
+            a.id_aluno,
+            a.nome_completo,
+            a.matricula,
 
-          AVG(
-            CAST(n.valor_nota AS FLOAT)
-          ) OVER (
-            PARTITION BY a.id_aluno
-          ) AS media
+            n.id_nota,
+            n.valor_nota,
+            n.data_criacao,
 
-        FROM alunos a
+            AVG(
+              CAST(
+                n.valor_nota AS FLOAT
+              )
+            ) OVER (
+              PARTITION BY a.id_aluno
+            ) AS media
 
-        LEFT JOIN notas n
-          ON n.fk_aluno = a.id_aluno
+          FROM alunos a
 
-        LEFT JOIN turma_disciplina td
-          ON td.id_turma_disciplina =
-            n.fk_turma_disciplina
+          LEFT JOIN notas n
+            ON n.fk_aluno =
+              a.id_aluno
 
-        WHERE a.fk_turma = @id_turma
-        ${filtroDisciplina}
+          LEFT JOIN turma_disciplina td
+            ON td.id_turma_disciplina =
+              n.fk_turma_disciplina
 
-        ORDER BY
-          a.nome_completo,
-          n.data_criacao
-      `);
+            ${filtroDisciplinaJoin}
 
+          WHERE a.fk_turma =
+            @id_turma
+
+          ORDER BY
+            a.nome_completo,
+            n.data_criacao
+        `);
+
+      // =========================
+      // MAPEAR ALUNOS
+      // =========================
       const alunosMap = {};
 
       result.recordset.forEach((item) => {
+        // cria aluno
         if (!alunosMap[item.id_aluno]) {
           alunosMap[item.id_aluno] = {
             id_aluno: item.id_aluno,
+
             nome_completo: item.nome_completo,
+
             matricula: item.matricula,
 
             media: item.media !== null ? Number(item.media.toFixed(2)) : null,
@@ -186,17 +209,24 @@ router.get(
           };
         }
 
+        // adiciona nota
         if (item.id_nota) {
           alunosMap[item.id_aluno].notas.push({
             id_nota: item.id_nota,
+
             valor_nota: item.valor_nota,
+
             data_criacao: item.data_criacao,
           });
         }
       });
 
+      // =========================
+      // RESPOSTA
+      // =========================
       res.json({
         sucesso: true,
+
         alunos: Object.values(alunosMap),
       });
     } catch (err) {
