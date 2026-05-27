@@ -2,35 +2,35 @@ const express = require("express");
 
 const router = express.Router();
 
-const { sql, getPool } = require("../db");
+const {sql, getPool} = require("../db");
 
-const { verificarToken } = require("../middlewares/auth.middleware");
+const {verificarToken} = require("../middlewares/auth.middleware");
 
 // ========================================
 // DISCIPLINAS PROFESSOR
 // ========================================
 router.get(
-  "/professor/:id/disciplinas",
+	"/professor/:id/disciplinas",
 
-  verificarToken,
+	verificarToken,
 
-  async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { ano } = req.query;
+	async (req, res) => {
+		try {
+			const {id} = req.params;
+			const {ano} = req.query;
 
-      if (!ano) {
-        return res.status(400).json({
-          erro: "Ano letivo é obrigatório",
-        });
-      }
+			if (!ano) {
+				return res.status(400).json({
+					erro: "Ano letivo é obrigatório",
+				});
+			}
 
-      const pool = await getPool();
+			const pool = await getPool();
 
-      const result = await pool
-        .request()
-        .input("id_professor", sql.Int, id)
-        .input("ano", sql.Int, ano).query(`
+			const result = await pool
+				.request()
+				.input("id_professor", sql.Int, id)
+				.input("ano", sql.Int, ano).query(`
           SELECT
             d.id_disciplina,
             d.nome AS disciplina,
@@ -52,62 +52,63 @@ router.get(
 
           WHERE d.fk_professor = @id_professor
             AND t.ano_letivo = @ano
+            AND t.desativado = 0
 
           ORDER BY d.nome, t.cod_turma
         `);
 
-      const disciplinasMap = {};
+			const disciplinasMap = {};
 
-      result.recordset.forEach((item) => {
-        if (!disciplinasMap[item.id_disciplina]) {
-          disciplinasMap[item.id_disciplina] = {
-            id_disciplina: item.id_disciplina,
-            disciplina: item.disciplina,
-            descricao: item.descricao,
-            carga_horaria: item.carga_horaria,
-            turmas: [],
-          };
-        }
+			result.recordset.forEach((item) => {
+				if (!disciplinasMap[item.id_disciplina]) {
+					disciplinasMap[item.id_disciplina] = {
+						id_disciplina: item.id_disciplina,
+						disciplina: item.disciplina,
+						descricao: item.descricao,
+						carga_horaria: item.carga_horaria,
+						turmas: [],
+					};
+				}
 
-        disciplinasMap[item.id_disciplina].turmas.push({
-          id_turma: item.id_turma,
-          cod_turma: item.cod_turma,
-          turno: item.turno,
-          ano_letivo: item.ano_letivo,
-        });
-      });
+				disciplinasMap[item.id_disciplina].turmas.push({
+					id_turma: item.id_turma,
+					cod_turma: item.cod_turma,
+					turno: item.turno,
+					ano_letivo: item.ano_letivo,
+				});
+			});
 
-      res.json({
-        sucesso: true,
-        disciplinas: Object.values(disciplinasMap),
-      });
-    } catch (err) {
-      console.error(err);
+			res.json({
+				sucesso: true,
+				disciplinas: Object.values(disciplinasMap),
+			});
+		} catch (err) {
+			console.error(err);
 
-      res.status(500).json({
-        erro: err.message,
-      });
-    }
-  },
+			res.status(500).json({
+				erro: err.message,
+			});
+		}
+	},
 );
 
 // ========================================
 // PERFIL PROFESSOR
 // ========================================
 router.get(
-  "/professor/:id/perfil",
+	"/professor/:id/perfil",
 
-  verificarToken,
+	verificarToken,
 
-  async (req, res) => {
-    try {
-      const { id } = req.params;
+	async (req, res) => {
+		try {
+			const {id} = req.params;
 
-      const pool = await getPool();
+			const pool = await getPool();
 
-      const professorResult = await pool
-        .request()
-        .input("id_professor", sql.Int, id).query(`
+			const professorResult = await pool
+				.request()
+				.input("id_professor", sql.Int, id).query(`
           SELECT
             p.id_professor,
             p.nome_completo,
@@ -138,25 +139,26 @@ router.get(
             ON uf.id_uf = e.fk_uf
 
           WHERE p.id_professor = @id_professor
+            AND p.desativado = 0
         `);
 
-      if (professorResult.recordset.length === 0) {
-        return res.status(404).json({
-          erro: "Professor não encontrado",
-        });
-      }
+			if (professorResult.recordset.length === 0) {
+				return res.status(404).json({
+					erro: "Professor não encontrado",
+				});
+			}
 
-      const telefoneResult = await pool
-        .request()
-        .input("id_professor", sql.Int, id).query(`
+			const telefoneResult = await pool
+				.request()
+				.input("id_professor", sql.Int, id).query(`
           SELECT telefone
           FROM telefone_professor
           WHERE fk_professor = @id_professor
         `);
 
-      const especializacaoResult = await pool
-        .request()
-        .input("id_professor", sql.Int, id).query(`
+			const especializacaoResult = await pool
+				.request()
+				.input("id_professor", sql.Int, id).query(`
           SELECT
             e.id_especializacao,
             e.nome,
@@ -171,38 +173,40 @@ router.get(
           WHERE pe.fk_professor = @id_professor
         `);
 
-      const professor = professorResult.recordset[0];
+			const professor = professorResult.recordset[0];
 
-      res.json({
-        sucesso: true,
+			res.json({
+				sucesso: true,
 
-        professor: {
-          id_professor: professor.id_professor,
-          nome_completo: professor.nome_completo,
-          data_nacimento: professor.data_nacimento,
+				professor: {
+					id_professor: professor.id_professor,
+					nome_completo: professor.nome_completo,
+					data_nacimento: professor.data_nacimento,
 
-          endereco: {
-            rua: professor.nome_rua,
-            numero: professor.numero,
-            bairro: professor.bairro,
-            cep: professor.cep,
-            cidade: professor.nome_cidade,
-            uf: professor.uf,
-          },
+					endereco: {
+						rua: professor.nome_rua,
+						numero: professor.numero,
+						bairro: professor.bairro,
+						cep: professor.cep,
+						cidade: professor.nome_cidade,
+						uf: professor.uf,
+					},
 
-          telefones: telefoneResult.recordset.map((x) => x.telefone),
+					telefones: telefoneResult.recordset.map(
+						(x) => x.telefone,
+					),
 
-          especializacoes: especializacaoResult.recordset,
-        },
-      });
-    } catch (err) {
-      console.error(err);
+					especializacoes: especializacaoResult.recordset,
+				},
+			});
+		} catch (err) {
+			console.error(err);
 
-      res.status(500).json({
-        erro: err.message,
-      });
-    }
-  },
+			res.status(500).json({
+				erro: err.message,
+			});
+		}
+	},
 );
 
 module.exports = router;

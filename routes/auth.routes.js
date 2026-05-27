@@ -3,106 +3,144 @@ const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 
-const { sql, getPool } = require("../db");
+const {sql, getPool} = require("../db");
 
 router.post("/login", async (req, res) => {
-  try {
-    const { email, senha } = req.body || {};
+	try {
+		const {email, senha} = req.body || {};
 
-    if (!email || !senha) {
-      return res.status(400).json({
-        erro: "Email e senha obrigatórios",
-      });
-    }
+		if (!email || !senha) {
+			return res.status(400).json({
+				erro: "Email e senha obrigatórios",
+			});
+		}
 
-    const pool = await getPool();
+		const pool = await getPool();
 
-    const usuarioResult = await pool
-      .request()
-      .input("email", sql.VarChar, email)
-      .input("senha", sql.VarChar, senha).query(`
+		// =========================
+		// LOGIN USUÁRIO
+		// =========================
+		const usuarioResult = await pool
+			.request()
+			.input("email", sql.VarChar, email)
+			.input("senha", sql.VarChar, senha).query(`
         SELECT
           id_usuario,
           email,
           user_name,
           nivel_acesso
+
         FROM usuario
+
         WHERE email = @email
           AND senha = @senha
       `);
 
-    if (usuarioResult.recordset.length === 0) {
-      return res.status(401).json({
-        erro: "Email ou senha inválidos",
-      });
-    }
+		// USUÁRIO NÃO ENCONTRADO
+		if (usuarioResult.recordset.length === 0) {
+			return res.status(401).json({
+				erro: "Email ou senha inválidos",
+			});
+		}
 
-    const usuario = usuarioResult.recordset[0];
+		const usuario = usuarioResult.recordset[0];
 
-    let perfil = null;
+		let perfil = null;
 
-    // PROFESSOR
-    if (usuario.nivel_acesso === 2) {
-      const professorResult = await pool
-        .request()
-        .input("id_usuario", sql.Int, usuario.id_usuario).query(`
-            SELECT
-              p.id_professor,
-              p.nome_completo,
-              p.data_nacimento,
+		// ========================================
+		// PROFESSOR
+		// ========================================
+		if (usuario.nivel_acesso === 2) {
+			const professorResult = await pool
+				.request()
 
-              (
-                SELECT DISTINCT
-                  t.ano_letivo
-                FROM disciplina d
+				.input("id_usuario", sql.Int, usuario.id_usuario)
+				.query(`
+          SELECT
+            p.id_professor,
+            p.nome_completo,
+            p.data_nacimento,
+            p.desativado,
 
-                INNER JOIN turma_disciplina td
-                  ON td.fk_disciplina =
-                    d.id_disciplina
+            (
+              SELECT DISTINCT
+                t.ano_letivo
 
-                INNER JOIN turma t
-                  ON t.id_turma =
-                    td.fk_turma
+              FROM disciplina d
 
-                WHERE d.fk_professor =
-                  p.id_professor
+              INNER JOIN turma_disciplina td
+                ON td.fk_disciplina =
+                  d.id_disciplina
 
-                FOR JSON PATH
-              ) AS opcoesAnos
+              INNER JOIN turma t
+                ON t.id_turma =
+                  td.fk_turma
 
-            FROM professor p
+              WHERE d.fk_professor =
+                p.id_professor
 
-            WHERE p.fk_usuario =
-              @id_usuario
-          `);
+                AND t.desativado = 0
 
-      if (professorResult.recordset.length > 0) {
-        const professor = professorResult.recordset[0];
+              FOR JSON PATH
+            ) AS opcoesAnos
 
-        perfil = {
-          tipo: "professor",
+          FROM professor p
 
-          dados: {
-            ...professor,
+          WHERE p.fk_usuario =
+            @id_usuario
+        `);
 
-            opcoesAnos: professor.opcoesAnos
-              ? JSON.parse(professor.opcoesAnos).map((x) => x.ano_letivo)
-              : [],
-          },
-        };
-      }
-    }
+			// NÃO ENCONTROU PROFESSOR
+			if (professorResult.recordset.length === 0) {
+				return res.status(401).json({
+					erro: "Professor não encontrado",
+				});
+			}
 
-    // ALUNO
-    if (usuario.nivel_acesso === 3) {
-      const alunoResult = await pool
-        .request()
-        .input("id_usuario", sql.Int, usuario.id_usuario).query(`
+			const professor = professorResult.recordset[0];
+
+			// PROFESSOR DESATIVADO
+			if (professor.desativado) {
+				return res.status(403).json({
+					erro: "Professor desativado. Entre em contato com a administração.",
+				});
+			}
+
+			perfil = {
+				tipo: "professor",
+
+				dados: {
+					id_professor: professor.id_professor,
+
+					nome_completo: professor.nome_completo,
+
+					data_nacimento: professor.data_nacimento,
+
+					opcoesAnos: professor.opcoesAnos
+						? JSON.parse(professor.opcoesAnos).map(
+								(x) => x.ano_letivo,
+							)
+						: [],
+				},
+			};
+		}
+
+		// ========================================
+		// ALUNO
+		// ========================================
+		if (usuario.nivel_acesso === 3) {
+			const alunoResult = await pool
+				.request()
+
+				.input("id_usuario", sql.Int, usuario.id_usuario)
+				.query(`
           SELECT
             a.id_aluno,
             a.nome_completo,
             a.matricula,
             a.data_nacimento,
+
+            a.desativado,
 
             (
               SELECT DISTINCT
@@ -113,6 +151,8 @@ router.post("/login", async (req, res) => {
               WHERE t.id_turma =
                 a.fk_turma
 
+                AND t.desativado = 0
+
               FOR JSON PATH
             ) AS opcoesAnos
 
@@ -122,53 +162,79 @@ router.post("/login", async (req, res) => {
             @id_usuario
         `);
 
-      if (alunoResult.recordset.length > 0) {
-        const aluno = alunoResult.recordset[0];
+			// NÃO ENCONTROU ALUNO
+			if (alunoResult.recordset.length === 0) {
+				return res.status(401).json({
+					erro: "Aluno não encontrado",
+				});
+			}
 
-        perfil = {
-          tipo: "aluno",
+			const aluno = alunoResult.recordset[0];
 
-          dados: {
-            ...aluno,
+			// ALUNO DESATIVADO
+			if (aluno.desativado) {
+				return res.status(403).json({
+					erro: "Aluno desativado. Entre em contato com a administração.",
+				});
+			}
 
-            opcoesAnos: aluno.opcoesAnos
-              ? JSON.parse(aluno.opcoesAnos).map((x) => x.ano_letivo)
-              : [],
-          },
-        };
-      }
-    }
+			perfil = {
+				tipo: "aluno",
 
-    const token = jwt.sign(
-      {
-        id_usuario: usuario.id_usuario,
+				dados: {
+					id_aluno: aluno.id_aluno,
 
-        nivel_acesso: usuario.nivel_acesso,
-      },
+					nome_completo: aluno.nome_completo,
 
-      process.env.JWT_SECRET,
+					matricula: aluno.matricula,
 
-      {
-        expiresIn: "1d",
-      },
-    );
+					data_nacimento: aluno.data_nacimento,
 
-    res.json({
-      sucesso: true,
+					opcoesAnos: aluno.opcoesAnos
+						? JSON.parse(aluno.opcoesAnos).map(
+								(x) => x.ano_letivo,
+							)
+						: [],
+				},
+			};
+		}
 
-      token,
+		// ========================================
+		// TOKEN
+		// ========================================
+		const token = jwt.sign(
+			{
+				id_usuario: usuario.id_usuario,
 
-      usuario,
+				nivel_acesso: usuario.nivel_acesso,
+			},
 
-      perfil,
-    });
-  } catch (err) {
-    console.error(err);
+			process.env.JWT_SECRET,
 
-    res.status(500).json({
-      erro: err.message,
-    });
-  }
+			{
+				expiresIn: "1d",
+			},
+		);
+
+		// ========================================
+		// RESPONSE
+		// ========================================
+		res.json({
+			sucesso: true,
+
+			token,
+
+			usuario,
+
+			perfil,
+		});
+	} catch (err) {
+		console.error(err);
+
+		res.status(500).json({
+			erro: err.message,
+		});
+	}
 });
 
 module.exports = router;

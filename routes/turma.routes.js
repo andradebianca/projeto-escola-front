@@ -2,211 +2,284 @@ const express = require("express");
 
 const router = express.Router();
 
-const { sql, getPool } = require("../db");
+const {sql, getPool} = require("../db");
 
-const { verificarToken } = require("../middlewares/auth.middleware");
+const {verificarToken} = require("../middlewares/auth.middleware");
 
 // ========================================
 // TURMAS PROFESSOR
 // ========================================
 router.get(
-  "/professor/:id/turmas",
+	"/professor/:id/turmas",
 
-  verificarToken,
+	verificarToken,
 
-  async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { ano } = req.query;
+	async (req, res) => {
+		try {
+			const {id} = req.params;
 
-      if (!ano) {
-        return res.status(400).json({
-          erro: "Ano letivo é obrigatório",
-        });
-      }
+			const {ano} = req.query;
 
-      const pool = await getPool();
+			if (!ano) {
+				return res.status(400).json({
+					erro: "Ano letivo é obrigatório",
+				});
+			}
 
-      const result = await pool
-        .request()
-        .input("id_professor", sql.Int, id)
-        .input("ano", sql.Int, ano).query(`
-          SELECT
-            t.id_turma,
-            t.cod_turma,
-            t.turno,
-            t.ano_letivo,
+			const pool = await getPool();
 
-            td.id_turma_disciplina,
+			const result = await pool
 
-            d.id_disciplina,
-            d.nome AS disciplina,
+				.request()
 
-            COUNT(a.id_aluno) AS quantidade_alunos
+				.input("id_professor", sql.Int, id)
 
-          FROM disciplina d
+				.input("ano", sql.Int, ano).query(`
 
-          INNER JOIN turma_disciplina td
-            ON td.fk_disciplina = d.id_disciplina
+            SELECT
+              t.id_turma,
+              t.cod_turma,
+              t.turno,
+              t.ano_letivo,
 
-          INNER JOIN turma t
-            ON t.id_turma = td.fk_turma
+              td.id_turma_disciplina,
 
-          LEFT JOIN alunos a
-            ON a.fk_turma = t.id_turma
+              d.id_disciplina,
+              d.nome AS disciplina,
 
-          WHERE d.fk_professor = @id_professor
-            AND t.ano_letivo = @ano
+              COUNT(a.id_aluno)
+                AS quantidade_alunos
 
-          GROUP BY
-            t.id_turma,
-            t.cod_turma,
-            t.turno,
-            t.ano_letivo,
-            td.id_turma_disciplina,
-            d.id_disciplina,
-            d.nome
+            FROM disciplina d
 
-          ORDER BY
-            t.ano_letivo,
-            t.cod_turma,
-            d.nome
-        `);
+            INNER JOIN turma_disciplina td
+              ON td.fk_disciplina =
+                d.id_disciplina
 
-      const turmasMap = {};
+            INNER JOIN turma t
+              ON t.id_turma =
+                td.fk_turma
 
-      result.recordset.forEach((item) => {
-        if (!turmasMap[item.id_turma]) {
-          turmasMap[item.id_turma] = {
-            id_turma: item.id_turma,
-            cod_turma: item.cod_turma,
-            turno: item.turno,
-            ano_letivo: item.ano_letivo,
-            disciplinas: [],
-          };
-        }
+            LEFT JOIN alunos a
+              ON a.fk_turma =
+                t.id_turma
 
-        turmasMap[item.id_turma].disciplinas.push({
-          id_turma_disciplina: item.id_turma_disciplina,
+            WHERE d.fk_professor =
+              @id_professor
 
-          id_disciplina: item.id_disciplina,
+              AND t.ano_letivo =
+                @ano
 
-          disciplina: item.disciplina,
+              -- TURMA ATIVA
+              AND t.desativado = 0
 
-          quantidade_alunos: item.quantidade_alunos,
-        });
-      });
+              -- ALUNO ATIVO
+              AND (
+                a.desativado = 0
+                OR a.desativado IS NULL
+              )
 
-      res.json({
-        sucesso: true,
-        turmas: Object.values(turmasMap),
-      });
-    } catch (err) {
-      console.error(err);
+            GROUP BY
+              t.id_turma,
+              t.cod_turma,
+              t.turno,
+              t.ano_letivo,
 
-      res.status(500).json({
-        erro: err.message,
-      });
-    }
-  },
+              td.id_turma_disciplina,
+
+              d.id_disciplina,
+              d.nome
+
+            ORDER BY
+              t.ano_letivo,
+              t.cod_turma,
+              d.nome
+          `);
+
+			// =========================
+			// MAP
+			// =========================
+			const turmasMap = {};
+
+			result.recordset.forEach((item) => {
+				// cria turma
+				if (!turmasMap[item.id_turma]) {
+					turmasMap[item.id_turma] = {
+						id_turma: item.id_turma,
+
+						cod_turma: item.cod_turma,
+
+						turno: item.turno,
+
+						ano_letivo: item.ano_letivo,
+
+						disciplinas: [],
+					};
+				}
+
+				// adiciona disciplina
+				turmasMap[item.id_turma].disciplinas.push({
+					id_turma_disciplina: item.id_turma_disciplina,
+
+					id_disciplina: item.id_disciplina,
+
+					disciplina: item.disciplina,
+
+					quantidade_alunos: item.quantidade_alunos,
+				});
+			});
+
+			// =========================
+			// RESPONSE
+			// =========================
+			res.json({
+				sucesso: true,
+
+				turmas: Object.values(turmasMap),
+			});
+		} catch (err) {
+			console.error(err);
+
+			res.status(500).json({
+				erro: err.message,
+			});
+		}
+	},
 );
 
 // ========================================
 // ALUNOS DA TURMA
 // ========================================
-router.get(
-  "/turma/:id/alunos",
+router.get("/turma/:id/alunos", verificarToken, async (req, res) => {
+	try {
+		const {id} = req.params;
 
-  verificarToken,
+		const {disciplinaId} = req.query;
 
-  async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { disciplinaId } = req.query;
+		const pool = await getPool();
 
-      const pool = await getPool();
+		let filtroDisciplina = "";
 
-      let filtroDisciplina = "";
+		const request = pool
+			.request()
 
-      const request = pool.request().input("id_turma", sql.Int, id);
+			.input("id_turma", sql.Int, id);
 
-      if (disciplinaId) {
-        filtroDisciplina = `
-          AND td.fk_disciplina = @disciplinaId
+		// =========================
+		// FILTRO DISCIPLINA
+		// =========================
+		if (disciplinaId) {
+			filtroDisciplina = `
+          AND td.fk_disciplina =
+            @disciplinaId
         `;
 
-        request.input("disciplinaId", sql.Int, disciplinaId);
-      }
+			request.input("disciplinaId", sql.Int, disciplinaId);
+		}
 
-      const result = await request.query(`
-        SELECT
-          a.id_aluno,
-          a.nome_completo,
-          a.matricula,
+		// =========================
+		// QUERY
+		// =========================
+		const result = await request.query(`
 
-          n.id_nota,
-          n.valor_nota,
-          n.data_criacao,
+          SELECT
+            a.id_aluno,
+            a.nome_completo,
+            a.matricula,
 
-          AVG(
-            CAST(n.valor_nota AS FLOAT)
-          ) OVER (
-            PARTITION BY a.id_aluno
-          ) AS media
+            n.id_nota,
+            n.valor_nota,
+            n.data_criacao,
 
-        FROM alunos a
+            AVG(
+              CAST(
+                n.valor_nota AS FLOAT
+              )
+            ) OVER (
+              PARTITION BY a.id_aluno
+            ) AS media
 
-        LEFT JOIN notas n
-          ON n.fk_aluno = a.id_aluno
+          FROM alunos a
 
-        LEFT JOIN turma_disciplina td
-          ON td.id_turma_disciplina =
-            n.fk_turma_disciplina
+          INNER JOIN turma t
+            ON t.id_turma =
+              a.fk_turma
 
-        WHERE a.fk_turma = @id_turma
-        ${filtroDisciplina}
+          LEFT JOIN notas n
+            ON n.fk_aluno =
+              a.id_aluno
 
-        ORDER BY
-          a.nome_completo,
-          n.data_criacao
-      `);
+          LEFT JOIN turma_disciplina td
+            ON td.id_turma_disciplina =
+              n.fk_turma_disciplina
 
-      const alunosMap = {};
+          WHERE a.fk_turma =
+            @id_turma
 
-      result.recordset.forEach((item) => {
-        if (!alunosMap[item.id_aluno]) {
-          alunosMap[item.id_aluno] = {
-            id_aluno: item.id_aluno,
-            nome_completo: item.nome_completo,
-            matricula: item.matricula,
+          -- ALUNO ATIVO
+          AND a.desativado = 0
 
-            media: item.media !== null ? Number(item.media.toFixed(2)) : null,
+          -- TURMA ATIVA
+          AND t.desativado = 0
 
-            notas: [],
-          };
-        }
+          ${filtroDisciplina}
 
-        if (item.id_nota) {
-          alunosMap[item.id_aluno].notas.push({
-            id_nota: item.id_nota,
-            valor_nota: item.valor_nota,
-            data_criacao: item.data_criacao,
-          });
-        }
-      });
+          ORDER BY
+            a.nome_completo,
+            n.data_criacao
+        `);
 
-      res.json({
-        sucesso: true,
-        alunos: Object.values(alunosMap),
-      });
-    } catch (err) {
-      console.error(err);
+		// =========================
+		// MAP
+		// =========================
+		const alunosMap = {};
 
-      res.status(500).json({
-        erro: err.message,
-      });
-    }
-  },
-);
+		result.recordset.forEach((item) => {
+			// cria aluno
+			if (!alunosMap[item.id_aluno]) {
+				alunosMap[item.id_aluno] = {
+					id_aluno: item.id_aluno,
+
+					nome_completo: item.nome_completo,
+
+					matricula: item.matricula,
+
+					media:
+						item.media !== null
+							? Number(item.media.toFixed(2))
+							: null,
+
+					notas: [],
+				};
+			}
+
+			// adiciona nota
+			if (item.id_nota) {
+				alunosMap[item.id_aluno].notas.push({
+					id_nota: item.id_nota,
+
+					valor_nota: item.valor_nota,
+
+					data_criacao: item.data_criacao,
+				});
+			}
+		});
+
+		// =========================
+		// RESPONSE
+		// =========================
+		res.json({
+			sucesso: true,
+
+			alunos: Object.values(alunosMap),
+		});
+	} catch (err) {
+		console.error(err);
+
+		res.status(500).json({
+			erro: err.message,
+		});
+	}
+});
 
 module.exports = router;

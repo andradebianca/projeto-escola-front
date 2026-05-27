@@ -2,33 +2,34 @@ const express = require("express");
 
 const router = express.Router();
 
-const { sql, getPool } = require("../db");
+const {sql, getPool} = require("../db");
 
-const { verificarToken } = require("../middlewares/auth.middleware");
+const {verificarToken} = require("../middlewares/auth.middleware");
 
 // ========================================
 // DISCIPLINAS ALUNO
 // ========================================
 router.get(
-  "/aluno/:id/disciplinas",
+	"/aluno/:id/disciplinas",
 
-  verificarToken,
+	verificarToken,
 
-  async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { ano } = req.query;
+	async (req, res) => {
+		try {
+			const {id} = req.params;
+			const {ano} = req.query;
 
-      if (!ano) {
-        return res.status(400).json({
-          erro: "Ano letivo é obrigatório",
-        });
-      }
+			if (!ano) {
+				return res.status(400).json({
+					erro: "Ano letivo é obrigatório",
+				});
+			}
 
-      const pool = await getPool();
+			const pool = await getPool();
 
-      const anosResult = await pool.request().input("id_aluno", sql.Int, id)
-        .query(`
+			const anosResult = await pool
+				.request()
+				.input("id_aluno", sql.Int, id).query(`
           SELECT DISTINCT
             t.ano_letivo
           FROM alunos a
@@ -38,10 +39,10 @@ router.get(
           ORDER BY t.ano_letivo
         `);
 
-      const alunoResult = await pool
-        .request()
-        .input("id_aluno", sql.Int, id)
-        .input("ano", sql.Int, ano).query(`
+			const alunoResult = await pool
+				.request()
+				.input("id_aluno", sql.Int, id)
+				.input("ano", sql.Int, ano).query(`
           SELECT
             a.id_aluno,
             a.nome_completo,
@@ -58,21 +59,23 @@ router.get(
             ON t.id_turma = a.fk_turma
 
           WHERE a.id_aluno = @id_aluno
-            AND t.ano_letivo = @ano
+          AND t.ano_letivo = @ano
+          AND a.desativado = 0
+          AND t.desativado = 0
         `);
 
-      if (alunoResult.recordset.length === 0) {
-        return res.status(404).json({
-          erro: "Aluno não encontrado",
-        });
-      }
+			if (alunoResult.recordset.length === 0) {
+				return res.status(404).json({
+					erro: "Aluno não encontrado",
+				});
+			}
 
-      const aluno = alunoResult.recordset[0];
+			const aluno = alunoResult.recordset[0];
 
-      const disciplinasResult = await pool
-        .request()
-        .input("id_aluno", sql.Int, id)
-        .input("id_turma", sql.Int, aluno.id_turma).query(`
+			const disciplinasResult = await pool
+				.request()
+				.input("id_aluno", sql.Int, id)
+				.input("id_turma", sql.Int, aluno.id_turma).query(`
           SELECT
             td.id_turma_disciplina,
 
@@ -100,79 +103,82 @@ router.get(
           WHERE td.fk_turma = @id_turma
         `);
 
-      const disciplinasMap = {};
+			const disciplinasMap = {};
 
-      disciplinasResult.recordset.forEach((item) => {
-        if (!disciplinasMap[item.id_disciplina]) {
-          disciplinasMap[item.id_disciplina] = {
-            id_disciplina: item.id_disciplina,
-            disciplina: item.disciplina,
-            professor: item.professor,
-            notas: [],
-            media: 0,
-          };
-        }
+			disciplinasResult.recordset.forEach((item) => {
+				if (!disciplinasMap[item.id_disciplina]) {
+					disciplinasMap[item.id_disciplina] = {
+						id_disciplina: item.id_disciplina,
+						disciplina: item.disciplina,
+						professor: item.professor,
+						notas: [],
+						media: 0,
+					};
+				}
 
-        if (item.valor_nota !== null) {
-          disciplinasMap[item.id_disciplina].notas.push(item.valor_nota);
-        }
-      });
+				if (item.valor_nota !== null) {
+					disciplinasMap[item.id_disciplina].notas.push(
+						item.valor_nota,
+					);
+				}
+			});
 
-      Object.values(disciplinasMap).forEach((disciplina) => {
-        if (disciplina.notas.length > 0) {
-          const soma = disciplina.notas.reduce((a, b) => a + b, 0);
+			Object.values(disciplinasMap).forEach((disciplina) => {
+				if (disciplina.notas.length > 0) {
+					const soma = disciplina.notas.reduce(
+						(a, b) => a + b,
+						0,
+					);
 
-          disciplina.media = Number(
-            (soma / disciplina.notas.length).toFixed(2),
-          );
-        }
-      });
+					disciplina.media = Number(
+						(soma / disciplina.notas.length).toFixed(2),
+					);
+				}
+			});
 
-      res.json({
-        sucesso: true,
+			res.json({
+				sucesso: true,
 
-        aluno: {
-          id_aluno: aluno.id_aluno,
-          nome_completo: aluno.nome_completo,
-          matricula: aluno.matricula,
+				aluno: {
+					id_aluno: aluno.id_aluno,
+					nome_completo: aluno.nome_completo,
+					matricula: aluno.matricula,
 
-          opcoesAnos: anosResult.recordset.map((x) => x.ano_letivo),
-        },
+					opcoesAnos: anosResult.recordset.map(
+						(x) => x.ano_letivo,
+					),
+				},
 
-        turma: {
-          id_turma: aluno.id_turma,
-          cod_turma: aluno.cod_turma,
-          turno: aluno.turno,
-          ano_letivo: aluno.ano_letivo,
-        },
+				turma: {
+					id_turma: aluno.id_turma,
+					cod_turma: aluno.cod_turma,
+					turno: aluno.turno,
+					ano_letivo: aluno.ano_letivo,
+				},
 
-        disciplinas: Object.values(disciplinasMap),
-      });
-    } catch (err) {
-      console.error(err);
+				disciplinas: Object.values(disciplinasMap),
+			});
+		} catch (err) {
+			console.error(err);
 
-      res.status(500).json({
-        erro: err.message,
-      });
-    }
-  },
+			res.status(500).json({
+				erro: err.message,
+			});
+		}
+	},
 );
 
 // ========================================
 // NOTAS ALUNO
 // ========================================
-router.get(
-  "/aluno/:id/notas",
+router.get("/aluno/:id/notas", verificarToken, async (req, res) => {
+	try {
+		const {id} = req.params;
 
-  verificarToken,
+		const pool = await getPool();
 
-  async (req, res) => {
-    try {
-      const { id } = req.params;
-
-      const pool = await getPool();
-
-      const result = await pool.request().input("id_aluno", sql.Int, id).query(`
+		const result = await pool.request().input("id_aluno", sql.Int, id)
+			.query(`
           SELECT
             d.id_disciplina,
             d.nome AS disciplina,
@@ -192,62 +198,60 @@ router.get(
 
           INNER JOIN professor p
             ON p.id_professor = d.fk_professor
+          INNER JOIN alunos a
+            ON a.id_aluno = n.fk_aluno
 
           WHERE n.fk_aluno = @id_aluno
+            AND a.desativado = 0
 
           ORDER BY d.nome, n.id_nota
         `);
 
-      const disciplinasMap = {};
+		const disciplinasMap = {};
 
-      result.recordset.forEach((item) => {
-        if (!disciplinasMap[item.id_disciplina]) {
-          disciplinasMap[item.id_disciplina] = {
-            id_disciplina: item.id_disciplina,
-            disciplina: item.disciplina,
-            professor: item.professor,
-            notas: [],
-          };
-        }
+		result.recordset.forEach((item) => {
+			if (!disciplinasMap[item.id_disciplina]) {
+				disciplinasMap[item.id_disciplina] = {
+					id_disciplina: item.id_disciplina,
+					disciplina: item.disciplina,
+					professor: item.professor,
+					notas: [],
+				};
+			}
 
-        if (disciplinasMap[item.id_disciplina].notas.length < 3) {
-          disciplinasMap[item.id_disciplina].notas.push({
-            id_nota: item.id_nota,
-            valor_nota: item.valor_nota,
-          });
-        }
-      });
+			if (disciplinasMap[item.id_disciplina].notas.length < 3) {
+				disciplinasMap[item.id_disciplina].notas.push({
+					id_nota: item.id_nota,
+					valor_nota: item.valor_nota,
+				});
+			}
+		});
 
-      res.json({
-        sucesso: true,
-        disciplinas: Object.values(disciplinasMap),
-      });
-    } catch (err) {
-      console.error(err);
+		res.json({
+			sucesso: true,
+			disciplinas: Object.values(disciplinasMap),
+		});
+	} catch (err) {
+		console.error(err);
 
-      res.status(500).json({
-        erro: err.message,
-      });
-    }
-  },
-);
+		res.status(500).json({
+			erro: err.message,
+		});
+	}
+});
 
 // ========================================
 // PERFIL ALUNO
 // ========================================
-router.get(
-  "/aluno/:id/perfil",
+router.get("/aluno/:id/perfil", verificarToken, async (req, res) => {
+	try {
+		const {id} = req.params;
 
-  verificarToken,
+		const pool = await getPool();
 
-  async (req, res) => {
-    try {
-      const { id } = req.params;
-
-      const pool = await getPool();
-
-      const alunoResult = await pool.request().input("id_aluno", sql.Int, id)
-        .query(`
+		const alunoResult = await pool
+			.request()
+			.input("id_aluno", sql.Int, id).query(`
           SELECT
             a.id_aluno,
             a.nome_completo,
@@ -279,52 +283,55 @@ router.get(
             ON uf.id_uf = e.fk_uf
 
           WHERE a.id_aluno = @id_aluno
+          AND a.desativado = 0
         `);
 
-      if (alunoResult.recordset.length === 0) {
-        return res.status(404).json({
-          erro: "Aluno não encontrado",
-        });
-      }
+		if (alunoResult.recordset.length === 0) {
+			return res.status(404).json({
+				erro: "Aluno não encontrado",
+			});
+		}
 
-      const telefoneResult = await pool.request().input("id_aluno", sql.Int, id)
-        .query(`
+		const telefoneResult = await pool
+			.request()
+			.input("id_aluno", sql.Int, id).query(`
           SELECT telefone
           FROM telefone_aluno
           WHERE fk_aluno = @id_aluno
         `);
 
-      const aluno = alunoResult.recordset[0];
+		const aluno = alunoResult.recordset[0];
 
-      res.json({
-        sucesso: true,
+		res.json({
+			sucesso: true,
 
-        aluno: {
-          id_aluno: aluno.id_aluno,
-          nome_completo: aluno.nome_completo,
-          matricula: aluno.matricula,
-          data_nacimento: aluno.data_nacimento,
+			aluno: {
+				id_aluno: aluno.id_aluno,
+				nome_completo: aluno.nome_completo,
+				matricula: aluno.matricula,
+				data_nacimento: aluno.data_nacimento,
 
-          endereco: {
-            rua: aluno.nome_rua,
-            numero: aluno.numero,
-            bairro: aluno.bairro,
-            cep: aluno.cep,
-            cidade: aluno.nome_cidade,
-            uf: aluno.uf,
-          },
+				endereco: {
+					rua: aluno.nome_rua,
+					numero: aluno.numero,
+					bairro: aluno.bairro,
+					cep: aluno.cep,
+					cidade: aluno.nome_cidade,
+					uf: aluno.uf,
+				},
 
-          telefones: telefoneResult.recordset.map((x) => x.telefone),
-        },
-      });
-    } catch (err) {
-      console.error(err);
+				telefones: telefoneResult.recordset.map(
+					(x) => x.telefone,
+				),
+			},
+		});
+	} catch (err) {
+		console.error(err);
 
-      res.status(500).json({
-        erro: err.message,
-      });
-    }
-  },
-);
+		res.status(500).json({
+			erro: err.message,
+		});
+	}
+});
 
 module.exports = router;
