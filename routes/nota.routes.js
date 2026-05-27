@@ -39,9 +39,9 @@ async function registrarAuditoria({
 				dadosNovos ? String(dadosNovos) : null,
 			).query(`
         INSERT INTO auditoria (
-          fk_usuario, acao, tabela_afetada, id_registro, descricao, dados_anteriores, dados_novos, data_auditoria
+          fk_usuario, acao, tabela_afetada, id_registro, descricao, dados_anteriores, dados_novos
         ) VALUES (
-          @fk_usuario, @acao, @tabela_afetada, @id_registro, @descricao, @dados_anteriores, @dados_novos, GETDATE()
+          @fk_usuario, @acao, @tabela_afetada, @id_registro, @descricao, @dados_anteriores, @dados_novos
         )
       `);
 	} catch (err) {
@@ -165,7 +165,12 @@ router.post("/nota", verificarToken, async (req, res) => {
 			periodo_nota,
 			data_aplicacao,
 		} = req.body;
+
 		const pool = await getPool();
+
+		// =========================
+		// VALIDAÇÃO
+		// =========================
 		validarNota({
 			fk_turma_disciplina,
 			fk_aluno,
@@ -174,7 +179,15 @@ router.post("/nota", verificarToken, async (req, res) => {
 			periodo_nota,
 			data_aplicacao,
 		});
-		verificarLimiteNotas(pool, fk_turma_disciplina, fk_aluno);
+
+		// =========================
+		// LIMITE NOTAS
+		// =========================
+		await verificarLimiteNotas(pool, fk_turma_disciplina, fk_aluno);
+
+		// =========================
+		// PERÍODO REPETIDO
+		// =========================
 		await verificarPeriodoNota(
 			pool,
 			null,
@@ -182,35 +195,77 @@ router.post("/nota", verificarToken, async (req, res) => {
 			fk_aluno,
 			periodo_nota,
 		);
+
+		// =========================
+		// INSERT
+		// =========================
 		await pool
 			.request()
+
 			.input("fk_turma_disciplina", sql.Int, fk_turma_disciplina)
+
 			.input("fk_aluno", sql.Int, fk_aluno)
+
 			.input("valor_nota", sql.Decimal(5, 2), valor_nota)
+
 			.input("descricao", sql.VarChar, descricao)
+
 			.input("periodo_nota", sql.Int, periodo_nota)
+
 			.input("data_aplicacao", sql.Date, data_aplicacao).query(`
-      INSERT INTO notas (fk_turma_disciplina, fk_aluno, data_aplicacao, valor_nota, descricao, periodo_nota) VALUES (@fk_turma_disciplina, @fk_aluno, @data_aplicacao, @valor_nota, @descricao, @periodo_nota)
-    `);
+        INSERT INTO notas (
+          fk_turma_disciplina,
+          fk_aluno,
+          data_aplicacao,
+          valor_nota,
+          descricao,
+          periodo_nota
+        )
+
+        VALUES (
+          @fk_turma_disciplina,
+          @fk_aluno,
+          @data_aplicacao,
+          @valor_nota,
+          @descricao,
+          @periodo_nota
+        )
+      `);
+
+		// =========================
+		// AUDITORIA
+		// =========================
 		await registrarAuditoria({
 			usuarioId: req.usuario.id_usuario,
+
 			acao: "CREATE",
+
 			tabela: "notas",
+
 			descricao: "Nota cadastrada",
-			dadosNovos: {
+
+			dadosNovos: JSON.stringify({
 				fk_turma_disciplina,
 				fk_aluno,
 				valor_nota,
 				periodo_nota,
-			},
+			}),
 		});
+
+		// =========================
+		// RESPONSE
+		// =========================
 		res.status(201).json({
 			sucesso: true,
+
 			mensagem: "Nota cadastrada com sucesso",
 		});
 	} catch (err) {
 		console.error(err);
-		res.status(500).json({erro: err.message});
+
+		res.status(500).json({
+			erro: err.message,
+		});
 	}
 });
 
@@ -221,22 +276,48 @@ router.post("/nota", verificarToken, async (req, res) => {
 router.put("/nota/:id", verificarToken, async (req, res) => {
 	try {
 		const {id} = req.params;
+
 		const {valor_nota, descricao, periodo_nota} = req.body;
-		if (!valor_nota || !descricao || !periodo_nota)
-			return res
-				.status(400)
-				.json({erro: "Todos os campos são obrigatórios"});
+
+		// =========================
+		// VALIDAÇÃO
+		// =========================
+		if (!valor_nota || !descricao || !periodo_nota) {
+			return res.status(400).json({
+				erro: "Todos os campos são obrigatórios",
+			});
+		}
+
 		const pool = await getPool();
+
+		// =========================
+		// BUSCA NOTA
+		// =========================
 		const notaResult = await pool
+
 			.request()
+
 			.input("id_nota", sql.Int, id).query(`
-      SELECT *
-      FROM notas
-      WHERE id_nota = @id_nota
-    `);
-		if (notaResult.recordset.length === 0)
-			return res.status(404).json({erro: "Nota não encontrada"});
+          SELECT *
+
+          FROM notas
+
+          WHERE id_nota =
+            @id_nota
+        `);
+
+		// NOTA NÃO ENCONTRADA
+		if (notaResult.recordset.length === 0) {
+			return res.status(404).json({
+				erro: "Nota não encontrada",
+			});
+		}
+
 		const nota = notaResult.recordset[0];
+
+		// =========================
+		// PERÍODO REPETIDO
+		// =========================
 		await verificarPeriodoNota(
 			pool,
 			id,
@@ -244,31 +325,77 @@ router.put("/nota/:id", verificarToken, async (req, res) => {
 			nota.fk_aluno,
 			periodo_nota,
 		);
-		if (diferencaDias(new Date(nota.data_criacao), new Date()) > 2)
-			return res
-				.status(403)
-				.json({erro: "Não é possível editar após 2 dias"});
+
+		// =========================
+		// LIMITE 2 DIAS
+		// =========================
+		if (diferencaDias(new Date(nota.data_criacao), new Date()) > 2) {
+			return res.status(403).json({
+				erro: "Não é possível editar após 2 dias",
+			});
+		}
+
+		// =========================
+		// UPDATE
+		// =========================
 		await pool
 			.request()
+
 			.input("id_nota", sql.Int, id)
+
 			.input("valor_nota", sql.Decimal(5, 2), valor_nota)
+
 			.input("descricao", sql.VarChar, descricao)
+
 			.input("periodo_nota", sql.Int, periodo_nota).query(`
-      UPDATE notas SET valor_nota = @valor_nota, descricao = @descricao, periodo_nota = @periodo_nota WHERE id_nota = @id_nota
-    `);
+        UPDATE notas
+
+        SET
+          valor_nota = @valor_nota,
+          descricao = @descricao,
+          periodo_nota = @periodo_nota
+
+        WHERE id_nota =
+          @id_nota
+      `);
+
+		// =========================
+		// AUDITORIA
+		// =========================
 		await registrarAuditoria({
 			usuarioId: req.usuario.id_usuario,
+
 			acao: "UPDATE",
+
 			tabela: "notas",
+
 			idRegistro: id,
+
 			descricao: "Nota atualizada",
-			dadosAnteriores: nota,
-			dadosNovos: {valor_nota, descricao, periodo_nota},
+
+			dadosAnteriores: JSON.stringify(nota),
+
+			dadosNovos: JSON.stringify({
+				valor_nota,
+				descricao,
+				periodo_nota,
+			}),
 		});
-		res.json({sucesso: true, mensagem: "Nota atualizada com sucesso"});
+
+		// =========================
+		// RESPONSE
+		// =========================
+		res.json({
+			sucesso: true,
+
+			mensagem: "Nota atualizada com sucesso",
+		});
 	} catch (err) {
 		console.error(err);
-		res.status(500).json({erro: err.message});
+
+		res.status(500).json({
+			erro: err.message,
+		});
 	}
 });
 

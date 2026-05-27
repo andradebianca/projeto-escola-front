@@ -7,43 +7,70 @@ const {sql, getPool} = require("../db");
 
 router.post("/login", async (req, res) => {
 	try {
-		const {email, senha} = req.body || {};
+		const {login, senha} = req.body || {};
 
-		if (!email || !senha) {
+		// =========================
+		// VALIDAÇÃO
+		// =========================
+		if (!login || !senha) {
 			return res.status(400).json({
-				erro: "Email e senha obrigatórios",
+				erro: "Login e senha obrigatórios",
 			});
 		}
 
 		const pool = await getPool();
 
 		// =========================
-		// LOGIN USUÁRIO
+		// BUSCA USUÁRIO
 		// =========================
 		const usuarioResult = await pool
 			.request()
-			.input("email", sql.VarChar, email)
-			.input("senha", sql.VarChar, senha).query(`
+
+			.input("login", sql.VarChar, login).query(`
         SELECT
           id_usuario,
           email,
           user_name,
+          senha,
           nivel_acesso
 
         FROM usuario
 
-        WHERE email = @email
-          AND senha = @senha
+        WHERE
+          email = @login
+          OR user_name = @login
       `);
 
-		// USUÁRIO NÃO ENCONTRADO
+		// =========================
+		// NÃO ENCONTRADO
+		// =========================
 		if (usuarioResult.recordset.length === 0) {
 			return res.status(401).json({
-				erro: "Email ou senha inválidos",
+				erro: "Usuário não encontrado",
 			});
 		}
 
 		const usuario = usuarioResult.recordset[0];
+
+		// =========================
+		// PRIMEIRO ACESSO
+		// =========================
+		if (!usuario.senha) {
+			return res.status(401).json({
+				primeiro_acesso: true,
+
+				erro: "É necessário cadastrar uma senha antes de acessar",
+			});
+		}
+
+		// =========================
+		// SENHA INVÁLIDA
+		// =========================
+		if (usuario.senha !== senha) {
+			return res.status(401).json({
+				erro: "Senha inválida",
+			});
+		}
 
 		let perfil = null;
 
@@ -216,6 +243,9 @@ router.post("/login", async (req, res) => {
 			},
 		);
 
+		// remove senha
+		delete usuario.senha;
+
 		// ========================================
 		// RESPONSE
 		// ========================================
@@ -236,5 +266,168 @@ router.post("/login", async (req, res) => {
 		});
 	}
 });
+
+router.post(
+	"/primeiro-acesso",
+
+	async (req, res) => {
+		try {
+			const {email, novaSenha} = req.body || {};
+
+			// =========================
+			// VALIDAÇÃO
+			// =========================
+			if (!email || !novaSenha) {
+				return res.status(400).json({
+					erro: "Email e senha obrigatórios",
+				});
+			}
+
+			const pool = await getPool();
+
+			// =========================
+			// BUSCA USUÁRIO
+			// =========================
+			const usuarioResult = await pool
+				.request()
+
+				.input("email", sql.VarChar, email).query(`
+            SELECT
+              id_usuario,
+              senha
+
+            FROM usuario
+
+            WHERE email =
+              @email
+          `);
+
+			if (usuarioResult.recordset.length === 0) {
+				return res.status(404).json({
+					erro: "Usuário não encontrado",
+				});
+			}
+
+			const usuario = usuarioResult.recordset[0];
+
+			// =========================
+			// JÁ POSSUI SENHA
+			// =========================
+			if (usuario.senha) {
+				return res.status(400).json({
+					erro: "Usuário já possui senha cadastrada",
+				});
+			}
+
+			// =========================
+			// UPDATE SENHA
+			// =========================
+			await pool
+				.request()
+
+				.input("id_usuario", sql.Int, usuario.id_usuario)
+
+				.input("senha", sql.VarChar(30), novaSenha).query(`
+          UPDATE usuario
+
+          SET
+            senha = @senha
+
+          WHERE id_usuario =
+            @id_usuario
+        `);
+
+			res.json({
+				sucesso: true,
+				mensagem: "Senha cadastrada com sucesso",
+			});
+		} catch (err) {
+			console.error(err);
+
+			res.status(500).json({
+				erro: err.message,
+			});
+		}
+	},
+);
+
+router.post(
+	"/esqueci-senha",
+
+	async (req, res) => {
+		try {
+			const {login, novaSenha} = req.body || {};
+
+			// =========================
+			// VALIDAÇÃO
+			// =========================
+			if (!login || !novaSenha) {
+				return res.status(400).json({
+					erro: "Login e nova senha obrigatórios",
+				});
+			}
+
+			const pool = await getPool();
+
+			// =========================
+			// BUSCAR USUÁRIO
+			// =========================
+			const usuarioResult = await pool
+				.request()
+
+				.input("login", sql.VarChar, login).query(`
+            SELECT
+              id_usuario
+
+            FROM usuario
+
+            WHERE
+              email = @login
+              OR user_name = @login
+          `);
+
+			// =========================
+			// NÃO ENCONTRADO
+			// =========================
+			if (usuarioResult.recordset.length === 0) {
+				return res.status(404).json({
+					erro: "Usuário não encontrado",
+				});
+			}
+
+			const usuario = usuarioResult.recordset[0];
+
+			// =========================
+			// UPDATE SENHA
+			// =========================
+			await pool
+				.request()
+
+				.input("id_usuario", sql.Int, usuario.id_usuario)
+
+				.input("senha", sql.VarChar(30), novaSenha).query(`
+          UPDATE usuario
+
+          SET
+            senha = @senha
+
+          WHERE id_usuario =
+            @id_usuario
+        `);
+
+			res.json({
+				sucesso: true,
+
+				mensagem: "Senha redefinida com sucesso",
+			});
+		} catch (err) {
+			console.error(err);
+
+			res.status(500).json({
+				erro: err.message,
+			});
+		}
+	},
+);
 
 module.exports = router;

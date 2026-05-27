@@ -150,37 +150,55 @@ router.get(
 // ========================================
 // ALUNOS DA TURMA
 // ========================================
-router.get("/turma/:id/alunos", verificarToken, async (req, res) => {
-	try {
-		const {id} = req.params;
+router.get(
+	"/turma/:id/alunos",
 
-		const {disciplinaId} = req.query;
+	verificarToken,
 
-		const pool = await getPool();
+	async (req, res) => {
+		try {
+			const {id} = req.params;
 
-		let filtroDisciplina = "";
+			const {disciplinaId} = req.query;
 
-		const request = pool
-			.request()
+			const pool = await getPool();
 
-			.input("id_turma", sql.Int, id);
+			// =========================
+			// REQUEST
+			// =========================
+			const request = pool
+				.request()
 
-		// =========================
-		// FILTRO DISCIPLINA
-		// =========================
-		if (disciplinaId) {
-			filtroDisciplina = `
-          AND td.fk_disciplina =
-            @disciplinaId
+				.input("id_turma", sql.Int, id);
+
+			// =========================
+			// FILTRO DISCIPLINA
+			// =========================
+			let filtroDisciplina = "";
+
+			if (disciplinaId) {
+				filtroDisciplina = `
+          AND EXISTS (
+
+            SELECT 1
+
+            FROM turma_disciplina td
+
+            WHERE td.id_turma_disciplina =
+              n.fk_turma_disciplina
+
+            AND td.fk_disciplina =
+              @disciplinaId
+          )
         `;
 
-			request.input("disciplinaId", sql.Int, disciplinaId);
-		}
+				request.input("disciplinaId", sql.Int, disciplinaId);
+			}
 
-		// =========================
-		// QUERY
-		// =========================
-		const result = await request.query(`
+			// =========================
+			// QUERY
+			// =========================
+			const result = await request.query(`
 
           SELECT
             a.id_aluno,
@@ -209,77 +227,72 @@ router.get("/turma/:id/alunos", verificarToken, async (req, res) => {
             ON n.fk_aluno =
               a.id_aluno
 
-          LEFT JOIN turma_disciplina td
-            ON td.id_turma_disciplina =
-              n.fk_turma_disciplina
+            ${filtroDisciplina}
 
           WHERE a.fk_turma =
             @id_turma
 
-          -- ALUNO ATIVO
-          AND a.desativado = 0
+            AND a.desativado = 0
 
-          -- TURMA ATIVA
-          AND t.desativado = 0
-
-          ${filtroDisciplina}
+            AND t.desativado = 0
 
           ORDER BY
             a.nome_completo,
             n.data_criacao
         `);
 
-		// =========================
-		// MAP
-		// =========================
-		const alunosMap = {};
+			// =========================
+			// MAP
+			// =========================
+			const alunosMap = {};
 
-		result.recordset.forEach((item) => {
-			// cria aluno
-			if (!alunosMap[item.id_aluno]) {
-				alunosMap[item.id_aluno] = {
-					id_aluno: item.id_aluno,
+			result.recordset.forEach((item) => {
+				// cria aluno
+				if (!alunosMap[item.id_aluno]) {
+					alunosMap[item.id_aluno] = {
+						id_aluno: item.id_aluno,
 
-					nome_completo: item.nome_completo,
+						nome_completo: item.nome_completo,
 
-					matricula: item.matricula,
+						matricula: item.matricula,
 
-					media:
-						item.media !== null
-							? Number(item.media.toFixed(2))
-							: null,
+						media:
+							item.media !== null
+								? Number(item.media.toFixed(2))
+								: null,
 
-					notas: [],
-				};
-			}
+						notas: [],
+					};
+				}
 
-			// adiciona nota
-			if (item.id_nota) {
-				alunosMap[item.id_aluno].notas.push({
-					id_nota: item.id_nota,
+				// adiciona nota
+				if (item.id_nota) {
+					alunosMap[item.id_aluno].notas.push({
+						id_nota: item.id_nota,
 
-					valor_nota: item.valor_nota,
+						valor_nota: item.valor_nota,
 
-					data_criacao: item.data_criacao,
-				});
-			}
-		});
+						data_criacao: item.data_criacao,
+					});
+				}
+			});
 
-		// =========================
-		// RESPONSE
-		// =========================
-		res.json({
-			sucesso: true,
+			// =========================
+			// RESPONSE
+			// =========================
+			res.json({
+				sucesso: true,
 
-			alunos: Object.values(alunosMap),
-		});
-	} catch (err) {
-		console.error(err);
+				alunos: Object.values(alunosMap),
+			});
+		} catch (err) {
+			console.error(err);
 
-		res.status(500).json({
-			erro: err.message,
-		});
-	}
-});
+			res.status(500).json({
+				erro: err.message,
+			});
+		}
+	},
+);
 
 module.exports = router;

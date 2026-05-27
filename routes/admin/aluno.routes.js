@@ -86,7 +86,7 @@ router.get(
 				.input("id_aluno", sql.Int, id).query(`
       SELECT
         a.id_aluno, a.nome_completo, a.data_nacimento, a.matricula, a.cpf, a.fk_turma AS id_turma,
-        u.email, u.user_name,
+        u.email,
         e.id_endereco, e.numero,
         r.nome_rua AS rua, r.cep, r.bairro,
         c.nome_cidade AS cidade,
@@ -257,26 +257,46 @@ router.post("/admin/aluno", verificarToken, apenasAdmin, async (req, res) => {
 			}
 
 			await transaction.commit();
+			// =========================
+			// AUDITORIA
+			// =========================
+			try {
+				await registrarAuditoria({
+					usuarioId: req.usuario.id_usuario,
 
-			await registrarAuditoria({
-				usuarioId: req.usuario.id_usuario,
-				acao: "CREATE",
-				tabela: "alunos",
-				idRegistro: idAluno,
-				descricao: `Cadastrou o aluno(a) ${nome_completo}`,
-			});
+					acao: "CREATE",
+
+					tabela: "alunos",
+
+					idRegistro: idAluno,
+
+					descricao: `Cadastrou o aluno(a) ${nome_completo}`,
+
+					dadosNovos: JSON.stringify({
+						email,
+						nome_completo,
+						matricula,
+						fk_turma,
+					}),
+				});
+			} catch (auditErr) {
+				console.error("Erro auditoria:", auditErr);
+			}
 
 			res.status(201).json({
 				sucesso: true,
+
 				mensagem: "Aluno matriculado com sucesso!",
 			});
 		} catch (innerErr) {
 			await transaction.rollback();
+
 			throw innerErr;
 		}
 	} catch (err) {
 		res.status(err.number && err.number >= 50000 ? 400 : 500).json({
 			sucesso: false,
+
 			erro: err.message,
 		});
 	}
@@ -287,16 +307,19 @@ router.post("/admin/aluno", verificarToken, apenasAdmin, async (req, res) => {
 // =========================================================================
 router.put(
 	"/admin/aluno/:id",
+
 	verificarToken,
+
 	apenasAdmin,
+
 	async (req, res) => {
 		const {id} = req.params;
+
 		const pool = await getPool();
 
 		try {
 			const {
 				email,
-				user_name,
 				nome_completo,
 				data_nacimento,
 				matricula,
@@ -305,174 +328,324 @@ router.put(
 				telefones,
 			} = req.body;
 
-			// Resolver parâmetros de localização antes da Transaction
+			// =========================
+			// RESOLVER LOCALIZAÇÃO
+			// =========================
 			let ufId, cidadeId, ruaId;
 
+			// UF
 			const ufCheck = await pool
 				.request()
-				.input("uf", sql.VarChar, endereco.uf)
-				.query(`SELECT id_uf FROM uf WHERE nome_estado = @uf`);
+
+				.input("uf", sql.VarChar, endereco.uf).query(`
+          SELECT id_uf
+
+          FROM uf
+
+          WHERE nome_estado =
+            @uf
+        `);
+
 			ufId =
 				ufCheck.recordset.length > 0
 					? ufCheck.recordset[0].id_uf
 					: (
 							await pool
 								.request()
+
 								.input(
 									"uf",
 									sql.VarChar,
 									endereco.uf,
-								)
-								.query(
-									`INSERT INTO uf (nome_estado) OUTPUT INSERTED.id_uf VALUES (@uf)`,
-								)
+								).query(`
+                  INSERT INTO uf (
+                    nome_estado
+                  )
+
+                  OUTPUT INSERTED.id_uf
+
+                  VALUES (@uf)
+                `)
 						).recordset[0].id_uf;
 
+			// CIDADE
 			const cidCheck = await pool
 				.request()
-				.input("cidade", sql.VarChar, endereco.cidade)
-				.query(
-					`SELECT id_cidade FROM cidade WHERE nome_cidade = @cidade`,
-				);
+
+				.input("cidade", sql.VarChar, endereco.cidade).query(`
+          SELECT id_cidade
+
+          FROM cidade
+
+          WHERE nome_cidade =
+            @cidade
+        `);
+
 			cidadeId =
 				cidCheck.recordset.length > 0
 					? cidCheck.recordset[0].id_cidade
 					: (
 							await pool
 								.request()
+
 								.input(
 									"cidade",
 									sql.VarChar,
 									endereco.cidade,
-								)
-								.query(
-									`INSERT INTO cidade (nome_cidade) OUTPUT INSERTED.id_cidade VALUES (@cidade)`,
-								)
+								).query(`
+                  INSERT INTO cidade (
+                    nome_cidade
+                  )
+
+                  OUTPUT INSERTED.id_cidade
+
+                  VALUES (@cidade)
+                `)
 						).recordset[0].id_cidade;
 
+			// RUA
 			const ruaCheck = await pool
 				.request()
+
 				.input("rua", sql.VarChar, endereco.rua)
-				.input("cep", sql.VarChar, endereco.cep)
-				.query(
-					`SELECT id_rua FROM rua WHERE nome_rua = @rua AND cep = @cep`,
-				);
+
+				.input("cep", sql.VarChar, endereco.cep).query(`
+          SELECT id_rua
+
+          FROM rua
+
+          WHERE nome_rua = @rua
+            AND cep = @cep
+        `);
+
 			ruaId =
 				ruaCheck.recordset.length > 0
 					? ruaCheck.recordset[0].id_rua
 					: (
 							await pool
 								.request()
+
 								.input(
 									"rua",
 									sql.VarChar,
 									endereco.rua,
 								)
+
 								.input(
 									"cep",
 									sql.VarChar,
 									endereco.cep,
 								)
+
 								.input(
 									"bairro",
 									sql.VarChar,
 									endereco.bairro,
-								)
-								.query(
-									`INSERT INTO rua (nome_rua, cep, bairro) OUTPUT INSERTED.id_rua VALUES (@rua, @cep, @bairro)`,
-								)
+								).query(`
+                  INSERT INTO rua (
+                    nome_rua,
+                    cep,
+                    bairro
+                  )
+
+                  OUTPUT INSERTED.id_rua
+
+                  VALUES (
+                    @rua,
+                    @cep,
+                    @bairro
+                  )
+                `)
 						).recordset[0].id_rua;
 
+			// =========================
+			// TRANSACTION
+			// =========================
 			const transaction = new sql.Transaction(pool);
+
 			await transaction.begin();
 
 			try {
-				const atualResult = await new sql.Request(transaction)
-					.input("id_aluno", sql.Int, id)
-					.query(
-						`SELECT fk_usuario, fk_endereco FROM alunos WHERE id_aluno = @id_aluno`,
-					);
+				// =========================
+				// DADOS ATUAIS
+				// =========================
+				const atualResult = await new sql.Request(
+					transaction,
+				).input("id_aluno", sql.Int, id).query(`
+              SELECT
+                fk_usuario,
+                fk_endereco
+
+              FROM alunos
+
+              WHERE id_aluno =
+                @id_aluno
+            `);
+
+				if (atualResult.recordset.length === 0) {
+					throw new Error("Aluno não encontrado");
+				}
+
 				const current = atualResult.recordset[0];
 
+				// =========================
+				// UPDATE USUARIO
+				// =========================
 				await new sql.Request(transaction)
-					.input("id_usuario", sql.Int, current.fk_usuario)
-					.input("email", sql.VarChar, email)
-					.input("user_name", sql.VarChar, user_name)
-					.query(
-						`UPDATE usuario SET email = @email, user_name = @user_name WHERE id_usuario = @id_usuario`,
-					);
 
+					.input("id_usuario", sql.Int, current.fk_usuario)
+
+					.input("email", sql.VarChar, email).query(`
+            UPDATE usuario
+
+            SET
+              email = @email
+
+            WHERE id_usuario =
+              @id_usuario
+          `);
+
+				// =========================
+				// UPDATE ENDEREÇO
+				// =========================
 				await new sql.Request(transaction)
+
 					.input(
 						"id_endereco",
 						sql.Int,
 						current.fk_endereco,
 					)
-					.input("fk_uf", sql.Int, ufId)
-					.input("fk_cidade", sql.Int, cidadeId)
-					.input("fk_rua", sql.Int, ruaId)
-					.input("numero", sql.VarChar, endereco.numero)
-					.query(
-						`UPDATE endereco SET fk_uf = @fk_uf, fk_cidade = @fk_cidade, fk_rua = @fk_rua, numero = @numero WHERE id_endereco = @id_endereco`,
-					);
 
+					.input("fk_uf", sql.Int, ufId)
+
+					.input("fk_cidade", sql.Int, cidadeId)
+
+					.input("fk_rua", sql.Int, ruaId)
+
+					.input("numero", sql.VarChar, endereco.numero)
+					.query(`
+            UPDATE endereco
+
+            SET
+              fk_uf = @fk_uf,
+              fk_cidade = @fk_cidade,
+              fk_rua = @fk_rua,
+              numero = @numero
+
+            WHERE id_endereco =
+              @id_endereco
+          `);
+
+				// =========================
+				// UPDATE ALUNO
+				// =========================
 				await new sql.Request(transaction)
+
 					.input("id_aluno", sql.Int, id)
+
 					.input("fk_turma", sql.Int, fk_turma || null)
+
 					.input(
 						"nome_completo",
 						sql.VarChar,
 						nome_completo,
 					)
-					.input("data_nacimento", sql.Date, data_nacimento)
-					.input("matricula", sql.Int, matricula)
-					.query(
-						`UPDATE alunos SET fk_turma = @fk_turma, nome_completo = @nome_completo, data_nacimento = @data_nacimento, matricula = @matricula WHERE id_aluno = @id_aluno`,
-					);
 
-				await new sql.Request(transaction)
-					.input("fk_aluno", sql.Int, id)
-					.query(
-						`DELETE FROM telefone_aluno WHERE fk_aluno = @fk_aluno`,
-					);
+					.input("data_nacimento", sql.Date, data_nacimento)
+
+					.input("matricula", sql.Int, matricula).query(`
+            UPDATE alunos
+
+            SET
+              fk_turma = @fk_turma,
+              nome_completo = @nome_completo,
+              data_nacimento = @data_nacimento,
+              matricula = @matricula
+
+            WHERE id_aluno =
+              @id_aluno
+          `);
+
+				// =========================
+				// TELEFONES
+				// =========================
+				await new sql.Request(transaction).input(
+					"fk_aluno",
+					sql.Int,
+					id,
+				).query(`
+            DELETE FROM telefone_aluno
+
+            WHERE fk_aluno =
+              @fk_aluno
+          `);
 
 				if (telefones && Array.isArray(telefones)) {
 					for (const fone of telefones) {
 						await new sql.Request(transaction)
+
 							.input("fk_aluno", sql.Int, id)
+
 							.input("telefone", sql.VarChar, fone)
-							.query(
-								`INSERT INTO telefone_aluno (fk_aluno, telefone) VALUES (@fk_aluno, @telefone);`,
-							);
+							.query(`
+                INSERT INTO telefone_aluno (
+                  fk_aluno,
+                  telefone
+                )
+
+                VALUES (
+                  @fk_aluno,
+                  @telefone
+                )
+              `);
 					}
 				}
 
+				// =========================
+				// COMMIT
+				// =========================
 				await transaction.commit();
 
+				// =========================
+				// AUDITORIA
+				// =========================
 				await registrarAuditoria({
 					usuarioId: req.usuario.id_usuario,
+
 					acao: "UPDATE",
+
 					tabela: "alunos",
+
 					idRegistro: id,
+
 					descricao: `Atualizou os dados do aluno ${nome_completo}`,
+
 					dadosNovos: JSON.stringify({
 						email,
-						user_name,
 						nome_completo,
 						matricula,
 					}),
 				});
 
+				// =========================
+				// RESPONSE
+				// =========================
 				res.json({
 					sucesso: true,
-					mensagem: "Cadastro do aluno updated!",
+
+					mensagem: "Aluno atualizado com sucesso!",
 				});
 			} catch (innerErr) {
 				await transaction.rollback();
+
 				throw innerErr;
 			}
 		} catch (err) {
-			res.status(500).json({sucesso: false, erro: err.message});
+			res.status(500).json({
+				sucesso: false,
+
+				erro: err.message,
+			});
 		}
 	},
 );
@@ -540,15 +713,15 @@ router.delete(
 				id,
 			).query(`
 
-          UPDATE alunos
+			UPDATE alunos
 
-          SET
-            desativado = 1,
-            desativado_em = GETDATE()
+			SET
+				desativado = 1,
+				desativado_em = GETDATE()
 
-          WHERE id_aluno =
-            @id_aluno
-        `);
+			WHERE id_aluno =
+				@id_aluno
+			`);
 
 			// =========================
 			// COMMIT
@@ -590,8 +763,14 @@ router.delete(
 				await transaction.rollback();
 			}
 
-			res.status(500).json({
+			res.status(
+				err.message === "Aluno não encontrado" ||
+					err.message === "Aluno já está desativado"
+					? 400
+					: 500,
+			).json({
 				sucesso: false,
+
 				erro: err.message,
 			});
 		}
