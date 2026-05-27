@@ -1,184 +1,316 @@
 <!doctype html>
 <html lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
-    <title>ABC - Controle de Alunos</title>
-    <link rel="stylesheet" href="../style/global.css" />
-    <link rel="stylesheet" href="./style/resource.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-    />
+	<head>
+		<meta charset="UTF-8" />
+		<title>ABC - Controle de Alunos</title>
+		<link rel="stylesheet" href="../style/global.css" />
+		<link rel="stylesheet" href="./style/resource.css" />
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+		/>
 
-    <link rel="icon" href="./../img/icons/book.png" type="image/x-icon" />
-  </head>
-  <body>
-    <div class="app-container">
-      <header class="top-header">
-        <div class="logo-area">
-          <h1 class="logo">ABC<span>.</span></h1>
-          <div class="logo-divider"></div>
-          <p class="portal-text">Painel Administrativo</p>
-        </div>
-        <button class="logout-btn-header" id="btn-sair">
-          Sair <i class="fa-solid fa-arrow-right-from-bracket"></i>
-        </button>
-      </header>
-      <div class="dashboard-container">
-        <aside class="sidebar"></aside>
-        <main class="main-content">
-          <div class="page-content-card">
-            <div
-              class="page-actions-header"
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 20px;
-              "
-            >
-              <div class="page-title" style="margin: 0">
-                <h2>Gerenciar Alunos</h2>
-                <p>
-                  Cadastro completo de estudantes, contatos telefônicos e
-                  residência.
-                </p>
-              </div>
-              <button class="new-btn" id="btn-novo-aluno">
-                <i class="fa-solid fa-plus"></i> Novo Aluno
-              </button>
-            </div>
-            <div class="toolbar">
-              <div class="search-container">
-                <i class="fa-solid fa-magnifying-glass"></i
-                ><input
-                  type="text"
-                  id="input-pesquisa"
-                  placeholder="Pesquisar por nome, cpf, matrícula ou email..."
-                />
-              </div>
-            </div>
-            <section class="records-list" id="alunos-list">
-              <p>Carregando...</p>
-            </section>
-          </div>
-        </main>
-      </div>
-    </div>
+		<link
+			rel="icon"
+			href="./../img/icons/book.png"
+			type="image/x-icon"
+		/>
+	</head>
+	<body>
+		<div class="app-container">
+			<header class="top-header">
+				<div class="logo-area">
+					<h1 class="logo">ABC<span>.</span></h1>
+					<div class="logo-divider"></div>
+					<p class="portal-text">Painel Administrativo</p>
+				</div>
+				<button class="logout-btn-header" id="btn-sair">
+					Sair
+					<i
+						class="fa-solid fa-arrow-right-from-bracket"
+					></i>
+				</button>
+			</header>
+			<div class="dashboard-container">
+				<aside class="sidebar"></aside>
+				<main class="main-content">
+					<div class="page-content-card">
+						<div
+							class="page-actions-header"
+							style="
+								display: flex;
+								justify-content: space-between;
+								align-items: center;
+								margin-bottom: 20px;
+							"
+						>
+							<div
+								class="page-title"
+								style="margin: 0"
+							>
+								<h2>Gerenciar Alunos</h2>
+								<p>
+									Cadastro completo de
+									estudantes, contatos
+									telefônicos e residência.
+								</p>
+							</div>
+							<button
+								class="new-btn"
+								id="btn-novo-aluno"
+							>
+								<i class="fa-solid fa-plus"></i>
+								Novo Aluno
+							</button>
+						</div>
+						<div class="toolbar">
+							<div class="search-container">
+								<i
+									class="fa-solid fa-magnifying-glass"
+								></i>
+								<input
+									type="text"
+									id="input-pesquisa"
+									placeholder="Pesquisar por nome, cpf, matrícula ou email..."
+								/>
+							</div>
+						</div>
+						<section
+							class="records-list"
+							id="alunos-list"
+						>
+							<p>Carregando...</p>
+						</section>
+					</div>
+				</main>
+			</div>
+		</div>
 
-    <div class="modal-overlay" id="modal-overlay">
-      <div class="modal">
-        <div class="modal-header">
-          <h3 id="modal-title">Novo Registro de Aluno</h3>
-          <button class="close-modal" id="close-modal">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="form-section-title first">Dados de Acesso Base</div>
-          <div class="input-group span-3">
-            <label>Email <span class="required">*</span></label>
-            <input type="email" id="input-email" />
-          </div>
+		<div class="modal-overlay" id="modal-overlay">
+			<div class="modal">
+				<div class="modal-header">
+					<h3 id="modal-title">Novo Registro de Aluno</h3>
+					<button class="close-modal" id="close-modal">
+						<i class="fa-solid fa-xmark"></i>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="form-section-title first">
+						Dados de Acesso Base
+					</div>
+					<div class="input-group span-3">
+						<label
+							>Email
+							<span class="required">*</span></label
+						>
+						<input type="email" id="input-email" />
+					</div>
 
-          <div class="form-section-title">Ficha do Estudante</div>
-          <div class="input-group span-4">
-            <label>Nome Completo <span class="required">*</span></label>
-            <input type="text" id="input-nome-completo" />
-          </div>
-          <div class="input-group span-2" id="field-cpf">
-            <label>CPF <span class="required">*</span></label>
-            <input type="text" id="input-cpf" placeholder="000.000.000-00" />
-          </div>
-          <div class="input-group span-2">
-            <label>Data Nascimento <span class="required">*</span></label>
-            <input type="date" id="input-data-nascimento" />
-          </div>
-          <div class="input-group span-2">
-            <label>Matrícula <span class="required">*</span></label>
-            <input type="number" id="input-matricula" />
-          </div>
-          <div class="input-group span-2">
-            <label>Turma de Vínculo <span class="required">*</span></label>
-            <select id="input-fk-turma">
-              <option value="">Selecione...</option>
-            </select>
-          </div>
+					<div class="form-section-title">
+						Ficha do Estudante
+					</div>
+					<div class="input-group span-4">
+						<label
+							>Nome Completo
+							<span class="required">*</span></label
+						>
+						<input
+							type="text"
+							id="input-nome-completo"
+						/>
+					</div>
+					<div class="input-group span-2" id="field-cpf">
+						<label
+							>CPF
+							<span class="required">*</span></label
+						>
+						<input
+							type="text"
+							id="input-cpf"
+							placeholder="000.000.000-00"
+						/>
+					</div>
+					<div class="input-group span-2">
+						<label
+							>Data Nascimento
+							<span class="required">*</span></label
+						>
+						<input
+							type="date"
+							id="input-data-nascimento"
+						/>
+					</div>
+					<div class="input-group span-2">
+						<label
+							>Matrícula
+							<span class="required">*</span></label
+						>
+						<input type="number" id="input-matricula" />
+					</div>
+					<div class="input-group span-2">
+						<label
+							>Turma de Vínculo
+							<span class="required">*</span></label
+						>
+						<select id="input-fk-turma">
+							<option value="">Selecione...</option>
+						</select>
+					</div>
 
-          <div class="form-section-title">
-            Endereço Residencial (Direto no Banco)
-          </div>
-          <div class="input-group span-2">
-            <label>CEP <span class="required">*</span></label>
-            <input type="text" id="input-cep" placeholder="00000-000" maxlength="10" />
-          </div>
-          <div class="input-group span-4">
-            <label>Rua / Logradouro <span class="required">*</span></label>
-            <input type="text" id="input-rua" />
-          </div>
-          <div class="input-group span-2">
-            <label>Número <span class="required">*</span></label>
-            <input type="text" id="input-numero-casa" />
-          </div>
-          <div class="input-group span-2">
-            <label>Bairro <span class="required">*</span></label>
-            <input type="text" id="input-bairro" />
-          </div>
-          <div class="input-group span-2">
-            <label>Cidade <span class="required">*</span></label>
-            <input type="text" id="input-cidade" />
-          </div>
-          <div class="input-group span-2">
-            <label>UF <span class="required">*</span></label>
-            <input type="text" id="input-uf" placeholder="Ex: São Paulo" />
-          </div>
+					<div class="form-section-title">
+						Endereço Residencial (Direto no Banco)
+					</div>
+					<div class="input-group span-2">
+						<label
+							>CEP
+							<span class="required">*</span></label
+						>
+						<input
+							type="text"
+							id="input-cep"
+							placeholder="00000-000"
+							maxlength="10"
+						/>
+					</div>
+					<div class="input-group span-4">
+						<label
+							>Rua / Logradouro
+							<span class="required">*</span></label
+						>
+						<input type="text" id="input-rua" />
+					</div>
+					<div class="input-group span-2">
+						<label
+							>Número
+							<span class="required">*</span></label
+						>
+						<input type="text" id="input-numero-casa" />
+					</div>
+					<div class="input-group span-2">
+						<label
+							>Bairro
+							<span class="required">*</span></label
+						>
+						<input type="text" id="input-bairro" />
+					</div>
+					<div class="input-group span-2">
+						<label
+							>Cidade
+							<span class="required">*</span></label
+						>
+						<input type="text" id="input-cidade" />
+					</div>
+					<div class="input-group span-2">
+						<label
+							>UF
+							<span class="required">*</span></label
+						>
+						<input
+							type="text"
+							id="input-uf"
+							placeholder="Ex: São Paulo"
+						/>
+					</div>
 
-          <div class="form-section-title">
-            Gerenciador de Contatos Dinâmicos
-          </div>
-          <div class="phone-manager-container">
-            <div class="phone-input-row">
-              <input
-                type="text"
-                id="input-telefone-novo"
-                placeholder="Ex: (11) 99999-9999"
-              />
-              <button
-                type="button"
-                class="btn-add-phone"
-                id="btn-add-lista-fone"
-              >
-                <i class="fa-solid fa-plus"></i>
-              </button>
-            </div>
-            <div class="phone-tags-list" id="lista-fones-tags"></div>
-          </div>
+					<div class="form-section-title">
+						Gerenciador de Contatos Dinâmicos
+					</div>
+					<div class="phone-manager-container">
+						<div class="phone-input-row">
+							<input
+								type="text"
+								id="input-telefone-novo"
+								placeholder="Ex: (11) 99999-9999"
+							/>
+							<button
+								type="button"
+								class="btn-add-phone"
+								id="btn-add-lista-fone"
+							>
+								<i class="fa-solid fa-plus"></i>
+							</button>
+						</div>
+						<div
+							class="phone-tags-list"
+							id="lista-fones-tags"
+						></div>
+					</div>
 
-          <div class="modal-footer-actions">
-            <button class="delete-btn" id="btn-excluir-aluno">
-              Remover Registro
-            </button>
-            <button class="save-btn" id="btn-salvar-aluno">
-              Salvar Cadastro Completo
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+					<div class="modal-footer-actions">
+						<button
+							class="delete-btn"
+							id="btn-excluir-aluno"
+							style="display: none"
+						>
+							Remover Registro
+						</button>
+						<button
+							class="save-btn"
+							id="btn-salvar-aluno"
+						>
+							Salvar Cadastro Completo
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
-    <div class="modal-overlay" id="details-overlay">
-      <div class="modal details-modal">
-        <div class="modal-header">
-          <h3>Ficha Cadastral Simplificada</h3>
-          <button class="close-modal" id="close-details-modal">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-        <div class="details-grid" id="details-grid"></div>
-      </div>
-    </div>
+		<div class="modal-overlay" id="details-overlay">
+			<div class="modal details-modal">
+				<div class="modal-header">
+					<h3>Ficha Cadastral Simplificada</h3>
+					<button
+						class="close-modal"
+						id="close-details-modal"
+					>
+						<i class="fa-solid fa-xmark"></i>
+					</button>
+				</div>
+				<div class="details-grid" id="details-grid"></div>
+			</div>
+		</div>
 
-    <script src="./script/global.js" type="module"></script>
-    <script src="./script/alunos.js" type="module"></script>
-  </body>
+		<div class="modal-overlay" id="confirm-delete-overlay">
+			<div class="modal modal-confirm">
+				<div class="modal-header">
+					<h3>
+						<i
+							class="fa-solid fa-triangle-exclamation"
+						></i>
+						Confirmar Exclusão
+					</h3>
+				</div>
+
+				<div class="modal-body-confirm">
+					<p>
+						Tem certeza que deseja excluir o aluno
+						<strong id="delete-student-name">...</strong
+						>?
+					</p>
+					<p class="subtext-confirm">
+						Esta ação não poderá ser desfeita no
+						sistema.
+					</p>
+				</div>
+
+				<div class="modal-footer-confirm">
+					<button
+						class="btn-confirm cancel"
+						id="btn-cancelar-exclusao"
+					>
+						Cancelar
+					</button>
+					<button
+						class="btn-confirm delete"
+						id="btn-confirmar-exclusao"
+					>
+						Sim, Excluir
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<script src="./script/global.js" type="module"></script>
+		<script src="./script/alunos.js" type="module"></script>
+	</body>
 </html>
